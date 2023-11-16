@@ -1,0 +1,18 @@
+{
+  "appTitle": "new_gardenifi_app",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "fullName":"Tom Makrodimos",
+  "@fullName": {
+    "description": "The full name of the author"
+  },
+  "appBarTitle":"The new edition of Gardenifi",
+  "@appBarTitle": {
+    "description": "Title of the appbar"
+  },
+  "welcomeText": "Welcome\nto automatic irrigation system",
+
+  "bluetoothConnection": "Bluetooth Connection",
+  "exit": "Exit"
+}

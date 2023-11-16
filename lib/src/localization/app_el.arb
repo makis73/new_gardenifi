@@ -1,0 +1,19 @@
+{
+    "appTitle": "Η νέα εφαρμογή Gardenifi",
+    "@appTitle": {
+      "description": "Ο τίτλος της εφαρμογής"
+    },
+    "fullName":"Θωμάς Μακροδήμος",
+    "@fullName": {
+      "description": "Το πλήρες  όνομα"
+    },
+    "appBarTitle":"Νέα έκδοση",
+    "@appBarTitle": {
+      "description": "Τίτλος  του appbar"
+    },
+    "welcomeText": "Καλώς ήρθατε\nστο αυτόματο σύστημα ποτίσματος",
+
+    "bluetoothConnection": "Σύνδεση Bluettooth",
+    "exit": "Έξοδος"
+  }
+  
