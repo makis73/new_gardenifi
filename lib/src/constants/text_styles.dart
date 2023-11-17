@@ -13,7 +13,7 @@ class TextStyles {
   );
 
   static const TextStyle smallNormal = TextStyle(
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: FontWeight.normal,
   );
 

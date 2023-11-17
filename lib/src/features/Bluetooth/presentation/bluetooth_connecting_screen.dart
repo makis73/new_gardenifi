@@ -1,18 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_gardenifi_app/src/common_widgets/big_green_button.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
-import 'package:new_gardenifi_app/src/common_widgets/gardenifi_logo.dart';
-import 'package:new_gardenifi_app/src/common_widgets/more_menu_button.dart';
 import 'package:new_gardenifi_app/src/common_widgets/no_bluetooth_widget.dart';
+import 'package:new_gardenifi_app/src/common_widgets/progress_widget.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/Bluetooth/data/bluetooth_repository.dart';
-import 'package:new_gardenifi_app/src/features/Bluetooth/presentation/bluetooth_controller.dart';
-import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class BluetoothConnectingScreen extends ConsumerStatefulWidget {
@@ -23,17 +17,18 @@ class BluetoothConnectingScreen extends ConsumerStatefulWidget {
 }
 
 class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingScreen> {
-  @override
-  void initState() {
-    log('INIT called');
-    super.initState();
-    // ref.read(bluetoothRepositoryProvider).setupScanStream();
-    // ref.read(bluetoothRepositoryProvider).startScan();
+  Future<void> watchResult() async {
+    ref.read(scanResultProvider.notifier).setupScanStream();
+    await ref.read(scanResultProvider.notifier).startScan();
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  void initState() {
+    // Start scan for devices and listening the stream 
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      watchResult();
+    });
+    super.initState();
   }
 
   @override
@@ -47,71 +42,95 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
     final bool isBluetoothOn =
         bluetoothAdapterProvider.value == BluetoothAdapterState.on ? true : false;
 
-    final state = ref.watch(bluetoothConnectionController);
-    final results = ref.watch(scanResultProvider);
+    /// Variable that watch if device found   
+    AsyncValue<bool> scanResultState = ref.watch(scanResultProvider);
 
-    log(results.toString());
-
-    // When the user leaves the screen stop scaning and listening to the scan result stream
-    // Future<bool> stopStreamAndScan() async {
-    //   ref.read(bluetoothRepositoryProvider)
-    //     ..dispose()
-    //     ..stopScan();
-    //   return true;
-    // }
-
-    return state.isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : WillPopScope(
-            onWillPop: null, //stopStreamAndScan,
-            child: Scaffold(
-              backgroundColor: const Color.fromARGB(229, 255, 255, 255),
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  BluetoothScreenUpper(
-                    radius: radius,
-                    showMenuButton: false,
-                    logoInTheRight: true,
-                  ),
-                  if (!isBluetoothOn) NoBluetoothWidget(ref: ref),
-                  // scanResultState.when(
-                  //   data: (data) {
-                  //     log('From widget: $data');
-                  //     if (data) {
-                  //       return const Center(
-                  //         child: Text('OK'),
-                  //       );
-                  //     } else {
-                  //       return const Center(
-                  //         child: Text('False'),
-                  //       );
-                  //     }
-                  //   },
-                  //   error: (error, stackTrace) {
-                  //     return const Text('Errorr');
-                  //   },
-                  //   loading: () => const Center(child: CircularProgressIndicator()),
-                  // )
-                  ElevatedButton(
-                      onPressed: () {
-                        ref.read(bluetoothConnectionController.notifier).startScan();
-                      },
-                      child: const Text('press'))
-                ],
-              ),
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  bool isScanningNow =
-                      ref.read(bluetoothRepositoryProvider).isScanningNow();
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: isScanningNow
-                          ? const Text('IsScanning')
-                          : const Text('Not Scanning')));
-                },
-              ),
+    return WillPopScope(
+      // If user press the back button during scanning stop scan and unsubscribe from stream
+      onWillPop: () async {
+        ref.read(bluetoothRepositoryProvider).stopScan();
+        return true;
+      }, //stopStreamAndScan,
+      child: Scaffold(
+        backgroundColor: const Color.fromARGB(229, 255, 255, 255),
+        body: Stack(
+          children: [
+            BluetoothScreenUpper(
+              radius: radius,
+              showMenuButton: false,
+              logoInTheRight: true,
             ),
-          );
+            !isBluetoothOn
+                ? NoBluetoothWidget(ref: ref)
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      buildScanResultWidget(scanResultState),
+                      // if (scanResultState == const AsyncData(false))
+                    ],
+                  ),
+          ],
+        ),
+        // TODO: For debug only
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            bool isScanningNow = ref.read(bluetoothRepositoryProvider).isScanningNow();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: isScanningNow
+                    ? const Text('IsScanning')
+                    : const Text('Not Scanning')));
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildScanResultWidget(AsyncValue<bool> scanResultState) {
+    return scanResultState.when(data: (foundDevice) {
+      if (foundDevice) {
+        // TODO: Connect with device .....
+        return ProgressWidget(
+          title: 'Connecting with device...'.hardcoded,
+          subtitle: 'Please hold your phone near device'.hardcoded,
+        );
+      } else {
+        return deviceNotFoundWidget();
+      }
+    }, error: (error, stackTrace) {
+      // TODO: Do something when error
+      return const Center(child: Text('Error'));
+    }, loading: () {
+      return ProgressWidget(
+        title: 'Searching device...'.hardcoded,
+        subtitle: 'Please hold your phone near device'.hardcoded,
+      );
+    });
+  }
+
+  Widget deviceNotFoundWidget() {
+    return Center(
+      child: Column(
+        children: [
+          Center(
+              child: Text(
+            'Device not found'.hardcoded,
+            style: TextStyles.mediumBold,
+          )),
+          Center(
+              child: Text(
+            'Make sure device is on and try again'.hardcoded,
+            style: TextStyles.smallNormal,
+          )),
+          gapH20,
+          TextButton(
+              onPressed: () async => watchResult(),
+              child: Text(
+                'Try Again'.hardcoded,
+                style: TextStyles.smallNormal,
+              )),
+        ],
+      ),
+    );
   }
 }
