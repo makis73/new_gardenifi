@@ -11,7 +11,7 @@ class BluetoothController extends StateNotifier<AsyncValue<bool>> {
 
   final BluetoothRepository bluetoothRepository;
 
-  late BluetoothDevice device;
+  BluetoothDevice? device;
 
   late StreamSubscription<List<ScanResult>> _scanSubscription;
 
@@ -21,7 +21,6 @@ class BluetoothController extends StateNotifier<AsyncValue<bool>> {
   void setupScanStream() async {
     // Sent to widget a loading value
     state = const AsyncValue.loading();
-
     // Start coundown 10 seconds and if device not found return to widget a false value
     // TODO: Change the timer to 10 - 15 seconds
     final timer = Timer(const Duration(seconds: 5), () async {
@@ -47,19 +46,12 @@ class BluetoothController extends StateNotifier<AsyncValue<bool>> {
     );
   }
 
-  Future<void> startScan() => bluetoothRepository.startScan();
 
-  Future<void> stopScan() => bluetoothRepository.stopScan(_scanSubscription);
+  Future<void> startScan() async => await bluetoothRepository.startScan();
 
-  Future<void> connectDevice() async {
-    await bluetoothRepository.connectDevice();
-    state = const AsyncData(false);
-    log('state = $state');
-  }
+  Future<void> stopScan() async => await bluetoothRepository.stopScan(_scanSubscription);
 
-  void setupConnectionStream() {
-    device.connectionState.listen((event) {});
-  }
+  // Future<void> connectDevice() async => await bluetoothRepository.connectDevice();
 
   @override
   void dispose() {
@@ -73,4 +65,8 @@ final bluetoothControllerProvider =
     StateNotifierProvider.autoDispose<BluetoothController, AsyncValue<bool>>((ref) {
   final bluetoothRepository = ref.watch(bluetoothRepositoryProvider);
   return BluetoothController(bluetoothRepository);
+});
+
+final deviceProvider = Provider<BluetoothDevice>((ref) {
+  return ref.read(bluetoothControllerProvider.notifier).device!;
 });
