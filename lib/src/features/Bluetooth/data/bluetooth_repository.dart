@@ -6,12 +6,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/bluetooth_constants.dart';
 
 class BluetoothRepository extends StateNotifier<AsyncValue<bool>> {
-  BluetoothRepository() : super(const AsyncValue.data(true));
+  BluetoothRepository({this.device}) : super(const AsyncValue.data(true));
+
+  final BluetoothDevice? device;
+
+  // The stream to watch Bluetooth adpater state
+  Stream<BluetoothAdapterState> adapterStateChanges() => FlutterBluePlus.adapterState;
 
   // The scan results stream
   Stream<List<ScanResult>> scanStream = FlutterBluePlus.scanResults;
-  // The stream to watch Bluetooth adpater state
-  Stream<BluetoothAdapterState> adapterStateChanges() => FlutterBluePlus.adapterState;
+
+  Stream<BluetoothConnectionState> connectionStream() => device!.connectionState;
 
   /// Function to turn on bluetooth adapter of mobile
   Future<void> turnBluetoothOn() async {
@@ -42,6 +47,8 @@ class BluetoothRepository extends StateNotifier<AsyncValue<bool>> {
   bool isScanningNow() {
     return FlutterBluePlus.isScanningNow;
   }
+
+  Future<void> connectDevice() => device!.connect();
 }
 
 /// The provider of the repository
@@ -57,3 +64,9 @@ final bluetoothAdapterStateStreamProvider =
   final bluetoothRepository = ref.watch(bluetoothRepositoryProvider);
   return bluetoothRepository.adapterStateChanges();
 });
+
+final bluetoothConnectProvider = Provider.family<BluetoothRepository, BluetoothDevice>(
+  (ref, device) {
+    return BluetoothRepository(device: device);
+  },
+);

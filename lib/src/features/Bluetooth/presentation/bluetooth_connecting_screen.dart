@@ -45,6 +45,8 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
     /// Variable that watch if device found
     AsyncValue<bool> scanResultState = ref.watch(bluetoothControllerProvider);
 
+    late bool deviceFound;
+
     return WillPopScope(
       // If user press the back button during scanning stop scan and unsubscribe from stream
       onWillPop: () async {

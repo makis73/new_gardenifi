@@ -5,14 +5,17 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/bluetooth_constants.dart';
 import 'package:new_gardenifi_app/src/features/Bluetooth/data/bluetooth_repository.dart';
-import 'package:new_gardenifi_app/src/features/Bluetooth/presentation/bluetooth_connecting_screen.dart';
 
 class BluetoothController extends StateNotifier<AsyncValue<bool>> {
   BluetoothController(this.bluetoothRepository) : super(const AsyncValue.data(false));
 
   final BluetoothRepository bluetoothRepository;
 
+  late BluetoothDevice device;
+
   late StreamSubscription<List<ScanResult>> _scanSubscription;
+
+  late StreamSubscription<BluetoothConnectionState> _connectionSubscription;
 
   /// Start watching the stream
   void setupScanStream() async {
@@ -36,6 +39,7 @@ class BluetoothController extends StateNotifier<AsyncValue<bool>> {
           if (result.device.platformName == DEVICE_NAME) {
             timer.cancel();
             bluetoothRepository.stopScan(_scanSubscription);
+            device = result.device;
             state = const AsyncValue<bool>.data(true);
           }
         }
@@ -46,6 +50,16 @@ class BluetoothController extends StateNotifier<AsyncValue<bool>> {
   Future<void> startScan() => bluetoothRepository.startScan();
 
   Future<void> stopScan() => bluetoothRepository.stopScan(_scanSubscription);
+
+  Future<void> connectDevice() async {
+    await bluetoothRepository.connectDevice();
+    state = const AsyncData(false);
+    log('state = $state');
+  }
+
+  void setupConnectionStream() {
+    device.connectionState.listen((event) {});
+  }
 
   @override
   void dispose() {
