@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
+import 'package:new_gardenifi_app/src/common_widgets/error_message_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/no_bluetooth_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/progress_widget.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/Bluetooth/data/bluetooth_repository.dart';
+import 'package:new_gardenifi_app/src/features/Bluetooth/presentation/bluetooth_controller.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class BluetoothConnectingScreen extends ConsumerStatefulWidget {
@@ -18,16 +20,14 @@ class BluetoothConnectingScreen extends ConsumerStatefulWidget {
 
 class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingScreen> {
   Future<void> watchResult() async {
-    ref.read(scanResultProvider.notifier).setupScanStream();
-    await ref.read(scanResultProvider.notifier).startScan();
+    ref.read(bluetoothControllerProvider.notifier).setupScanStream();
+    await ref.read(bluetoothControllerProvider.notifier).startScan();
   }
 
   @override
   void initState() {
-    // Start scan for devices and listening the stream 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      watchResult();
-    });
+    // Start scan for devices and listening the stream
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) => watchResult());
     super.initState();
   }
 
@@ -42,13 +42,13 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
     final bool isBluetoothOn =
         bluetoothAdapterProvider.value == BluetoothAdapterState.on ? true : false;
 
-    /// Variable that watch if device found   
-    AsyncValue<bool> scanResultState = ref.watch(scanResultProvider);
+    /// Variable that watch if device found
+    AsyncValue<bool> scanResultState = ref.watch(bluetoothControllerProvider);
 
     return WillPopScope(
       // If user press the back button during scanning stop scan and unsubscribe from stream
       onWillPop: () async {
-        ref.read(bluetoothRepositoryProvider).stopScan();
+        ref.read(bluetoothControllerProvider.notifier).stopScan();
         return true;
       }, //stopStreamAndScan,
       child: Scaffold(
@@ -67,7 +67,6 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       buildScanResultWidget(scanResultState),
-                      // if (scanResultState == const AsyncData(false))
                     ],
                   ),
           ],
@@ -87,25 +86,25 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
   }
 
   Widget buildScanResultWidget(AsyncValue<bool> scanResultState) {
-    return scanResultState.when(data: (foundDevice) {
-      if (foundDevice) {
-        // TODO: Connect with device .....
-        return ProgressWidget(
-          title: 'Connecting with device...'.hardcoded,
-          subtitle: 'Please hold your phone near device'.hardcoded,
-        );
-      } else {
-        return deviceNotFoundWidget();
-      }
-    }, error: (error, stackTrace) {
-      // TODO: Do something when error
-      return const Center(child: Text('Error'));
-    }, loading: () {
-      return ProgressWidget(
-        title: 'Searching device...'.hardcoded,
-        subtitle: 'Please hold your phone near device'.hardcoded,
-      );
-    });
+    return scanResultState.when(
+        data: (foundDevice) {
+          if (foundDevice) {
+            // TODO: Connect with device .....
+            return ProgressWidget(
+              title: 'Connecting with device...'.hardcoded,
+              subtitle: 'Please hold your phone near device'.hardcoded,
+            );
+          } else {
+            return deviceNotFoundWidget();
+          }
+        },
+        error: (error, stackTrace) => Center(child: ErrorMessageWidget(error.toString())),
+        loading: () {
+          return ProgressWidget(
+            title: 'Searching device...'.hardcoded,
+            subtitle: 'Please hold your phone near device'.hardcoded,
+          );
+        });
   }
 
   Widget deviceNotFoundWidget() {
