@@ -10,7 +10,7 @@ import 'package:new_gardenifi_app/src/common_widgets/progress_widget.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/Bluetooth/data/bluetooth_repository.dart';
-import 'package:new_gardenifi_app/src/features/Bluetooth/presentation/bluetooth_connection_controller.dart';
+import 'package:new_gardenifi_app/src/features/Bluetooth/data/test_repository.dart';
 import 'package:new_gardenifi_app/src/features/Bluetooth/presentation/bluetooth_controller.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
@@ -22,22 +22,16 @@ class BluetoothConnectingScreen extends ConsumerStatefulWidget {
 }
 
 class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingScreen> {
-  bool deviceFound = false;
-
-  Future<void> watchResult() async {
-    ref.read(bluetoothControllerProvider.notifier).setupScanStream();
-    await ref.read(bluetoothControllerProvider.notifier).startScan();
-  }
-
-  // void watchConnection() async {
-  //   await ref.read(bluetoothControllerProvider.notifier).connectDevice();
-  //   ref.read(bleConnectionController).setupConnectionStream();
-  // }
+  // bool deviceFound = false;
 
   @override
   void initState() {
     // Start scan for devices and listening the stream
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) => watchResult());
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref.read(bleScanProvider.notifier).startScanStream();
+      ref.read(bleScanProvider.notifier).startScan();
+      // watchResult();
+    });
     super.initState();
   }
 
@@ -53,13 +47,18 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
         bluetoothAdapterProvider.value == BluetoothAdapterState.on ? true : false;
 
     /// Variable that watch if device found
-    AsyncValue<bool> scanResultState = ref.watch(bluetoothControllerProvider);
+    AsyncValue<bool> scanResultState = ref.watch(bleScanProvider);
+
+    // /// Variable that watch the connection with device
+    // final connectionState = ref.watch(connectionStateProvider);
+
+    // final bool isConnected =
+    //     connectionState.value == BluetoothConnectionState.connected ? true : false;
 
     return WillPopScope(
       // If user press the back button during scanning stop scan and unsubscribe from stream
-      // TODO: unsubscribe from device connection stream
       onWillPop: () async {
-        ref.read(bluetoothControllerProvider.notifier).stopScan();
+        ref.read(bluetoothRepositoryProvider).stopScanAndSubscription();
         return true;
       }, //stopStreamAndScan,
       child: Scaffold(
@@ -77,8 +76,8 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      if (!deviceFound) buildScanResultWidget(scanResultState),
-                      if (deviceFound) buildConnectionWidget()
+                      buildScanResultWidget(scanResultState),
+                      // if (deviceFound) buildConnectionWidget()
                     ],
                   ),
           ],
@@ -101,60 +100,39 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
     return scanResultState.when(
         data: (foundDevice) {
           if (foundDevice) {
-            // return buildConnectionWidget();
-            setState(() {
-              deviceFound = true;
-            });
-            return Container();
-
-            // return ProgressWidget(
-            //   title: 'Connecting with device...'.hardcoded,
-            //   subtitle: 'Please hold your phone near device'.hardcoded,
-            // );
+            return const Center(
+              child: Text('Found device'),
+            );
           } else {
             return deviceNotFoundWidget();
           }
         },
         error: (error, stackTrace) => Center(child: ErrorMessageWidget(error.toString())),
-        loading: () {
-          return ProgressWidget(
-            title: 'Searching device...'.hardcoded,
-            subtitle: 'Please hold your phone near device'.hardcoded,
-          );
-        });
+        loading: () => ProgressWidget(
+              title: 'Searching device...'.hardcoded,
+              subtitle: 'Please hold your phone near device'.hardcoded,
+            ));
   }
 
-  Widget buildConnectionWidget() {
-    BluetoothDevice device = ref.watch(bluetoothControllerProvider.notifier).device!;
-    log('device: $device');
+  // Widget buildConnectionWidget() {
+    // AsyncValue<bool> connectionState = ref.watch(bleConnectionController(device));
 
-        // ! every time the widget build it calls again and again them
-        // ! they must be called once outside widget
-        // ! Probably to move to another screen when device has found
-        ref.read(bleConnectionController(device).notifier).connectDevice(device);
-        ref.read(bleConnectionController(device).notifier).setupConnectionStream();
-      
-  
-
-    /// Variable that watch if device connected
-    AsyncValue<bool> connectionState = ref.watch(bleConnectionController(device));
-
-    return connectionState.when(
-      data: (connected) {
-        log('$connected');
-        if (connected) {
-          return const Center(child: Text('Connected!!!!'));
-        } else {
-          return const Center(child: Text('Not Connected!!!!'));
-        }
-      },
-      error: (error, stackTrace) => Center(child: ErrorMessageWidget(error.toString())),
-      loading: () => ProgressWidget(
-        title: 'Connecting...'.hardcoded,
-        subtitle: 'Please hold your phone near device'.hardcoded,
-      ),
-    );
-  }
+    // return connectionState.when(
+    //   data: (connected) {
+    //     log('$connected');
+    //     if (connected) {
+    //       return const Center(child: Text('Connected!!!!'));
+    //     } else {
+    //       return const Center(child: Text('Not Connected!!!!'));
+    //     }
+    //   },
+    //   error: (error, stackTrace) => Center(child: ErrorMessageWidget(error.toString())),
+    //   loading: () => ProgressWidget(
+    //     title: 'Connecting...'.hardcoded,
+    //     subtitle: 'Please hold your phone near device'.hardcoded,
+    //   ),
+    // );
+  // }
 
   Widget deviceNotFoundWidget() {
     return Center(
@@ -172,7 +150,10 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
           )),
           gapH20,
           TextButton(
-              onPressed: () async => watchResult(),
+              onPressed: () async {
+                ref.read(bleScanProvider.notifier).startScanStream();
+                ref.read(bleScanProvider.notifier).startScan();
+              },
               child: Text(
                 'Try Again'.hardcoded,
                 style: TextStyles.smallNormal,
