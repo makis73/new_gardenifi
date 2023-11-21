@@ -39,7 +39,7 @@ class BigGreenButton extends ConsumerWidget {
             onPressed: isBluetoothOn
                 ? callback
                 : null,
-            child: Text(loc.bluetoothConnection, style: TextStyles.bigButtonStyle),
+            child: Text(message, style: TextStyles.bigButtonStyle),
           ),
         ));
   }

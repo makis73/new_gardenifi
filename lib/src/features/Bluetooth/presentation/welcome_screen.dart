@@ -23,7 +23,7 @@ class WelcomeScreen extends ConsumerWidget {
 
     final bluetoothAdapterProvider = ref.watch(bluetoothAdapterStateStreamProvider);
     final loc = ref.read(appLocalizationsProvider);
-    
+
     final bool isBluetoothOn =
         bluetoothAdapterProvider.value == BluetoothAdapterState.on ? true : false;
 
@@ -51,8 +51,16 @@ class WelcomeScreen extends ConsumerWidget {
                       messageWidget: buildWelcomeText(radius, loc)),
                   GardenifiLogo(height: screenHeight, divider: 8),
                   if (!isBluetoothOn) NoBluetoothWidget(ref: ref),
-                  buildBottomWidgets(context, screenWidth, screenHeight, isBluetoothOn,
-                      ref, navigateToNextPage),
+                  BottomWidget(
+                      context: context,
+                      screenWidth: screenWidth,
+                      screenHeight: screenHeight,
+                      isBluetoothOn: isBluetoothOn,
+                      text: 'Before continue you must configure the irrigation device'
+                          .hardcoded,
+                      buttonText: loc.bluetoothConnection,
+                      ref: ref,
+                      callback: navigateToNextPage),
                 ],
               ),
             )
@@ -69,26 +77,6 @@ class WelcomeScreen extends ConsumerWidget {
         ));
   }
 
-  Widget buildBottomWidgets(BuildContext context, double screenWidth, double screenHeight,
-      bool isBluetoothOn, WidgetRef ref, Future<void> Function() callback) {
-    final loc = ref.read(appLocalizationsProvider);
-    return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-            child: Text(
-              'Before continue you must configure the irrigation device.'.hardcoded,
-              style: TextStyles.smallNormal,
-            ),
-          ),
-          BigGreenButton(loc.bluetoothConnection, isBluetoothOn, callback)
-        ],
-      ),
-    );
-  }
-
   Positioned buildWelcomeText(double radius, AppLocalizations loc) {
     return Positioned.fill(
         child: Align(
@@ -102,5 +90,48 @@ class WelcomeScreen extends ConsumerWidget {
         ),
       ),
     ));
+  }
+}
+
+class BottomWidget extends StatelessWidget {
+  const BottomWidget({
+    super.key,
+    required this.context,
+    required this.screenWidth,
+    required this.screenHeight,
+    required this.isBluetoothOn,
+    required this.text,
+    required this.buttonText,
+    required this.ref,
+    required this.callback,
+  });
+
+  final BuildContext context;
+  final double screenWidth;
+  final double screenHeight;
+  final bool isBluetoothOn;
+  final String text;
+  final String buttonText;
+  final WidgetRef ref;
+  final Future<void> Function() callback;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+            child: Text(
+              text,
+              style: TextStyles.smallNormal,
+            ),
+          ),
+          BigGreenButton(buttonText, isBluetoothOn, callback)
+        ],
+      ),
+    );
   }
 }

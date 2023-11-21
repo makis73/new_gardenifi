@@ -12,6 +12,7 @@ import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/Bluetooth/data/bluetooth_repository.dart';
 import 'package:new_gardenifi_app/src/features/Bluetooth/data/test_repository.dart';
 import 'package:new_gardenifi_app/src/features/Bluetooth/presentation/bluetooth_controller.dart';
+import 'package:new_gardenifi_app/src/features/Bluetooth/presentation/welcome_screen.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class BluetoothConnectingScreen extends ConsumerStatefulWidget {
@@ -38,6 +39,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     final radius = screenHeight / 4;
 
     /// Variable that watch the state of the bluetooth adapter
@@ -47,10 +49,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
         bluetoothAdapterProvider.value == BluetoothAdapterState.on ? true : false;
 
     /// Variable that watch if device found
-    AsyncValue<bool> scanResultState = ref.watch(bleScanProvider);
-
-    // /// Variable that watch the connection with device
-    // final connectionState = ref.watch(connectionStateProvider);
+    AsyncValue<BluetoothDevice?> scanResultState = ref.watch(bleScanProvider);
 
     // final bool isConnected =
     //     connectionState.value == BluetoothConnectionState.connected ? true : false;
@@ -63,23 +62,43 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
       }, //stopStreamAndScan,
       child: Scaffold(
         backgroundColor: const Color.fromARGB(229, 255, 255, 255),
-        body: Stack(
-          children: [
-            BluetoothScreenUpper(
-              radius: radius,
-              showMenuButton: false,
-              logoInTheRight: true,
-            ),
-            !isBluetoothOn
-                ? NoBluetoothWidget(ref: ref)
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      buildScanResultWidget(scanResultState),
-                      // if (deviceFound) buildConnectionWidget()
-                    ],
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                children: [
+                  BluetoothScreenUpper(
+                    radius: radius,
+                    showMenuButton: false,
+                    logoInTheRight: true,
                   ),
+                  !isBluetoothOn
+                      ? NoBluetoothWidget(ref: ref)
+                      : Expanded(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              buildScanResultWidget(scanResultState),
+                              BottomWidget(
+                                context: context,
+                                screenWidth: screenWidth,
+                                screenHeight: screenHeight,
+                                isBluetoothOn: isBluetoothOn,
+                                text: 'Press Continue to go to WiFi setup screen'.hardcoded,
+                                buttonText: 'Continue'.hardcoded,
+                                ref: ref,
+                                callback: () async {
+                                  throw UnimplementedError();
+                                },
+                              )
+                            ],
+                          ),
+                      ),
+                ],
+              ),
+            ),
           ],
         ),
         // TODO: For debug only
@@ -96,13 +115,11 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
     );
   }
 
-  Widget buildScanResultWidget(AsyncValue<bool> scanResultState) {
+  Widget buildScanResultWidget(AsyncValue<BluetoothDevice?> scanResultState) {
     return scanResultState.when(
-        data: (foundDevice) {
-          if (foundDevice) {
-            return const Center(
-              child: Text('Found device'),
-            );
+        data: (device) {
+          if (device != null) {
+            return buildConnectionWidget(device);
           } else {
             return deviceNotFoundWidget();
           }
@@ -114,25 +131,31 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
             ));
   }
 
-  // Widget buildConnectionWidget() {
-    // AsyncValue<bool> connectionState = ref.watch(bleConnectionController(device));
+  Widget buildConnectionWidget(BluetoothDevice device) {
+    /// Variable that watch the connection with device
+    final connectionState = ref.watch(connectionStateProvider(device));
+    log('From widget: connection state = $connectionState');
 
-    // return connectionState.when(
-    //   data: (connected) {
-    //     log('$connected');
-    //     if (connected) {
-    //       return const Center(child: Text('Connected!!!!'));
-    //     } else {
-    //       return const Center(child: Text('Not Connected!!!!'));
-    //     }
-    //   },
-    //   error: (error, stackTrace) => Center(child: ErrorMessageWidget(error.toString())),
-    //   loading: () => ProgressWidget(
-    //     title: 'Connecting...'.hardcoded,
-    //     subtitle: 'Please hold your phone near device'.hardcoded,
-    //   ),
-    // );
-  // }
+    return connectionState.when(
+      data: (state) {
+        log('$state');
+        if (state == BluetoothConnectionState.connected) {
+          return Center(
+              child: Text(
+            'Pairing Succesful'.hardcoded,
+            style: TextStyles.mediumBold,
+          ));
+        } else {
+          return couldNotConnectWidget(device);
+        }
+      },
+      error: (error, stackTrace) => Center(child: ErrorMessageWidget(error.toString())),
+      loading: () => ProgressWidget(
+        title: 'Connecting...'.hardcoded,
+        subtitle: 'Please hold your phone near device'.hardcoded,
+      ),
+    );
+  }
 
   Widget deviceNotFoundWidget() {
     return Center(
@@ -153,6 +176,29 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
               onPressed: () async {
                 ref.read(bleScanProvider.notifier).startScanStream();
                 ref.read(bleScanProvider.notifier).startScan();
+              },
+              child: Text(
+                'Try Again'.hardcoded,
+                style: TextStyles.smallNormal,
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget couldNotConnectWidget(BluetoothDevice device) {
+    return Center(
+      child: Column(
+        children: [
+          Center(
+              child: Text(
+            'Could not connect with device'.hardcoded,
+            style: TextStyles.mediumBold,
+          )),
+          gapH20,
+          TextButton(
+              onPressed: () async {
+                await ref.read(bleScanProvider.notifier).connectDevice(device);
               },
               child: Text(
                 'Try Again'.hardcoded,

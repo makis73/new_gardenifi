@@ -5,8 +5,8 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/bluetooth_constants.dart';
 
-class BluetoothRepository extends StateNotifier<AsyncValue<bool>> {
-  BluetoothRepository() : super(const AsyncValue.data(false));
+class BluetoothRepository extends StateNotifier<AsyncValue<BluetoothDevice?>> {
+  BluetoothRepository() : super(const AsyncValue.data(null));
 
   late BluetoothDevice device;
 
@@ -19,20 +19,19 @@ class BluetoothRepository extends StateNotifier<AsyncValue<bool>> {
   // The scan stream subscription
   late StreamSubscription<List<ScanResult>> _scanSubscription;
 
-  // // The stream to watch Bluetooth connection with device
-  // Stream<BluetoothConnectionState> connectionState() => device.connectionState;
-
+  // The stream to watch Bluetooth connection with device
+  Stream<BluetoothConnectionState> connectionStateGhanges(BluetoothDevice device) =>
+      device.connectionState;
   // ------------------ SCAN ----------------
   Future<void> startScanStream() async {
     // Sent to widget a loading value
     state = const AsyncValue.loading();
-    log('From repo: state = $state');
 
     // Start coundown 10 seconds and if device not found return to widget a false value
     // TODO: Change the timer to 10 - 15 seconds
     final timer = Timer(const Duration(seconds: 5), () async {
       await stopScanAndSubscription();
-      state = const AsyncData(false);
+      state = const AsyncData(null);
     });
 
     // await Future.delayed(const Duration(seconds: 2));
@@ -41,14 +40,13 @@ class BluetoothRepository extends StateNotifier<AsyncValue<bool>> {
       (results) async {
         if (results.isNotEmpty) {
           ScanResult result = results.last;
-          log('found: ${result.device.platformName}');
           // If device found:stop countdown, stop scan, cancel subscription, sent to widget a true value
           if (result.device.platformName == DEVICE_NAME) {
+            device = result.device;
             timer.cancel();
             await stopScanAndSubscription();
-            device = result.device;
-            state = const AsyncValue<bool>.data(true);
-            log('From repo after: state = $state');
+            await connectDevice(device);
+            state = AsyncValue<BluetoothDevice>.data(device);
           }
         }
       },
@@ -89,7 +87,7 @@ class BluetoothRepository extends StateNotifier<AsyncValue<bool>> {
 
   Future<void> connectDevice(BluetoothDevice device) async {
     await device.connect();
-  } 
+  }
 }
 
 /// The provider of the repository
@@ -106,11 +104,12 @@ final bluetoothAdapterStateStreamProvider =
   return bluetoothRepository.adapterStateChanges();
 });
 
-final bleScanProvider = StateNotifierProvider<BluetoothRepository, AsyncValue<bool>>(
-    (ref) => BluetoothRepository());
+final bleScanProvider =
+    StateNotifierProvider<BluetoothRepository, AsyncValue<BluetoothDevice?>>(
+        (ref) => BluetoothRepository());
 
-// final connectionStateProvider =
-//     StreamProvider.autoDispose<BluetoothConnectionState>((ref) {
-//   final bluetoothRepository = ref.watch(bluetoothRepositoryProvider);
-//   return bluetoothRepository.connectionState();
-// });
+final connectionStateProvider = StreamProvider.family
+    .autoDispose<BluetoothConnectionState, BluetoothDevice>((ref, device) {
+  final bluetoothRepository = ref.watch(bluetoothRepositoryProvider);
+  return bluetoothRepository.connectionStateGhanges(device);
+});
