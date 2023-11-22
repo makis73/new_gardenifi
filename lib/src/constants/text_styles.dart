@@ -7,18 +7,35 @@ class TextStyles {
     fontWeight: FontWeight.bold,
   );
 
+  static const TextStyle bigBold = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
+
   static const TextStyle bigButtonStyle = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w400,
   );
 
-  static const TextStyle smallNormal = TextStyle(
+  static const TextStyle xSmallNormal = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.normal,
   );
 
-  static const TextStyle smallNormalRed = TextStyle(
-    fontSize: 16,
+    static const TextStyle smallNormal = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.normal,
+  );
+
+      static const TextStyle smallBold = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+  );
+
+
+
+  static const TextStyle alertMessage = TextStyle(
+    fontSize: 18,
     fontWeight: FontWeight.normal,
     color: Colors.red,
   );

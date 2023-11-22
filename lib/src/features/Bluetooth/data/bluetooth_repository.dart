@@ -22,19 +22,18 @@ class BluetoothRepository extends StateNotifier<AsyncValue<BluetoothDevice?>> {
   // The stream to watch Bluetooth connection with device
   Stream<BluetoothConnectionState> connectionStateGhanges(BluetoothDevice device) =>
       device.connectionState;
-  // ------------------ SCAN ----------------
+
+  /// Start searching for the device
   Future<void> startScanStream() async {
     // Sent to widget a loading value
     state = const AsyncValue.loading();
-
-    // Start coundown 10 seconds and if device not found return to widget a false value
+    // Start coundown 10 seconds. If device not found return to widget a false value
     // TODO: Change the timer to 10 - 15 seconds
     final timer = Timer(const Duration(seconds: 5), () async {
       await stopScanAndSubscription();
       state = const AsyncData(null);
     });
 
-    // await Future.delayed(const Duration(seconds: 2));
     // Start listening for devices
     _scanSubscription = scanStream.listen(
       (results) async {
@@ -83,14 +82,22 @@ class BluetoothRepository extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     return FlutterBluePlus.isScanningNow;
   }
 
-  // ---------------- CONNECT ---------------------
-
+  /// The function to connect to the given device
   Future<void> connectDevice(BluetoothDevice device) async {
+    state = const AsyncLoading();
     await device.connect();
+    state = AsyncValue<BluetoothDevice>.data(device);
+  }
+
+  /// The function to stop watching the connection state
+  stopWatchingConnectionState() {
+    // TODO: Must cancel this stream after ending all to do with bluetooth
   }
 }
 
-/// The provider of the repository
+// ------------- PROVIDERS -----------------------------------------
+
+/// The provider of the Bluetooth repository
 final bluetoothRepositoryProvider = Provider<BluetoothRepository>((ref) {
   final blue = BluetoothRepository();
   ref.onDispose(() => blue.dispose());
@@ -104,10 +111,12 @@ final bluetoothAdapterStateStreamProvider =
   return bluetoothRepository.adapterStateChanges();
 });
 
+/// The provider tha watch if device found
 final bleScanProvider =
     StateNotifierProvider<BluetoothRepository, AsyncValue<BluetoothDevice?>>(
         (ref) => BluetoothRepository());
 
+/// The provider that watch the bluetooth connection state with the device
 final connectionStateProvider = StreamProvider.family
     .autoDispose<BluetoothConnectionState, BluetoothDevice>((ref, device) {
   final bluetoothRepository = ref.watch(bluetoothRepositoryProvider);

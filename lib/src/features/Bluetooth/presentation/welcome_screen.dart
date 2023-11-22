@@ -50,7 +50,7 @@ class WelcomeScreen extends ConsumerWidget {
                       logoInTheRight: false,
                       messageWidget: buildWelcomeText(radius, loc)),
                   GardenifiLogo(height: screenHeight, divider: 8),
-                  if (!isBluetoothOn) NoBluetoothWidget(ref: ref),
+                  if (!isBluetoothOn) Expanded(child: NoBluetoothWidget(ref: ref)),
                   BottomWidget(
                       context: context,
                       screenWidth: screenWidth,
@@ -126,7 +126,7 @@ class BottomWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
             child: Text(
               text,
-              style: TextStyles.smallNormal,
+              style: TextStyles.xSmallNormal,
             ),
           ),
           BigGreenButton(buttonText, isBluetoothOn, callback)

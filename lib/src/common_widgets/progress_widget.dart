@@ -5,7 +5,8 @@ import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 class ProgressWidget extends StatelessWidget {
   const ProgressWidget({
     super.key,
-    required this.title, this.subtitle,
+    required this.title,
+    this.subtitle,
   });
 
   final String title;
@@ -15,14 +16,15 @@ class ProgressWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             title,
-            style: TextStyles.mediumBold,
+            style: TextStyles.bigBold,
           ),
           Text(
             subtitle ?? '',
-            style: TextStyles.smallNormal,
+            style: TextStyles.xSmallNormal,
           ),
           gapH24,
           const CircularProgressIndicator()

@@ -15,25 +15,22 @@ class NoBluetoothWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-        gapH64,
-        Text(
-          'App require bluetooth to be turned on'.hardcoded,
-          style: TextStyles.smallNormalRed,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+      Text(
+        'App require bluetooth to be turned on'.hardcoded,
+        style: TextStyles.alertMessage,
+      ),
+      TextButton(
+        child: Text(
+          'Turn on'.hardcoded,
+          style: TextStyles.smallBold.copyWith(color: Colors.blue),
         ),
-        TextButton(
-          child: Text(
-            'Turn on'.hardcoded,
-            style: TextStyles.mediumBold,
-          ),
-          onPressed: () async {
-            await ref.read(bluetoothRepositoryProvider).turnBluetoothOn();
-          },
-        )
-      ]),
-    );
+        onPressed: () async {
+          await ref.read(bluetoothRepositoryProvider).turnBluetoothOn();
+        },
+      ), gapH64
+    ]);
   }
 }
