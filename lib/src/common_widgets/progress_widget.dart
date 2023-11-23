@@ -14,22 +14,20 @@ class ProgressWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: TextStyles.bigBold,
-          ),
-          Text(
-            subtitle ?? '',
-            style: TextStyles.xSmallNormal,
-          ),
-          gapH24,
-          const CircularProgressIndicator()
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          title,
+          style: TextStyles.bigBold,
+        ),
+        Text(
+          subtitle ?? '',
+          style: TextStyles.xSmallNormal,
+        ),
+        gapH24,
+        const CircularProgressIndicator()
+      ],
     );
   }
 }
