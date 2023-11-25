@@ -7,23 +7,22 @@ import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart
 import 'package:new_gardenifi_app/src/common_widgets/error_message_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/no_bluetooth_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/progress_widget.dart';
-import 'package:new_gardenifi_app/src/constants/breakpoints.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/features/Bluetooth/data/bluetooth_repository.dart';
-import 'package:new_gardenifi_app/src/features/Bluetooth/presentation/welcome_screen.dart';
-import 'package:new_gardenifi_app/src/features/Bluetooth/presentation/wifi_setup_screen.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/data/bluetooth_repository.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/welcome_screen.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_setup_screen.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
-class BluetoothConnectingScreen extends ConsumerStatefulWidget {
-  const BluetoothConnectingScreen({super.key});
+class BluetoothConnectionScreen extends ConsumerStatefulWidget {
+  const BluetoothConnectionScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _BluetoothConnectinScreenState();
 }
 
-class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingScreen> {
-  bool deviceFound = false;
+class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionScreen> {
   bool deviceConnected = false;
 
   late BluetoothDevice raspiDevice;
@@ -31,9 +30,9 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
   @override
   void initState() {
     // Start scan for devices and listening the stream
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.read(bleScanProvider.notifier).startScanStream();
-      ref.read(bleScanProvider.notifier).startScan();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(bluetoothControllerProvider.notifier).startScanStream();
+      ref.read(bluetoothControllerProvider.notifier).startScan();
       // watchResult();
     });
     super.initState();
@@ -52,12 +51,13 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
         bluetoothAdapterProvider.value == BluetoothAdapterState.on ? true : false;
 
     /// Variable that watch if device found
-    AsyncValue<BluetoothDevice?> scanResultState = ref.watch(bleScanProvider);
+    AsyncValue<BluetoothDevice?> scanResultState = ref.watch(bluetoothControllerProvider);
 
     return WillPopScope(
       // If user press the back button during scanning stop scan and unsubscribe from stream
       onWillPop: () async {
-        ref.read(bluetoothRepositoryProvider).stopScanAndSubscription();
+        ref.read(bluetoothControllerProvider.notifier).stopScan();
+        log('${FlutterBluePlus.isScanningNow}');
         return true;
       }, //stopStreamAndScan,
       child: Scaffold(
@@ -81,10 +81,10 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
                             children: [
                               Flexible(
                                 flex: 2,
-                                child: buildScanResultWidget(scanResultState),
+                                child: buildFindingDeviceWidget(scanResultState),
                               ),
                               if (!deviceConnected)
-                                // A placeholder instead of BottomWidget
+                                // A placeholder instead of button while device is not connected
                                 Flexible(
                                   flex: 1,
                                   child: Container(
@@ -92,6 +92,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
                                   ),
                                 ),
                               if (deviceConnected)
+                                // When device connect show the button
                                 BottomWidget(
                                   context: context,
                                   screenWidth: screenWidth,
@@ -105,7 +106,8 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => WifiSetupScreen(raspiDevice),
+                                          builder: (context) =>
+                                              WifiSetupScreen(raspiDevice),
                                         ));
                                   },
                                 )
@@ -117,36 +119,20 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
             ),
           ],
         ),
-        // TODO: For debug only
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            BluetoothDevice device = ref.read(bluetoothRepositoryProvider).device;
-            log('device = $device');
-            // bool isScanningNow = ref.read(bluetoothRepositoryProvider).isScanningNow();
-            // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            //     content: isScanningNow
-            //         ? const Text('IsScanning')
-            //         : const Text('Not Scanning')));
-          },
-        ),
       ),
     );
   }
 
-  Widget buildScanResultWidget(AsyncValue<BluetoothDevice?> scanResultState) {
+  Widget buildFindingDeviceWidget(AsyncValue<BluetoothDevice?> scanResultState) {
     return scanResultState.when(
         data: (device) {
           if (device != null) {
             setState(() {
-              deviceFound = true;
               raspiDevice = device;
             });
-            return buildConnectionWidget(device);
+            return buildConnectionWidget(raspiDevice);
           } else {
-            setState(() {
-              deviceFound = false;
-            });
-            return deviceNotFoundWidget();
+            return buildDeviceNotFoundWidget();
           }
         },
         error: (error, stackTrace) => Center(child: ErrorMessageWidget(error.toString())),
@@ -158,7 +144,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
 
   Widget buildConnectionWidget(BluetoothDevice device) {
     /// Variable that watch the connection with device
-    final connectionState = ref.watch(connectionStateProvider(device));
+    final connectionState = ref.watch(connectionProvider);
     log('From widget: connection state = $connectionState');
 
     return connectionState.when(
@@ -167,7 +153,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
           setState(() {
             deviceConnected = true;
           });
-          return pairingSuccessWidget();
+          return buildPairingSuccessWidget();
         } else {
           return couldNotConnectWidget(device);
         }
@@ -180,7 +166,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
     );
   }
 
-  Widget pairingSuccessWidget() {
+  Widget buildPairingSuccessWidget() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -198,7 +184,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
     );
   }
 
-  Widget deviceNotFoundWidget() {
+  Widget buildDeviceNotFoundWidget() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -212,8 +198,8 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
         ),
         TextButton(
             onPressed: () async {
-              ref.read(bleScanProvider.notifier).startScanStream();
-              ref.read(bleScanProvider.notifier).startScan();
+              ref.read(bluetoothControllerProvider.notifier).startScanStream();
+              ref.read(bluetoothControllerProvider.notifier).startScan();
             },
             child: Text(
               'Try Again'.hardcoded,
@@ -233,7 +219,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectingSc
         ),
         TextButton(
             onPressed: () async {
-              await ref.read(bleScanProvider.notifier).connectDevice(device);
+              await ref.read(bluetoothControllerProvider.notifier).connectDevice(device);
             },
             child: Text(
               'Try Again'.hardcoded,

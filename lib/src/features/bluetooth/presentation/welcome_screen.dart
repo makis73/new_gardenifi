@@ -8,7 +8,7 @@ import 'package:new_gardenifi_app/src/common_widgets/gardenifi_logo.dart';
 import 'package:new_gardenifi_app/src/common_widgets/no_bluetooth_widget.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/data/bluetooth_repository.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/find_device_screen.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection_screen.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
@@ -29,51 +29,44 @@ class WelcomeScreen extends ConsumerWidget {
 
     Future<void> navigateToNextPage() async {
       Navigator.of(context).push(PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const FindDeviceScreen(),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const BluetoothConnectionScreen(),
       ));
     }
 
     return Scaffold(
-        backgroundColor: const Color.fromARGB(229, 255, 255, 255),
-        body: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  BluetoothScreenUpper(
-                      radius: radius,
-                      showMenuButton: true,
-                      logoInTheRight: false,
-                      messageWidget: buildWelcomeText(radius, loc)),
-                  GardenifiLogo(height: screenHeight, divider: 8),
-                  if (!isBluetoothOn) Expanded(child: NoBluetoothWidget(ref: ref)),
-                  BottomWidget(
-                      context: context,
-                      screenWidth: screenWidth,
-                      screenHeight: screenHeight,
-                      isBluetoothOn: isBluetoothOn,
-                      text: 'Before continue you must configure the irrigation device'
-                          .hardcoded,
-                      buttonText: loc.bluetoothConnection,
-                      ref: ref,
-                      callback: navigateToNextPage),
-                ],
-              ),
-            )
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            bool isScanningNow = ref.read(bluetoothRepositoryProvider).isScanningNow();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: isScanningNow
-                    ? const Text('IsScanning')
-                    : const Text('Not Scanning')));
-          },
-        ));
+      backgroundColor: const Color.fromARGB(229, 255, 255, 255),
+      body: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                BluetoothScreenUpper(
+                    radius: radius,
+                    showMenuButton: true,
+                    logoInTheRight: false,
+                    messageWidget: buildWelcomeText(radius, loc)),
+                GardenifiLogo(height: screenHeight, divider: 8),
+                if (!isBluetoothOn) Expanded(child: NoBluetoothWidget(ref: ref)),
+                BottomWidget(
+                    context: context,
+                    screenWidth: screenWidth,
+                    screenHeight: screenHeight,
+                    isBluetoothOn: isBluetoothOn,
+                    text: 'Before continue you must configure the irrigation device'
+                        .hardcoded,
+                    buttonText: loc.bluetoothConnection,
+                    ref: ref,
+                    callback: navigateToNextPage),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Positioned buildWelcomeText(double radius, AppLocalizations loc) {
