@@ -1,12 +1,13 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BluetoothRepository  {
+class BluetoothRepository {
   BluetoothRepository() : super();
 
-   // The stream to watch Bluetooth adpater state
+  // The stream to watch Bluetooth adpater state
   Stream<BluetoothAdapterState> adapterStateChanges() => FlutterBluePlus.adapterState;
 
   // The scan results stream
@@ -30,6 +31,16 @@ class BluetoothRepository  {
     }
   }
 
+  /// The function to connect to the given device
+  Future<void> connectDevice(BluetoothDevice device) async {
+    await device.connect();
+  }
+
+  Future<List<BluetoothService>> discoverServices(BluetoothDevice device) async {
+    var services = await device.discoverServices();
+    return services;
+  }
+
   /// Function to stop scanning and cancel the stream subscription.
   Future<void> stopScan() async {
     try {
@@ -39,14 +50,19 @@ class BluetoothRepository  {
     }
   }
 
-  /// The function to connect to the given device
-  Future<void> connectDevice(BluetoothDevice device) async {
-    await device.connect();
-  }
-
   /// The function to stop watching the connection state
   stopWatchingConnectionState() {
     // TODO: Must cancel this stream after ending all to do with bluetooth
+  }
+
+  Future<List<int>> readFromCharacteristic(BluetoothCharacteristic char) async {
+    var result = await char.read();
+    return result;
+  }
+
+  Future<void> writeToCharacteristic(
+      BluetoothCharacteristic char, List<int> value) async {
+    await char.write(value);
   }
 }
 
@@ -63,4 +79,3 @@ final bluetoothAdapterStateStreamProvider =
   final bluetoothRepository = ref.watch(bluetoothRepositoryProvider);
   return bluetoothRepository.adapterStateChanges();
 });
-

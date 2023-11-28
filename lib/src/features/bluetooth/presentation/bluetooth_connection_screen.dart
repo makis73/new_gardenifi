@@ -107,7 +107,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              WifiSetupScreen(raspiDevice),
+                                              WiFiSetupScreen(raspiDevice),
                                         ));
                                   },
                                 )

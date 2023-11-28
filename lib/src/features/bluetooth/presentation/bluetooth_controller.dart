@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/bluetooth_constants.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/data/bluetooth_repository.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/domain/wifi_network.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/domain/wifi_networks.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
   BluetoothController(this.bluetoothRepository) : super(const AsyncValue.data(null));
@@ -12,6 +16,10 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
   final BluetoothRepository bluetoothRepository;
 
   BluetoothDevice? device;
+
+  BluetoothService? service;
+
+  BluetoothCharacteristic? char;
 
   late StreamSubscription<List<ScanResult>> _scanSubscription;
 
@@ -59,6 +67,105 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
 
   Stream<BluetoothConnectionState> watchConnectionChanges() =>
       bluetoothRepository.connectionStateGhanges(device!);
+
+  Future<BluetoothCharacteristic?> fetchServices() async {
+    var services = await bluetoothRepository.discoverServices(device!);
+    for (var service in services) {
+      if (service.uuid.toString() == SERVICE_UUID) {
+        for (var characteristic in service.characteristics) {
+          if (characteristic.uuid.toString() == CHARACTERISTIC_UUID) {
+            log('Characteristic found!');
+            char = characteristic;
+          }
+          // if (characteristic.uuid.toString() == STATUS_CHARASTERISTIC_UUID) {
+          //   statusCharacteristic = characteristic;
+          // }
+        }
+      }
+    }
+    return char;
+    //TODO: What if characteristic not found?
+  }
+
+  // call repository to read data from device
+  Future<List<int>> readFromDevice() async {
+    if (char != null) {
+      var response = await bluetoothRepository.readFromCharacteristic(char!);
+      return response;
+    } else {
+      log('Error while reading');
+      return [];
+    }
+  }
+
+  // call repository to write data to device
+  Future<void> writeToDevice(String data) async {
+    List<int> formatedData = utf8.encode(data);
+    if (char != null) {
+      await bluetoothRepository.writeToCharacteristic(char!, formatedData);
+    } else {
+      log('Error while writing');
+    }
+  }
+
+  // Read networks from device
+  Future<List<WifiNetwork>> fetchNetworks(
+      BluetoothCharacteristic targetCharacteristic) async {
+    log('fetchNetworks called');
+    List<WifiNetwork> listOfWifiNetwork = [];
+    List<int> page1response = [];
+
+    // request 1st page
+    var i = 1;
+    var newRequest = '{"page": "$i"}';
+    // send request to device
+    await writeToDevice(newRequest);
+    // await bluetoothRepository.writeToCharacteristic(targetCharacteristic, newRequest);
+    // await targetCharacteristic.write(newRequest);
+
+    // read the response from device
+    page1response = await readFromDevice();
+
+    // await bluetoothRepository.readFromCharacteristic(targetCharacteristic);
+    // page1response = await targetCharacteristic.read();
+    log('page1 length: ${page1response.length}');
+
+    String stringOfWifis = String.fromCharCodes(page1response);
+    log('stringOfWifis_1=$stringOfWifis');
+
+    var networksFromJson = WifiNetworks.fromJson(stringOfWifis);
+    log('pages: ${networksFromJson.pages}');
+    listOfWifiNetwork += networksFromJson.nets;
+
+    // TODO: WTF is doing this here?
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('hwId', networksFromJson.hwId);
+    prefs.setString('mqtt_host', networksFromJson.mqttBroker.host);
+    prefs.setInt('mqtt_port', networksFromJson.mqttBroker.port);
+    prefs.setString('mqtt_user', networksFromJson.mqttBroker.user);
+    prefs.setString('mqtt_pass', networksFromJson.mqttBroker.pass);
+
+    // if there are more than one pages request them
+    var pages = networksFromJson.pages;
+
+    for (int i = 2; i <= pages; i++) {
+      log('Request for page $i');
+      var newRequest = '{"page": "$i"}';
+      await writeToDevice(newRequest);
+      // await bluetoothRepository.writeToCharacteristic(targetCharacteristic, newRequest);
+      // await targetCharacteristic.write(newRequest);
+
+      List<int> newResponse = await readFromDevice();
+      // await bluetoothRepository.readFromCharacteristic(targetCharacteristic);
+      // List<int> newResponse = await targetCharacteristic.read();
+      String stringOfWifis = String.fromCharCodes(newResponse);
+      log('stringOfWifisPage$i = $stringOfWifis');
+
+      var networksFromJson = WifiNetworks.fromJson(stringOfWifis);
+      listOfWifiNetwork += networksFromJson.nets;
+    }
+    return listOfWifiNetwork;
+  }
 }
 
 //-------------> PROVIDERS <--------------//
@@ -70,14 +177,17 @@ final bluetoothControllerProvider =
   return BluetoothController(bluetoothRepository);
 });
 
-// The provider of the device
-final deviceProvider = Provider<BluetoothDevice>((ref) {
-  return ref.read(bluetoothControllerProvider.notifier).device!;
-});
-
 // The provider that watch the connection of the device
 final connectionProvider = StreamProvider.autoDispose<BluetoothConnectionState>((ref) {
   final connectionStream =
       ref.watch(bluetoothControllerProvider.notifier).watchConnectionChanges();
   return connectionStream;
+});
+
+final wifiNetworksFutureProvider =
+    FutureProvider.autoDispose<List<WifiNetwork>>((ref) async {
+  // read characteristic and then ask for networks
+  final char = await ref.watch(bluetoothControllerProvider.notifier).fetchServices();
+  // TODO: What if characteristic not found?
+  return ref.watch(bluetoothControllerProvider.notifier).fetchNetworks(char!);
 });

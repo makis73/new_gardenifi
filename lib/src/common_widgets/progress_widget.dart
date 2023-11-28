@@ -7,10 +7,12 @@ class ProgressWidget extends StatelessWidget {
     super.key,
     required this.title,
     this.subtitle,
+    this.textStyle =TextStyles.bigBold,
   });
 
   final String title;
   final String? subtitle;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class ProgressWidget extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyles.bigBold,
+          style: textStyle,
         ),
         Text(
           subtitle ?? '',
