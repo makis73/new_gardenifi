@@ -62,7 +62,11 @@ class BluetoothRepository {
 
   Future<void> writeToCharacteristic(
       BluetoothCharacteristic char, List<int> value) async {
-    await char.write(value);
+    try {
+      await char.write(value, withoutResponse: false);
+    } catch (e) {
+      log('error sending nets: $e');
+    }
   }
 }
 

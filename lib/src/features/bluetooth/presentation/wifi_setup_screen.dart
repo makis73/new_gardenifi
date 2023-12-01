@@ -12,6 +12,7 @@ import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/data/bluetooth_repository.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/connection_lost_widget.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/welcome_screen.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/widgets/error_fetching_networks_widget.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/widgets/refresh_networks_button.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/widgets/wait_while_fetching_widget.dart';
@@ -27,33 +28,36 @@ class WiFiSetupScreen extends ConsumerStatefulWidget {
 }
 
 class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
-  // Future<void> fetchCharacteristic() async {
-  //   final char = ref.watch(characteristicProvider).value;
+  String ssid = '';
 
-  //   setState(() {
-  //     characteristic = char;
-  //   });
-  // }
+  bool passwordSelected = false;
 
-  String _currentSelectedValue = '';
+  bool networkSelected = false;
+
+  bool passwordVisibility = false;
+
+  String password = '';
+
+  TextEditingController controller = TextEditingController();
+
+  late final focusNode = FocusNode();
 
   void dropdownCallback(String? selectedValue) {
     setState(() {
-      _currentSelectedValue = selectedValue!;
+      ssid = selectedValue!;
+      networkSelected = true;
     });
   }
 
   void rebuildWidget() {
     ref.invalidate(wifiNetworksFutureProvider);
     setState(() {
-      _currentSelectedValue = '';
+      ssid = '';
     });
   }
 
   @override
   void initState() {
-    // fetchCharacteristic();
-
     super.initState();
   }
 
@@ -72,6 +76,8 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
 
     final bool isConnected =
         connectionState.value == BluetoothConnectionState.connected ? true : false;
+
+    controller.text = password;
 
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -113,6 +119,12 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                             child: Column(
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(12.0),
+                                                  child: Text(
+                                                      'Select from the list the desired network and then fill in the password'
+                                                          .hardcoded),
+                                                ),
                                                 SizedBox(
                                                   width: 300,
                                                   height: 60,
@@ -124,14 +136,12 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                             borderRadius:
                                                                 BorderRadius.circular(15),
                                                             gapPadding: 1)),
-                                                    isEmpty: _currentSelectedValue == '',
+                                                    isEmpty: ssid == '',
                                                     child: DropdownButtonHideUnderline(
                                                         child: DropdownButton<String>(
                                                       // TODO: What height it must have
                                                       menuMaxHeight: 400,
-                                                      value: _currentSelectedValue == ''
-                                                          ? null
-                                                          : _currentSelectedValue,
+                                                      value: ssid == '' ? null : ssid,
                                                       onChanged: dropdownCallback,
                                                       items: data
                                                           .map((e) => DropdownMenuItem(
@@ -142,11 +152,74 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                   ),
                                                 ),
                                                 RefreshNetworksButton(
-                                                    callback: rebuildWidget)
+                                                    callback: rebuildWidget),
+                                                const SizedBox(height: 50),
+                                                SizedBox(
+                                                  width: 300,
+                                                  height: 60,
+                                                  child: TextField(
+                                                    enabled:
+                                                        networkSelected ? true : false,
+                                                    controller: controller,
+                                                    obscureText:
+                                                        passwordVisibility ? false : true,
+                                                    decoration: InputDecoration(
+                                                      border: OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(15)),
+                                                      labelText:
+                                                          'Enter the password of network'
+                                                              .hardcoded,
+                                                      suffixIcon: InkWell(
+                                                        onTap: () => setState(() {
+                                                          passwordVisibility =
+                                                              !passwordVisibility;
+                                                          password = controller.text;
+                                                          controller.selection =
+                                                              TextSelection.fromPosition(
+                                                                  TextPosition(
+                                                                      offset: password
+                                                                          .length));
+                                                        }),
+                                                        child: passwordVisibility
+                                                            ? const Icon(
+                                                                Icons.visibility_off)
+                                                            : const Icon(
+                                                                Icons.visibility),
+                                                      ),
+                                                    ),
+                                                    onSubmitted: (givenText) {
+                                                      setState(() {
+                                                        password = givenText;
+                                                        // controller.text = password;
+                                                        passwordSelected = true;
+                                                        log('ssid: $ssid, password: $password');
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ),
-                                          const ButtonPlaceholder(),
+                                          passwordSelected
+                                              ? BottomWidget(
+                                                  context: context,
+                                                  screenWidth: screenWidth,
+                                                  screenHeight: screenHeight,
+                                                  isBluetoothOn: isBluetoothOn,
+                                                  text:
+                                                      'Press "Connect" to connect the device to the desired network'.hardcoded,
+                                                  buttonText: 'Connect'.hardcoded,
+                                                  ref: ref,
+                                                  callback: () async {
+                                                    log('button pressed');
+                                                    await ref
+                                                        .read(bluetoothControllerProvider
+                                                            .notifier)
+                                                        .sendNetworkCredentialsToDevice(
+                                                            ssid, password);
+                                                  })
+                                              : const ButtonPlaceholder(),
                                         ],
                                       ),
                                     );
@@ -157,7 +230,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                   : ErrorFetchingNetworksWidget(callback: rebuildWidget);
                             },
                             loading: () => const WaitWhileFetchingWidget(),
-                          )
+                          ),
               ],
             ),
           )
@@ -166,5 +239,3 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
     );
   }
 }
-
-
