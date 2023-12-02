@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/welcome_screen.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {

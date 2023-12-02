@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_gardenifi_app/src/common_widgets/button_placeholder.dart';
 import 'package:new_gardenifi_app/src/common_widgets/error_message_widget.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/widgets/refresh_networks_button.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/refresh_networks_button.dart';
 
 class ErrorFetchingNetworksWidget extends StatelessWidget {
   const ErrorFetchingNetworksWidget({

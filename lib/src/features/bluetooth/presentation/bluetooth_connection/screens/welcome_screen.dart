@@ -4,11 +4,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/big_green_button.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
+import 'package:new_gardenifi_app/src/common_widgets/bottom_screen_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/gardenifi_logo.dart';
 import 'package:new_gardenifi_app/src/common_widgets/no_bluetooth_widget.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/data/bluetooth_repository.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection_screen.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/bluetooth_connection_screen.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
@@ -85,45 +86,3 @@ class WelcomeScreen extends ConsumerWidget {
   }
 }
 
-class BottomWidget extends StatelessWidget {
-  const BottomWidget({
-    super.key,
-    required this.context,
-    required this.screenWidth,
-    required this.screenHeight,
-    required this.isBluetoothOn,
-    required this.text,
-    required this.buttonText,
-    required this.ref,
-    required this.callback,
-  });
-
-  final BuildContext context;
-  final double screenWidth;
-  final double screenHeight;
-  final bool isBluetoothOn;
-  final String text;
-  final String buttonText;
-  final WidgetRef ref;
-  final Future<void> Function() callback;
-
-  @override
-  Widget build(BuildContext context) {
-    final loc = ref.read(appLocalizationsProvider);
-    return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
-            child: Text(
-              text,
-              style: TextStyles.xSmallNormal,
-            ),
-          ),
-          BigGreenButton(buttonText, isBluetoothOn, callback)
-        ],
-      ),
-    );
-  }
-}

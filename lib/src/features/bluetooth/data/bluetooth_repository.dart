@@ -56,7 +56,8 @@ class BluetoothRepository {
   }
 
   Future<List<int>> readFromCharacteristic(BluetoothCharacteristic char) async {
-    var result = await char.read();
+    var result = await char.read(timeout: 60);
+    print('@@@@@@ reading: ${String.fromCharCodes(result)}');
     return result;
   }
 
@@ -65,7 +66,7 @@ class BluetoothRepository {
     try {
       await char.write(value, withoutResponse: false);
     } catch (e) {
-      log('error sending nets: $e');
+      print('@@@@@@error sending nets: $e');
     }
   }
 }

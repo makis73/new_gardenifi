@@ -4,14 +4,20 @@ import 'dart:developer';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:new_gardenifi_app/src/constants/bluetooth_constants.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/data/bluetooth_repository.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/domain/wifi_network.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/domain/wifi_networks.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
-  BluetoothController(this.bluetoothRepository) : super(const AsyncValue.data(null));
+  BluetoothController(
+    this.bluetoothRepository,
+    this.ref,
+  ) : super(const AsyncValue.data(null));
+
+  final Ref ref;
 
   final BluetoothRepository bluetoothRepository;
 
@@ -38,7 +44,7 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     state = const AsyncValue.loading();
     // Start coundown 10 seconds. If device not found return to widget a false value
     // TODO: Change the timer to 10 - 15 seconds
-    final timer = Timer(const Duration(seconds: 5), () async {
+    final timer = Timer(const Duration(seconds: 15), () async {
       await bluetoothRepository.stopScan();
       state = const AsyncData(null);
     });
@@ -76,18 +82,15 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
       if (service.uuid.toString() == SERVICE_UUID) {
         for (var characteristic in service.characteristics) {
           if (characteristic.uuid.toString() == CHARACTERISTIC_UUID) {
-            log('Characteristic found!');
             mainCharacteristic = characteristic;
           }
           if (characteristic.uuid.toString() == STATUS_CHARASTERISTIC_UUID) {
             statusCharacteristic = characteristic;
-            log('statusCharacteristic = $statusCharacteristic');
           }
         }
       }
     }
     return mainCharacteristic;
-    //TODO: What if characteristic not found?
   }
 
   // call repository to read data from device
@@ -160,11 +163,10 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
   }
 
   Future<String> sendNetworkCredentialsToDevice(String ssid, String password) async {
-    print('sendnetworks called');
     Map<String, String> data = {'ssid': ssid, "wifi_key": password};
     String jsonData = json.encode(data);
     await writeToDevice(jsonData);
-    log('send credentials');
+    // Device will sent back "1" if connected to internet successful or "0" if not 
     var response = await readFromDevice(statusCharacteristic!);
     log('waiting for response');
     print('response from sending nets: ${String.fromCharCodes(response)}');
@@ -178,7 +180,7 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
 final bluetoothControllerProvider =
     StateNotifierProvider<BluetoothController, AsyncValue<BluetoothDevice?>>((ref) {
   final bluetoothRepository = ref.watch(bluetoothRepositoryProvider);
-  return BluetoothController(bluetoothRepository);
+  return BluetoothController(bluetoothRepository, ref);
 });
 
 // The provider that watch the connection of the device
@@ -192,10 +194,25 @@ final wifiNetworksFutureProvider =
     FutureProvider.autoDispose<List<WifiNetwork>>((ref) async {
   // read characteristic and then ask for networks
   final char = await ref.watch(bluetoothControllerProvider.notifier).fetchServices();
-  // TODO: What if characteristic not found?
   return ref.watch(bluetoothControllerProvider.notifier).fetchNetworks(char!);
 });
 
-final wifiConnectionStatusProvider = FutureProvider.family<String, WifiNetwork>((ref, network) async {
-  return ref.read(bluetoothControllerProvider.notifier).sendNetworkCredentialsToDevice(network.ssid, network.password!);
+// The provider that watch if device connected to internet or not. If connected it return "1" else returns "0"
+final wifiConnectionStatusProvider = FutureProvider<String>((ref) async {
+  final ssid = ref.watch(ssidProvider);
+  final password = ref.watch(passwordProvider);
+  print('From Provider: ssid:$ssid, pass: $password');
+  return ref
+      .read(bluetoothControllerProvider.notifier)
+      .sendNetworkCredentialsToDevice(ssid, password);
+});
+
+// The provider that watch the selected ssid 
+final ssidProvider = StateProvider<String>((ref) {
+  return '';
+});
+
+// The provider that watch the given password for the selected network
+final passwordProvider = StateProvider<String>((ref) {
+  return '';
 });

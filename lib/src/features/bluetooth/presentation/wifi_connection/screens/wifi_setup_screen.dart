@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
+import 'package:new_gardenifi_app/src/common_widgets/bottom_screen_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/button_placeholder.dart';
 import 'package:new_gardenifi_app/src/common_widgets/error_message_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/no_bluetooth_widget.dart';
@@ -11,11 +12,12 @@ import 'package:new_gardenifi_app/src/common_widgets/progress_widget.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/data/bluetooth_repository.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/connection_lost_widget.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/welcome_screen.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/widgets/error_fetching_networks_widget.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/widgets/refresh_networks_button.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/widgets/wait_while_fetching_widget.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/widgets/connection_lost_widget.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/error_fetching_networks_widget.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/refresh_networks_button.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/wait_while_fetching_widget.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/screens/wifi_connection_screen.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class WiFiSetupScreen extends ConsumerStatefulWidget {
@@ -46,6 +48,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
     setState(() {
       ssid = selectedValue!;
       networkSelected = true;
+      ref.read(ssidProvider.notifier).state = ssid;
     });
   }
 
@@ -158,6 +161,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                   width: 300,
                                                   height: 60,
                                                   child: TextField(
+                                                    keyboardType: TextInputType.visiblePassword,
                                                     enabled:
                                                         networkSelected ? true : false,
                                                     controller: controller,
@@ -191,9 +195,11 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                     onSubmitted: (givenText) {
                                                       setState(() {
                                                         password = givenText;
-                                                        // controller.text = password;
+                                                        ref
+                                                            .read(
+                                                                passwordProvider.notifier)
+                                                            .state = password;
                                                         passwordSelected = true;
-                                                        log('ssid: $ssid, password: $password');
                                                       });
                                                     },
                                                   ),
@@ -208,16 +214,21 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                   screenHeight: screenHeight,
                                                   isBluetoothOn: isBluetoothOn,
                                                   text:
-                                                      'Press "Connect" to connect the device to the desired network'.hardcoded,
+                                                      'Press "Connect" to connect the device to the desired network'
+                                                          .hardcoded,
                                                   buttonText: 'Connect'.hardcoded,
                                                   ref: ref,
                                                   callback: () async {
-                                                    log('button pressed');
-                                                    await ref
-                                                        .read(bluetoothControllerProvider
-                                                            .notifier)
-                                                        .sendNetworkCredentialsToDevice(
-                                                            ssid, password);
+                                                    print(
+                                                        '${ref.read(passwordProvider.notifier).state}');
+                                                    
+                                                    ref.invalidate(
+                                                        wifiConnectionStatusProvider);
+                                                    Navigator.of(context)
+                                                        .push(MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const WifiConnectionScreen(),
+                                                    ));
                                                   })
                                               : const ButtonPlaceholder(),
                                         ],
