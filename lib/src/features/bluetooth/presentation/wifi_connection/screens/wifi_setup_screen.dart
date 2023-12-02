@@ -1,19 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bottom_screen_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/button_placeholder.dart';
-import 'package:new_gardenifi_app/src/common_widgets/error_message_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/no_bluetooth_widget.dart';
-import 'package:new_gardenifi_app/src/common_widgets/progress_widget.dart';
-import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/data/bluetooth_repository.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/widgets/connection_lost_widget.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/error_fetching_networks_widget.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/refresh_networks_button.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/wait_while_fetching_widget.dart';
@@ -44,6 +38,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
 
   late final focusNode = FocusNode();
 
+  /// Rebuild the screen with [setState]
   void dropdownCallback(String? selectedValue) {
     setState(() {
       ssid = selectedValue!;
@@ -52,6 +47,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
     });
   }
 
+  /// Destroy the current provider state and refresh it
   void rebuildWidget() {
     ref.invalidate(wifiNetworksFutureProvider);
     setState(() {
@@ -60,18 +56,10 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    log('*** Build called');
-
-    /// Variable that watch the state of the bluetooth adapter
+    // Variable that watch the state of the bluetooth adapter
     final bluetoothAdapterProvider = ref.watch(bluetoothAdapterStateStreamProvider);
-
-    /// Variable that watch the state of the bluetooth connection
+    // Variable that watch the state of the bluetooth connection
     final connectionState = ref.watch(connectionProvider);
 
     final bool isBluetoothOn =
@@ -80,18 +68,13 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
     final bool isConnected =
         connectionState.value == BluetoothConnectionState.connected ? true : false;
 
-    controller.text = password;
-
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final radius = screenHeight / 4;
 
-    // final char = ref.watch(characteristicProvider).value;
-    // log('characteristic= $char');
-
     final nets = ref.watch(wifiNetworksFutureProvider);
 
-    log('From widget: nets = $nets');
+    controller.text = password;
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(229, 255, 255, 255),
@@ -102,7 +85,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
             child: Column(
               children: [
                 BluetoothScreenUpper(
-                    radius: radius, showMenuButton: true, logoInTheRight: true),
+                    radius: radius, showMenuButton: false, showLogo: true),
                 !isBluetoothOn
                     ? Expanded(child: NoBluetoothWidget(ref: ref))
                     : !isConnected
@@ -142,7 +125,6 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                     isEmpty: ssid == '',
                                                     child: DropdownButtonHideUnderline(
                                                         child: DropdownButton<String>(
-                                                      // TODO: What height it must have
                                                       menuMaxHeight: 400,
                                                       value: ssid == '' ? null : ssid,
                                                       onChanged: dropdownCallback,
@@ -161,7 +143,8 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                   width: 300,
                                                   height: 60,
                                                   child: TextField(
-                                                    keyboardType: TextInputType.visiblePassword,
+                                                    keyboardType:
+                                                        TextInputType.visiblePassword,
                                                     enabled:
                                                         networkSelected ? true : false,
                                                     controller: controller,
@@ -219,9 +202,6 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                   buttonText: 'Connect'.hardcoded,
                                                   ref: ref,
                                                   callback: () async {
-                                                    print(
-                                                        '${ref.read(passwordProvider.notifier).state}');
-                                                    
                                                     ref.invalidate(
                                                         wifiConnectionStatusProvider);
                                                     Navigator.of(context)

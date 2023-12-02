@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_gardenifi_app/src/common_widgets/big_green_button.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bottom_screen_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/gardenifi_logo.dart';
 import 'package:new_gardenifi_app/src/common_widgets/no_bluetooth_widget.dart';
+import 'package:new_gardenifi_app/src/constants/colors.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/data/bluetooth_repository.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/bluetooth_connection_screen.dart';
@@ -22,7 +22,9 @@ class WelcomeScreen extends ConsumerWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final radius = screenHeight / 4;
 
+    // Variable to watch the state of the bluetooth adapter
     final bluetoothAdapterProvider = ref.watch(bluetoothAdapterStateStreamProvider);
+
     final loc = ref.read(appLocalizationsProvider);
 
     final bool isBluetoothOn =
@@ -36,7 +38,7 @@ class WelcomeScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(229, 255, 255, 255),
+      backgroundColor: screenBackgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverFillRemaining(
@@ -47,8 +49,8 @@ class WelcomeScreen extends ConsumerWidget {
               children: [
                 BluetoothScreenUpper(
                     radius: radius,
-                    showMenuButton: true,
-                    logoInTheRight: false,
+                    showMenuButton: false,
+                    showLogo: false,
                     messageWidget: buildWelcomeText(radius, loc)),
                 GardenifiLogo(height: screenHeight, divider: 8),
                 if (!isBluetoothOn) Expanded(child: NoBluetoothWidget(ref: ref)),
@@ -85,4 +87,3 @@ class WelcomeScreen extends ConsumerWidget {
     ));
   }
 }
-

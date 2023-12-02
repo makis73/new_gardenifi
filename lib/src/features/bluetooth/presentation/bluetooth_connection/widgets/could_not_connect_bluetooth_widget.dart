@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
@@ -22,11 +21,13 @@ class CouldNotConnectBluetoothWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Could not connect with device'.hardcoded,
+          'Could not connect with device\n'.hardcoded,
           style: TextStyles.mediumBold,
+          textAlign: TextAlign.center,
         ),
         TextButton(
             onPressed: () async {
+              ref.invalidate(bluetoothControllerProvider);
               await ref.read(bluetoothControllerProvider.notifier).connectDevice(device);
             },
             child: Text(

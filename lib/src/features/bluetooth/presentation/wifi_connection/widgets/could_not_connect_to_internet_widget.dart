@@ -33,8 +33,12 @@ class CouldNotConnectToInternetWidget extends ConsumerWidget {
                       'Try Again'.hardcoded,
                       style: TextStyles.smallNormal,
                     )),
-                    gapH32,
-                Icon(Icons.wifi_off, size: 40, color: Colors.red,)
+                gapH32,
+                const Icon(
+                  Icons.wifi_off,
+                  size: 40,
+                  color: Colors.red,
+                )
               ],
             ),
           ), // A placeholder instead of button while device is not connected
@@ -44,11 +48,11 @@ class CouldNotConnectToInternetWidget extends ConsumerWidget {
               height: 100,
               child: Column(
                 children: [
-                  const Text(
-                      'If problem persist go back and check network ssid and password'),
+                  Text('If problem persist go back and check network ssid and password'
+                      .hardcoded),
                   TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Go back'))
+                      child: Text('Go back'.hardcoded))
                 ],
               ),
             ),

@@ -7,14 +7,14 @@ class BluetoothScreenUpper extends StatelessWidget {
     super.key,
     required this.radius,
     required this.showMenuButton,
-    required this.logoInTheRight,
+    required this.showLogo,
     this.messageWidget,
   });
 
   final double radius;
   final Widget? messageWidget;
   final bool showMenuButton;
-  final bool logoInTheRight;
+  final bool showLogo;
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +52,8 @@ class BluetoothScreenUpper extends StatelessWidget {
             child: MoreMenuButton(),
           ),
         if (messageWidget != null) messageWidget!,
-        if (logoInTheRight)
+        if (showLogo)
           Positioned.fill(
-            
             child: Align(
               alignment: Alignment.center,
               child: GardenifiLogo(

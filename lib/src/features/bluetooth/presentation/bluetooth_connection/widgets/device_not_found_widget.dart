@@ -14,28 +14,31 @@ class DeviceNotFoundWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Device not found'.hardcoded,
-          style: TextStyles.bigBold,
-        ),
-        Text(
-          'Make sure device is on and try again'.hardcoded,
-          style: TextStyles.xSmallNormal,
-        ),
-        TextButton(
-            onPressed: () async {
-              // ref.invalidate(bluetoothControllerProvider);
-              await ref.read(bluetoothControllerProvider.notifier).startScanStream();
-              await ref.read(bluetoothControllerProvider.notifier).startScan();
-            },
-            child: Text(
-              'Try Again'.hardcoded,
-              style: TextStyles.smallNormal,
-            )),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Device not found \nor connection with device lost'.hardcoded,
+            style: TextStyles.mediumBold,
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            'Make sure device is on and try again'.hardcoded,
+            style: TextStyles.xSmallNormal,
+          ),
+          TextButton(
+              onPressed: () async {
+                await ref.read(bluetoothControllerProvider.notifier).startScanStream();
+                await ref.read(bluetoothControllerProvider.notifier).startScan();
+              },
+              child: Text(
+                'Try Again'.hardcoded,
+                style: TextStyles.smallNormal,
+              )),
+        ],
+      ),
     );
   }
 }

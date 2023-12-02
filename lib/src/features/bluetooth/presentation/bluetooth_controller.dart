@@ -40,10 +40,9 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
   }
 
   Future<void> startScanStream() async {
-    // Sent to widget a loading value
+    // Send to widget a loading value
     state = const AsyncValue.loading();
     // Start coundown 10 seconds. If device not found return to widget a false value
-    // TODO: Change the timer to 10 - 15 seconds
     final timer = Timer(const Duration(seconds: 15), () async {
       await bluetoothRepository.stopScan();
       state = const AsyncData(null);
@@ -110,15 +109,12 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     List<int> formatedData = utf8.encode(data);
     if (mainCharacteristic != null) {
       await bluetoothRepository.writeToCharacteristic(mainCharacteristic!, formatedData);
-    } else {
-      log('Error while writing');
-    }
+    } 
   }
 
   // Read networks from device
   Future<List<WifiNetwork>> fetchNetworks(
       BluetoothCharacteristic targetCharacteristic) async {
-    log('fetchNetworks called');
     List<WifiNetwork> listOfWifiNetwork = [];
     List<int> page1response = [];
 
@@ -129,11 +125,8 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     await writeToDevice(newRequest);
     // read the response from device
     page1response = await readFromDevice(mainCharacteristic!);
-    log('page1 length: ${page1response.length}');
     String stringOfWifis = String.fromCharCodes(page1response);
-    log('stringOfWifis_1=$stringOfWifis');
     var networksFromJson = WifiNetworks.fromJson(stringOfWifis);
-    log('pages: ${networksFromJson.pages}');
     listOfWifiNetwork += networksFromJson.nets;
 
     // TODO: WTF is doing this here?
@@ -148,13 +141,11 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     var pages = networksFromJson.pages;
 
     for (int i = 2; i <= pages; i++) {
-      log('Request for page $i');
       var newRequest = '{"page": "$i"}';
       await writeToDevice(newRequest);
 
       List<int> newResponse = await readFromDevice(mainCharacteristic!);
       String stringOfWifis = String.fromCharCodes(newResponse);
-      log('stringOfWifisPage$i = $stringOfWifis');
 
       var networksFromJson = WifiNetworks.fromJson(stringOfWifis);
       listOfWifiNetwork += networksFromJson.nets;
@@ -168,13 +159,11 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     await writeToDevice(jsonData);
     // Device will sent back "1" if connected to internet successful or "0" if not 
     var response = await readFromDevice(statusCharacteristic!);
-    log('waiting for response');
-    print('response from sending nets: ${String.fromCharCodes(response)}');
     return String.fromCharCodes(response);
   }
 }
 
-//-------------> PROVIDERS <--------------//
+//-------------> PROVIDERS <--------------
 
 // / The provider of the BluetoothController class
 final bluetoothControllerProvider =
@@ -201,7 +190,6 @@ final wifiNetworksFutureProvider =
 final wifiConnectionStatusProvider = FutureProvider<String>((ref) async {
   final ssid = ref.watch(ssidProvider);
   final password = ref.watch(passwordProvider);
-  print('From Provider: ssid:$ssid, pass: $password');
   return ref
       .read(bluetoothControllerProvider.notifier)
       .sendNetworkCredentialsToDevice(ssid, password);

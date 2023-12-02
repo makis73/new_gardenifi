@@ -22,15 +22,14 @@ class ConnectionLostWidget extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Could not connect with device'.hardcoded,
+                'Could not connect with device\nor connnection lost. '.hardcoded,
                 style: TextStyles.mediumBold,
+                textAlign: TextAlign.center,
               ),
               TextButton(
                   onPressed: () async {
-                    // TODO: Must do something here, like go back to first screen and try to connect from the start
-                    await ref
-                        .read(bluetoothControllerProvider.notifier)
-                        .connectDevice(device);
+                    ref.invalidate(bluetoothControllerProvider);
+                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'Try Again'.hardcoded,
@@ -38,7 +37,8 @@ class ConnectionLostWidget extends ConsumerWidget {
                   )),
             ],
           ),
-        ), // A placeholder instead of button while device is not connected
+        ),
+        // A placeholder instead of button while device is not connected
         Flexible(
           flex: 1,
           child: Container(

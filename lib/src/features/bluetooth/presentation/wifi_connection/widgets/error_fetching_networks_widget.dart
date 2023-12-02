@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:new_gardenifi_app/src/common_widgets/button_placeholder.dart';
 import 'package:new_gardenifi_app/src/common_widgets/error_message_widget.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/refresh_networks_button.dart';
+import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class ErrorFetchingNetworksWidget extends StatelessWidget {
   const ErrorFetchingNetworksWidget({
@@ -22,7 +23,7 @@ class ErrorFetchingNetworksWidget extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const ErrorMessageWidget('Oups ... something went wrong'),
+                ErrorMessageWidget('Oups ... something went wrong'.hardcoded),
                 RefreshNetworksButton(callback: callback),
               ],
             ),

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bottom_screen_widget.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class ConnectionWifiSuccessWidget extends StatelessWidget {
@@ -33,7 +31,7 @@ class ConnectionWifiSuccessWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Device connected to internet succesful'.hardcoded,
+                    'Device connected to internet succesfuly'.hardcoded,
                     style: TextStyles.bigBold,
                   ),
                   gapH32,
@@ -55,6 +53,7 @@ class ConnectionWifiSuccessWidget extends StatelessWidget {
             buttonText: 'Continue'.hardcoded,
             ref: ref,
             callback: () async {
+              // TODO: Navigate to main screen
               return;
             },
           )
