@@ -129,7 +129,7 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     var networksFromJson = WifiNetworks.fromJson(stringOfWifis);
     listOfWifiNetwork += networksFromJson.nets;
 
-    // TODO: WTF is doing this here?
+    //  The device along with wifi networks sends mqtt credentials and the unique [hardwareId] that i will need later. So I store them locally.
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('hwId', networksFromJson.hwId);
     prefs.setString('mqtt_host', networksFromJson.mqttBroker.host);
@@ -204,3 +204,8 @@ final ssidProvider = StateProvider<String>((ref) {
 final passwordProvider = StateProvider<String>((ref) {
   return '';
 });
+
+final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+  return SharedPreferences.getInstance();
+});
+
