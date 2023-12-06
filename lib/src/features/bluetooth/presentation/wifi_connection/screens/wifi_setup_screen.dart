@@ -124,10 +124,12 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                             gapPadding: 1)),
                                                     isEmpty: ssid == '',
                                                     child: DropdownButtonHideUnderline(
+                                                      
                                                         child: DropdownButton<String>(
                                                       menuMaxHeight: 400,
                                                       value: ssid == '' ? null : ssid,
                                                       onChanged: dropdownCallback,
+                                                      isExpanded: true,
                                                       items: data
                                                           .map((e) => DropdownMenuItem(
                                                               value: e.ssid,

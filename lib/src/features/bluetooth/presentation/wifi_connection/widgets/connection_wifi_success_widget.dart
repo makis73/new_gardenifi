@@ -1,11 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bottom_screen_widget.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/programs_screen.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
-class ConnectionWifiSuccessWidget extends StatelessWidget {
+class ConnectionWifiSuccessWidget extends ConsumerWidget {
   const ConnectionWifiSuccessWidget({
     super.key,
     required this.context,
@@ -16,7 +21,7 @@ class ConnectionWifiSuccessWidget extends StatelessWidget {
   final WidgetRef ref;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Expanded(
@@ -26,13 +31,14 @@ class ConnectionWifiSuccessWidget extends StatelessWidget {
           Flexible(
             flex: 2,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal:15.0),
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Device connected to internet succesfuly'.hardcoded,
-                    style: TextStyles.bigBold,
+                    style: TextStyles.mediumBold,
+                    textAlign: TextAlign.center,
                   ),
                   gapH32,
                   const Icon(
@@ -53,8 +59,12 @@ class ConnectionWifiSuccessWidget extends StatelessWidget {
             buttonText: 'Continue'.hardcoded,
             ref: ref,
             callback: () async {
-              // TODO: Navigate to main screen
-              return;
+              // Device has been connected to internet so we can unsubscribe and stop bluetooth connection
+              // ref.read(bluetoothControllerProvider.notifier).dispose();
+              
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => const ProgramsScreen(),
+              ));
             },
           )
         ],

@@ -24,6 +24,7 @@ class CouldNotConnectToInternetWidget extends ConsumerWidget {
                 Text(
                   'Device could not connect to internet'.hardcoded,
                   style: TextStyles.mediumBold,
+                  textAlign: TextAlign.center,
                 ),
                 TextButton(
                     onPressed: () async {

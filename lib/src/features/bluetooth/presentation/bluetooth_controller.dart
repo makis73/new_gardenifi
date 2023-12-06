@@ -96,10 +96,9 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
   Future<List<int>> readFromDevice(BluetoothCharacteristic char) async {
     if (mainCharacteristic != null) {
       var response = await bluetoothRepository.readFromCharacteristic(char);
-      log('Read: ${String.fromCharCodes(response)}');
       return response;
     } else {
-      log('Error while reading');
+      log('Error while reading from [BluetoothController-readFromDevice]');
       return [];
     }
   }
