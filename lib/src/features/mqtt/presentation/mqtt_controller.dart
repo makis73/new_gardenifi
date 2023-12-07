@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,16 +10,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/data/mqtt_repository.dart';
 
-class MqttController extends StateNotifier<String> {
-  MqttController() : super('WTF');
+class MqttController extends StateNotifier<MqttReceivedMessage?> {
+  MqttController(this.ref) : super(null);
 
   final mqttRepository = MqttRepository();
   MqttServerClient? client;
   late String hwId;
+  final Ref ref;
 
   Future<void> setupAndConnectClient() async {
-    print('########## setupAndConnect called!!!!!!');
-
     final prefs = await SharedPreferences.getInstance();
     final String user = prefs.getString('mqtt_user') ?? '';
     final String password = prefs.getString('mqtt_pass') ?? '';
@@ -27,14 +27,10 @@ class MqttController extends StateNotifier<String> {
 
     client = mqttRepository.initializeMqttClient(host, port, indentifier);
 
-    // ref.watch(clientProvider.notifier).state = client;
-
     await mqttRepository.connectClient(client!, user, password);
 
-    print('########## Connected!!!!!!');
     // TODO: Show a snackbar that connected to broker [onConnected]
 
-    // state = const AsyncValue.loading();
     subscribeToTopics();
   }
 
@@ -48,27 +44,44 @@ class MqttController extends StateNotifier<String> {
   }
 
   void subscribeToTopics() async {
-    print('APP:: [subscribeToTopics] called.');
     await loadHardwareId();
-    mqttRepository.subscribeToTopic(client!, createTopicName(statusTopic));
-    mqttRepository.subscribeToTopic(client!, createTopicName(configTopic));
-    mqttRepository.subscribeToTopic(client!, createTopicName(systemTopic));
-    mqttRepository.subscribeToTopic(client!, createTopicName(valvesTopic));
-    var topic = createTopicName(statusTopic);
-    log('statusTopic: $topic');
+    final status = createTopicName(statusTopic);
+    final config = createTopicName(configTopic);
+    final system = createTopicName(systemTopic);
+    final valves = createTopicName(valvesTopic);
+
+    mqttRepository.subscribeToTopic(client!, status);
+    mqttRepository.subscribeToTopic(client!, config);
+    mqttRepository.subscribeToTopic(client!, system);
+    mqttRepository.subscribeToTopic(client!, valves);
 
     client!.updates!.listen((event) {
+      state = event[0];
       final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
       final topic = event[0].topic;
 
-      final String tempMessage =
-          MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-      // String message = Utf8Decoder().convert(tempMessage!.codeUnits);
+      if (topic == valves) {
+        final String tempMessage =
+            MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+        final String replacedString = tempMessage.replaceAll('\'', '"');
 
-      if (tempMessage.isNotEmpty && tempMessage != '{}') {
-        state = tempMessage;
-        log('APP:: MqttController:: state: $state');
-        print('APP:: MqttController:: received message in topic: $topic - $tempMessage ');
+        final List<String> mes = replacedString
+            .replaceAll('[', '')
+            .replaceAll(']', '')
+            .split(',')
+            .map<String>((e) {
+          return e;
+        }).toList();
+        ref.read(valvesTopicProvider.notifier).state = mes;
+      }
+
+      if (topic == status) {
+        final String tempMessage =
+            MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+        final String replacedString = tempMessage.replaceAll('\'', '"');
+
+        final Map<String, dynamic> mes = jsonDecode(replacedString);
+        ref.read(statusTopicProvider.notifier).state = mes;
       }
     });
   }
@@ -79,25 +92,11 @@ class MqttController extends StateNotifier<String> {
 }
 
 // ------------> Providers <--------------
-final mqttControllerProvider = StateNotifierProvider<MqttController, String>((ref) {
-  return MqttController();
+final mqttControllerProvider =
+    StateNotifierProvider<MqttController, MqttReceivedMessage?>((ref) {
+  return MqttController(ref);
 });
 
-// final messageReceivedProvider =
-//     StateNotifierProvider<MqttController, AsyncValue<String?>>((ref)  {
-//       print('########## Provider called!!!!!!');
-//   ref.read(mqttControllerProvider).setupAndConnectClient;
-  
-// });
+final valvesTopicProvider = StateProvider<List<String>>((ref) => []);
 
-// final clientProvider = StateProvider<MqttServerClient?>((ref) {
-//   final controller = ref.watch(mqttControllerProvider);
-//   return null;
-// });
-
-// final brokerStreamProvider =
-//     StreamProvider<List<MqttReceivedMessage<MqttMessage?>>>((ref) {
-//   final controller = ref.watch(mqttControllerProvider);
-//   final client = ref.watch(clientProvider);
-//   return controller.watchBroker(client!);
-// });
+final statusTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});

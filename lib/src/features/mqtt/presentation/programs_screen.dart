@@ -22,9 +22,26 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
   @override
   Widget build(BuildContext context) {
     final mqttValue = ref.watch(mqttControllerProvider);
+    final valvesStatus = ref.watch(valvesTopicProvider);
+    final statusStatus = ref.watch(statusTopicProvider);
 
     return Scaffold(
-      body: Center(child: Text(mqttValue?? 'no Value'),)
-    );
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+                  child: Text('From valves topic: Received message: ${valvesStatus.toString()}'),
+                ),
+                Center(
+                  child: Text('From status topic: Received message: ${statusStatus.toString()}'),
+                ),
+                Center(
+                  child: Text('Valve 1 : ${statusStatus['out1']}'),
+                ),
+                Center(
+                  child: Text('Valve 2 : ${statusStatus['out2']}'),
+                ),
+          ],
+        ));
   }
 }
