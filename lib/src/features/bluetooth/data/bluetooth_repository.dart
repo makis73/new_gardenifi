@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,35 +49,29 @@ class BluetoothRepository {
     }
   }
 
-  /// The function to stop watching the connection state
-  stopWatchingConnectionState() {
-    // TODO: Must cancel this stream after ending all to do with bluetooth
-  }
 
   Future<List<int>> readFromCharacteristic(BluetoothCharacteristic char) async {
     var result = await char.read(timeout: 60);
-    print('@@@@@@ reading: ${String.fromCharCodes(result)}');
     return result;
   }
 
   Future<void> writeToCharacteristic(
       BluetoothCharacteristic char, List<int> value) async {
     try {
-      await char.write(value, withoutResponse: false);
+      await char.write(value, withoutResponse: true);
     } catch (e) {
-      print('@@@@@@error sending nets: $e');
     }
   }
 }
 
 // -------------> PROVIDERS <--------------------
 
-/// The provider of the Bluetooth repository
+// The provider of the Bluetooth repository
 final bluetoothRepositoryProvider = Provider<BluetoothRepository>((ref) {
   return BluetoothRepository();
 });
 
-/// The provider of the bluetooth adapter state stream
+// The provider of the bluetooth adapter state stream
 final bluetoothAdapterStateStreamProvider =
     StreamProvider.autoDispose<BluetoothAdapterState>((ref) {
   final bluetoothRepository = ref.watch(bluetoothRepositoryProvider);

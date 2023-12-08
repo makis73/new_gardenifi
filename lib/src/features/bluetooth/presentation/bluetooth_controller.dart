@@ -108,7 +108,7 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     List<int> formatedData = utf8.encode(data);
     if (mainCharacteristic != null) {
       await bluetoothRepository.writeToCharacteristic(mainCharacteristic!, formatedData);
-    } 
+    }
   }
 
   // Read networks from device
@@ -156,13 +156,15 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     Map<String, String> data = {'ssid': ssid, "wifi_key": password};
     String jsonData = json.encode(data);
     await writeToDevice(jsonData);
-    // Device will sent back "1" if connected to internet successful or "0" if not 
+    // Device will sent back "1" if connected to internet successful or "0" if not
+    await Future.delayed(Duration(seconds: 3));
     var response = await readFromDevice(statusCharacteristic!);
+    log('response = ${String.fromCharCodes(response)}');
     return String.fromCharCodes(response);
   }
 }
 
-//-------------> PROVIDERS <--------------
+//-------------> P R O V I D E R S <--------------
 
 // / The provider of the BluetoothController class
 final bluetoothControllerProvider =
@@ -194,7 +196,7 @@ final wifiConnectionStatusProvider = FutureProvider<String>((ref) async {
       .sendNetworkCredentialsToDevice(ssid, password);
 });
 
-// The provider that watch the selected ssid 
+// The provider that watch the selected ssid
 final ssidProvider = StateProvider<String>((ref) {
   return '';
 });
@@ -207,4 +209,3 @@ final passwordProvider = StateProvider<String>((ref) {
 final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
   return SharedPreferences.getInstance();
 });
-

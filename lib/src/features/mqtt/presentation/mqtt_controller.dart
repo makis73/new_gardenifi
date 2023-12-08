@@ -10,8 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/data/mqtt_repository.dart';
 
-class MqttController extends StateNotifier<MqttReceivedMessage?> {
-  MqttController(this.ref) : super(null);
+class MqttController extends StateNotifier<AsyncValue<void>> {
+  MqttController(this.ref) : super(const AsyncLoading());
 
   final mqttRepository = MqttRepository();
   MqttServerClient? client;
@@ -49,6 +49,7 @@ class MqttController extends StateNotifier<MqttReceivedMessage?> {
     final config = createTopicName(configTopic);
     final system = createTopicName(systemTopic);
     final valves = createTopicName(valvesTopic);
+    final command = createTopicName(commandTopic);
 
     mqttRepository.subscribeToTopic(client!, status);
     mqttRepository.subscribeToTopic(client!, config);
@@ -56,23 +57,20 @@ class MqttController extends StateNotifier<MqttReceivedMessage?> {
     mqttRepository.subscribeToTopic(client!, valves);
 
     client!.updates!.listen((event) {
-      state = event[0];
+      state = const AsyncData(null);
       final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
       final topic = event[0].topic;
 
       if (topic == valves) {
-        final String tempMessage =
+        final String message =
             MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-        final String replacedString = tempMessage.replaceAll('\'', '"');
+        // final String replacedString = tempMessage.replaceAll('\'', '"');
 
-        final List<String> mes = replacedString
-            .replaceAll('[', '')
-            .replaceAll(']', '')
-            .split(',')
-            .map<String>((e) {
-          return e;
-        }).toList();
-        ref.read(valvesTopicProvider.notifier).state = mes;
+        final correctedMessage = message.replaceAll("'", "\"");
+
+        List<String> listOfValvesFromBroker =
+            (jsonDecode(correctedMessage) as List<dynamic>).cast<String>();
+        ref.read(valvesTopicProvider.notifier).state = listOfValvesFromBroker;
       }
 
       if (topic == status) {
@@ -83,20 +81,33 @@ class MqttController extends StateNotifier<MqttReceivedMessage?> {
         final Map<String, dynamic> mes = jsonDecode(replacedString);
         ref.read(statusTopicProvider.notifier).state = mes;
       }
+      if (topic == command) {
+        final String tempMessage =
+            MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+        final String replacedString = tempMessage.replaceAll('\'', '"');
+
+        final Map<String, dynamic> mes = jsonDecode(replacedString);
+        ref.read(commandTopicProvider.notifier).state = mes;
+      }
     });
   }
 
-  watchBroker(MqttServerClient client) {
-    client.updates;
+  void sendMessage(String topic, MqttQos qos, String message) {
+    final topicToSend = createTopicName(topic);
+    mqttRepository.publishMessage(topicToSend, qos, message);
   }
 }
 
 // ------------> Providers <--------------
-final mqttControllerProvider =
-    StateNotifierProvider<MqttController, MqttReceivedMessage?>((ref) {
+final mqttControllerProvider = StateNotifierProvider<MqttController, AsyncValue>((ref) {
   return MqttController(ref);
 });
 
+//TODO: Providers must receive the initial value from broker
 final valvesTopicProvider = StateProvider<List<String>>((ref) => []);
 
 final statusTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
+
+final commandTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
+
+final configTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
