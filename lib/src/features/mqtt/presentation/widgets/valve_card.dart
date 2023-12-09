@@ -18,46 +18,53 @@ class ValveCard extends ConsumerWidget {
     final status = ref.watch(statusTopicProvider);
 //
     return Expanded(
-      child:listOfValves.isEmpty ? Center(child: Text('No valves'),) : ListView.builder(
-        itemCount: listOfValves.length,
-        padding: EdgeInsets.symmetric(vertical: 0),
-        itemBuilder: (context, index) {
-          int valve = int.parse(listOfValves[index]);
-          bool valveIsOn = status['out${index + 1}'] == 1 ? true : false;
+      child: listOfValves.isEmpty
+          ? const Center(
+            // TODO: Create widget for no valves enabled
+              child: Text('No valves'),
+            )
+          : ListView.builder(
+              itemCount: listOfValves.length,
+              padding: const EdgeInsets.symmetric(vertical: 0),
+              itemBuilder: (context, index) {
+                int valve = int.parse(listOfValves[index]);
+                bool valveIsOn = status['out${index + 1}'] == 1 ? true : false;
 
-          Map onStatusMap = {"out": valve, "cmd": 1};
-          Map offStatusMap = {"out": valve, "cmd": 0};
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ExpansionTile(
-              title: Text('Valve ${valve.toString()}'),
-              subtitle: Text('$valveIsOn'),
-              collapsedBackgroundColor: Colors.white,
-              // backgroundColor: Colors.amber,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              collapsedShape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              children: [
-                Row(
-                  children: [
-                    Switch(
-                      value: valveIsOn,
-                      onChanged: (value) =>
-                          ref.read(mqttControllerProvider.notifier).sendMessage(
-                                commandTopic,
-                                MqttQos.atLeastOnce,
-                                valveIsOn
-                                    ? json.encode(offStatusMap)
-                                    : json.encode(onStatusMap),
-                              ),
-                    )
-                  ],
-                ),
-              ],
+                Map onStatusMap = {"out": valve, "cmd": 1};
+                Map offStatusMap = {"out": valve, "cmd": 0};
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ExpansionTile(
+                    title: Text('Valve ${valve.toString()}'),
+                    subtitle: Text('$valveIsOn'),
+                    collapsedBackgroundColor: Colors.white,
+                    backgroundColor: Colors.green[100]!.withOpacity(0.5),
+                    shape:
+                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    collapsedShape:
+                        RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Switch(
+                            value: valveIsOn,
+                            onChanged: (value) =>
+                                ref.read(mqttControllerProvider.notifier).sendMessage(
+                                      commandTopic,
+                                      MqttQos.atLeastOnce,
+                                      valveIsOn
+                                          ? json.encode(offStatusMap)
+                                          : json.encode(onStatusMap),
+                                    ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

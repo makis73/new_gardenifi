@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class DeviceDisconnectedWidget extends ConsumerWidget {
@@ -22,7 +20,7 @@ class DeviceDisconnectedWidget extends ConsumerWidget {
             children: [
               Text(
                 'Device disconnectet from internet!'.hardcoded,
-                style: TextStyles.mediumBold,
+                style: TextStyles.mediumBold.copyWith(color: Colors.red[900]),
                 textAlign: TextAlign.center,
               ),
               

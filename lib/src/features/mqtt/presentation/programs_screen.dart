@@ -7,6 +7,7 @@ import 'package:new_gardenifi_app/src/common_widgets/bottom_screen_widget.dart';
 import 'package:new_gardenifi_app/src/constants/colors.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/device_disconnected.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/no_valves_widget.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/valve_card.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
@@ -46,9 +47,10 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                     radius: radius, showMenuButton: true, showLogo: true),
                 (statusTopicMessage.containsKey('err') &&
                         statusTopicMessage['err'] == 'LOST_CONNECTION')
-                    // TODO: Make screen for no rpi connected
                     ? const DeviceDisconnectedWidget()
-                    : const ValveCard(),
+                    : valvesTopicMessage.isEmpty
+                        ? const NoValvesWidget()
+                        : const ValveCard(),
               ],
             );
           },
