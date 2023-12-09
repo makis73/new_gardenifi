@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:new_gardenifi_app/src/features/bluetooth/domain/wifi_network.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/mqtt_broker.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/domain/mqtt_broker.dart';
 
 class WifiNetworks {
   final int page;

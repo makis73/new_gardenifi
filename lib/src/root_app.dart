@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/programs_screen.dart';
 
 /// The Widget that configures your application.
 class RootApp extends StatelessWidget {
@@ -20,8 +21,10 @@ class RootApp extends StatelessWidget {
       // depending on the user's locale.
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      // TODO: Add routes and go to main screen if raspi has been initialized
-      home: const WelcomeScreen(),
+      // If the device has not been initialized go to first screen. Else go to main program screen
+      home: (deviceHasBeenInitialized == true || deviceHasBeenInitialized == null)
+          ? const ProgramsScreen()
+          : const WelcomeScreen(),
     );
   }
 }
