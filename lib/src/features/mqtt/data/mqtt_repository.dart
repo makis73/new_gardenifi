@@ -57,7 +57,7 @@ class MqttRepository {
     if (message.isNotEmpty) {
       builder.addString(message);
       final payload = builder.payload;
-      _client.publishMessage(topic, qos, payload!);
+      _client.publishMessage(topic, qos, payload!, retain: true);
     }
   }
 
