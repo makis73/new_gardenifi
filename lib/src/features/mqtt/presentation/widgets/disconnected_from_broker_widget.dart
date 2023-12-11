@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class DisconnectedFromBrokerWidget extends ConsumerWidget {
@@ -32,18 +33,15 @@ class DisconnectedFromBrokerWidget extends ConsumerWidget {
                 ),
                 TextButton(
                     onPressed: () async {
-                      // TODO: To something
+                      // Reset providers and try to connect to broker
+                      ref.invalidate(mqttControllerProvider);
+                      ref.invalidate(disconnectedProvider);
+                      ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
                     },
                     child: Text(
                       'Try Again'.hardcoded,
                       style: TextStyles.smallNormal,
                     )),
-                // gapH32,
-                // const Icon(
-                //   Icons.wifi_off,
-                //   size: 40,
-                //   color: Colors.blue,
-                // )
               ],
             ),
           ), // A placeholder instead of button while device is not connected
@@ -53,10 +51,12 @@ class DisconnectedFromBrokerWidget extends ConsumerWidget {
               height: 100,
               child: Column(
                 children: [
-                  Text('If problem persist exit the app and try open again.'
-                      .hardcoded),
+                  Text(
+                      'If problem persist exit the app and try open it again.'.hardcoded),
                   TextButton(
-                      onPressed: () => SystemChannels.platform.invokeMethod('SystemNavigator.pop'),
+                      onPressed: () =>
+                          // Exit the app
+                          SystemChannels.platform.invokeMethod('SystemNavigator.pop'),
                       child: Text('Exit'.hardcoded))
                 ],
               ),

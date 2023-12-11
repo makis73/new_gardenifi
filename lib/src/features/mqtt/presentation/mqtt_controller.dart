@@ -128,9 +128,9 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
 }
 
 // ------------> Providers <--------------
-final mqttControllerProvider = StateNotifierProvider<MqttController, AsyncValue>((ref) {
-  return MqttController(ref);
-});
+
+final mqttControllerProvider =
+    StateNotifierProvider<MqttController, AsyncValue>((ref) => MqttController(ref));
 
 //TODO: Providers must receive the initial value from broker
 final valvesTopicProvider = StateProvider<List<String>>((ref) => []);

@@ -22,10 +22,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
   @override
   void initState() {
     super.initState();
-    
-   
-      ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
-   
+    ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
   }
 
   @override
@@ -50,14 +47,15 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
           return Column(
             children: [
               BluetoothScreenUpper(radius: radius, showMenuButton: true, showLogo: true),
+
               cantConnectToBroker
                   ? const CanNotConnectToBrokerWidget()
                   : (statusTopicMessage.containsKey('err') &&
                           statusTopicMessage['err'] == 'LOST_CONNECTION')
                       ? const DeviceDisconnectedWidget()
-                      : valvesTopicMessage.isEmpty
+                      : (valvesTopicMessage.isEmpty)
                           ? const NoValvesWidget()
-                          : disconnectedFromBroker
+                          : (disconnectedFromBroker)
                               ? const DisconnectedFromBrokerWidget()
                               : const ValveCards()
             ],
