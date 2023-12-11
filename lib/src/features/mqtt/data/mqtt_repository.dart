@@ -1,7 +1,10 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 
 enum MqttCurrentConnectionState {
   idle,
@@ -17,6 +20,8 @@ enum MqttSubscriptionState {
 }
 
 class MqttRepository {
+  MqttRepository(this.ref);
+  final Ref ref;
   late MqttCurrentConnectionState connectionState = MqttCurrentConnectionState.idle;
   late MqttSubscriptionState subscriptionState = MqttSubscriptionState.idle;
   late MqttServerClient _client;
@@ -27,25 +32,32 @@ class MqttRepository {
 
     _client = MqttServerClient.withPort(host, identifier, port);
     _client.logging(on: true);
-    _client.keepAlivePeriod = 20;
+    _client.keepAlivePeriod = 5;
     _client.secure = true;
-    _client.onDisconnected = _onDisconnected;
+    _client.onDisconnected = onDisconnected;
     _client.onConnected = _onConnected;
     _client.onSubscribed = _onSubscribed;
     _client.connectionMessage = connectMessage;
+    _client.autoReconnect = false;
 
     return _client;
   }
 
-  Future<void> connectClient(MqttServerClient client, String username, String password) async {
+  Future<void> connectClient(
+      MqttServerClient client, String username, String password) async {
     try {
-      log('connecting...');
       await _client.connect(username, password);
-      log('Client connected!');
-    } catch (e) {
-      log('oups ... disconnecting');
-      _client.disconnect();
+    } on NoConnectionException catch (_) {
+      // Raised by the client when connection fails.
+      rethrow;
+    } on SocketException catch (_) {
+      // Raised by the socket layer
+      rethrow;
     }
+  }
+
+  void disconnect(MqttServerClient client) {
+    client.disconnect();
   }
 
   void subscribeToTopic(MqttClient client, String topicName) {
@@ -63,16 +75,23 @@ class MqttRepository {
 
   void _onConnected() {
     connectionState = MqttCurrentConnectionState.connected;
-    log('onConnected:: client connected');
+    print('APP:: onConnected:: client connected');
     // onConnectedCallback();
   }
 
-  void _onDisconnected() {
+  void onDisconnected() {
     connectionState = MqttCurrentConnectionState.disconnected;
-    log('onDisconnected:: client disconnected');
+    print('APP:: disconnected');
+    ref.read(disconnectedProvider.notifier).state = true;
   }
+
+  void _onAutoReconnect() {}
 
   void _onSubscribed(String topic) {
     subscriptionState = MqttSubscriptionState.subscribed;
   }
 }
+
+final repositoryProvider = Provider<MqttRepository>((ref) {
+  return MqttRepository(ref);
+});

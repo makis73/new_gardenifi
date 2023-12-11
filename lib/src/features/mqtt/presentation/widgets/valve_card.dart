@@ -4,13 +4,15 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
+import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 
 // {'valves': ['1', '2', '3', '4'], 'out1': 0, 'out2': 0, 'out3': 0, 'out4': 1, 'server_time': '2023/12/08 21:51:14', 'tz': 'UTC', 'hw_id': '100000005fd258b6'}
 
-class ValveCard extends ConsumerWidget {
-  const ValveCard({super.key});
+class ValveCards extends ConsumerWidget {
+  const ValveCards({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,12 +20,7 @@ class ValveCard extends ConsumerWidget {
     final status = ref.watch(statusTopicProvider);
 //
     return Expanded(
-      child: listOfValves.isEmpty
-          ? const Center(
-            // TODO: Create widget for no valves enabled
-              child: Text('No valves'),
-            )
-          : ListView.builder(
+      child: ListView.builder(
               itemCount: listOfValves.length,
               padding: const EdgeInsets.symmetric(vertical: 0),
               itemBuilder: (context, index) {
@@ -35,9 +32,28 @@ class ValveCard extends ConsumerWidget {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ExpansionTile(
-                    title: Text('Valve ${valve.toString()}'),
-                    subtitle: Text('$valveIsOn'),
+                    title: Row(
+                      children: [
+                        Text(
+                          'Valve ${valve.toString()}',
+                          style: TextStyles.mediumBold,
+                        ),
+                        gapW20,
+                        if (valveIsOn)
+                          const Icon(
+                            Icons.autorenew,
+                            color: Colors.green,
+                          ),
+                      ],
+                    ),
+                    subtitle: valveIsOn
+                        ? Text(
+                            'Close at...',
+                            style: TextStyle(color: Colors.black),
+                          )
+                        : null,
                     collapsedBackgroundColor: Colors.white,
+                    collapsedTextColor: Colors.green[900],
                     backgroundColor: Colors.green[100]!.withOpacity(0.5),
                     shape:
                         RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

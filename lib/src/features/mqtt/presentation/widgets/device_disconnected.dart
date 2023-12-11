@@ -6,7 +6,6 @@ import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 class DeviceDisconnectedWidget extends ConsumerWidget {
   const DeviceDisconnectedWidget({super.key});
 
- 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Expanded(
@@ -23,11 +22,10 @@ class DeviceDisconnectedWidget extends ConsumerWidget {
                 style: TextStyles.mediumBold.copyWith(color: Colors.red[900]),
                 textAlign: TextAlign.center,
               ),
-              
-                   Text(
-                    'Make sure device is powered on '.hardcoded,
-                    style: TextStyles.smallNormal,
-                  ),
+              Text(
+                'Make sure device is powered on '.hardcoded,
+                style: TextStyles.smallNormal,
+              ),
             ],
           ),
         ),

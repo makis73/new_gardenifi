@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -13,12 +14,14 @@ import 'package:new_gardenifi_app/src/features/mqtt/data/mqtt_repository.dart';
 class MqttController extends StateNotifier<AsyncValue<void>> {
   MqttController(this.ref) : super(const AsyncLoading());
 
-  final mqttRepository = MqttRepository();
   MqttServerClient? client;
-  late String hwId;
   final Ref ref;
+  late String hwId;
+  // late Timer timer;
 
   Future<void> setupAndConnectClient() async {
+    print('APP:: setupAndConnect called');
+    final mqttRepository = ref.read(repositoryProvider);
     final prefs = await SharedPreferences.getInstance();
     final String user = prefs.getString('mqtt_user') ?? '';
     final String password = prefs.getString('mqtt_pass') ?? '';
@@ -27,7 +30,25 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
 
     client = mqttRepository.initializeMqttClient(host, port, indentifier);
 
-    await mqttRepository.connectClient(client!, user, password);
+    // timer = Timer(const Duration(seconds: 15), () async {
+    //   state = const AsyncData(null);
+    // });
+
+    try {
+      await mqttRepository.connectClient(client!, user, password);
+    } on NoConnectionException catch (_) {
+      // Raised by the client when connection fails.
+      ref.read(cantConnectProvider.notifier).state = true;
+      // Stop loading
+      state = const AsyncData(null);
+      disconnectFromBroker();
+    } on SocketException catch (_) {
+      // Raised by the socket layer
+      ref.read(cantConnectProvider.notifier).state = true;
+      // Stop loading
+      state = const AsyncData(null);
+      disconnectFromBroker();
+    }
 
     // TODO: Show a snackbar that connected to broker [onConnected]
 
@@ -44,6 +65,7 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
   }
 
   void subscribeToTopics() async {
+    final mqttRepository = ref.read(repositoryProvider);
     await loadHardwareId();
     final status = createTopicName(statusTopic);
     final config = createTopicName(configTopic);
@@ -57,6 +79,7 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
     mqttRepository.subscribeToTopic(client!, valves);
 
     client!.updates!.listen((event) {
+      // timer.cancel();
       state = const AsyncData(null);
       final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
       final topic = event[0].topic;
@@ -93,8 +116,14 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
   }
 
   void sendMessage(String topic, MqttQos qos, String message) {
+    final mqttRepository = ref.read(repositoryProvider);
     final topicToSend = createTopicName(topic);
     mqttRepository.publishMessage(topicToSend, qos, message);
+  }
+
+  void disconnectFromBroker() {
+    final mqttRepository = ref.read(repositoryProvider);
+    mqttRepository.disconnect(client!);
   }
 }
 
@@ -111,3 +140,7 @@ final statusTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 final commandTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
 final configTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
+
+final disconnectedProvider = StateProvider<bool>((ref) => false);
+
+final cantConnectProvider = StateProvider<bool>((ref) => false);
