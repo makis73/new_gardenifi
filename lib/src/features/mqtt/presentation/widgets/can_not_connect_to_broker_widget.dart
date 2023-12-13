@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
+import 'package:new_gardenifi_app/utils.dart';
 
 class CanNotConnectToBrokerWidget extends ConsumerWidget {
   const CanNotConnectToBrokerWidget({super.key});
@@ -34,10 +35,7 @@ class CanNotConnectToBrokerWidget extends ConsumerWidget {
                 TextButton(
                     onPressed: () async {
                       // Reset providers and try to connect to broker
-                      ref.invalidate(mqttControllerProvider);
-                      ref.invalidate(cantConnectProvider);
-                      ref.invalidate(disconnectedProvider);
-                      ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
+                      refreshMainScreen(ref);
                     },
                     child: Text(
                       'Try Again'.hardcoded,
@@ -52,7 +50,9 @@ class CanNotConnectToBrokerWidget extends ConsumerWidget {
               height: 100,
               child: Column(
                 children: [
-                  Text('If problem persist, maybe broker is down.Exit the app and try again later.'.hardcoded),
+                  Text(
+                      'If problem persist, maybe broker is down.Exit the app and try again later.'
+                          .hardcoded),
                   TextButton(
                       onPressed: () =>
                           SystemChannels.platform.invokeMethod('SystemNavigator.pop'),

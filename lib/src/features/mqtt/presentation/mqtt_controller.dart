@@ -20,7 +20,6 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
   // late Timer timer;
 
   Future<void> setupAndConnectClient() async {
-    print('APP:: setupAndConnect called');
     final mqttRepository = ref.read(repositoryProvider);
     final prefs = await SharedPreferences.getInstance();
     final String user = prefs.getString('mqtt_user') ?? '';
@@ -30,10 +29,6 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
 
     client = mqttRepository.initializeMqttClient(host, port, indentifier);
 
-    // timer = Timer(const Duration(seconds: 15), () async {
-    //   state = const AsyncData(null);
-    // });
-
     try {
       await mqttRepository.connectClient(client!, user, password);
     } on NoConnectionException catch (_) {
@@ -41,13 +36,13 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       ref.read(cantConnectProvider.notifier).state = true;
       // Stop loading
       state = const AsyncData(null);
-      disconnectFromBroker();
+      // disconnectFromBroker();
     } on SocketException catch (_) {
       // Raised by the socket layer
       ref.read(cantConnectProvider.notifier).state = true;
       // Stop loading
       state = const AsyncData(null);
-      disconnectFromBroker();
+      // disconnectFromBroker();
     }
 
     // TODO: Show a snackbar that connected to broker [onConnected]
@@ -79,7 +74,6 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
     mqttRepository.subscribeToTopic(client!, valves);
 
     client!.updates!.listen((event) {
-      // timer.cancel();
       state = const AsyncData(null);
       final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
       final topic = event[0].topic;
@@ -87,7 +81,6 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       if (topic == valves) {
         final String message =
             MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-        // final String replacedString = tempMessage.replaceAll('\'', '"');
 
         final correctedMessage = message.replaceAll("'", "\"");
 
@@ -132,7 +125,6 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
 final mqttControllerProvider =
     StateNotifierProvider<MqttController, AsyncValue>((ref) => MqttController(ref));
 
-//TODO: Providers must receive the initial value from broker
 final valvesTopicProvider = StateProvider<List<String>>((ref) => []);
 
 final statusTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});

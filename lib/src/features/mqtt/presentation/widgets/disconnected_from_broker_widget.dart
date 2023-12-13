@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
+import 'package:new_gardenifi_app/utils.dart';
 
 class DisconnectedFromBrokerWidget extends ConsumerWidget {
   const DisconnectedFromBrokerWidget({super.key});
@@ -34,9 +35,7 @@ class DisconnectedFromBrokerWidget extends ConsumerWidget {
                 TextButton(
                     onPressed: () async {
                       // Reset providers and try to connect to broker
-                      ref.invalidate(mqttControllerProvider);
-                      ref.invalidate(disconnectedProvider);
-                      ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
+                      refreshMainScreen(ref);
                     },
                     child: Text(
                       'Try Again'.hardcoded,

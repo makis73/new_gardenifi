@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
 import 'package:new_gardenifi_app/src/constants/colors.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
@@ -10,6 +11,7 @@ import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/device_
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/disconnected_from_broker_widget.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/no_valves_widget.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/valve_card.dart';
+import 'package:new_gardenifi_app/utils.dart';
 
 class ProgramsScreen extends ConsumerStatefulWidget {
   const ProgramsScreen({super.key});
@@ -18,11 +20,23 @@ class ProgramsScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _ProgramsScreenState();
 }
 
-class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
+class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    var disstate = ref.read(disconnectedProvider);
+    log('didChange..: $disstate');
+    if (state == AppLifecycleState.resumed ) {
+      refreshMainScreen(ref);
+    }
   }
 
   @override
@@ -47,7 +61,6 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
           return Column(
             children: [
               BluetoothScreenUpper(radius: radius, showMenuButton: true, showLogo: true),
-
               cantConnectToBroker
                   ? const CanNotConnectToBrokerWidget()
                   : (statusTopicMessage.containsKey('err') &&

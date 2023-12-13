@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<bool?> checkInitializationStatus() async {
@@ -19,17 +21,15 @@ Future<bool?> checkInitializationStatus() async {
 }
 
 String timeConvert(BuildContext context, String startTime, String duration) {
-  DateTime dateTime = DateFormat.Hm()
-      .parse(startTime)
-      .add(Duration(minutes: int.parse(duration)));
+  DateTime dateTime =
+      DateFormat.Hm().parse(startTime).add(Duration(minutes: int.parse(duration)));
   TimeOfDay timeOfDay = TimeOfDay.fromDateTime(dateTime);
   return timeOfDay.format(context);
 }
 
 String utcToLocal(String time) {
   var x = DateFormat('M/d/y').format(DateTime.now());
-  DateTime localDateTime =
-      DateFormat('M/d/y hh:mm').parseUTC('$x $time').toLocal();
+  DateTime localDateTime = DateFormat('M/d/y hh:mm').parseUTC('$x $time').toLocal();
   // Convert DateTime local time to [String]
   String localTimeString = DateFormat('HH:mm').format(localDateTime);
 
@@ -45,4 +45,11 @@ String localToUtc(String time) {
   // Convert UTC to [String]
   String utcTimeString = DateFormat('HH:mm').format(utcTime);
   return utcTimeString;
+}
+
+void refreshMainScreen(WidgetRef ref) {
+  ref.invalidate(cantConnectProvider);
+  ref.invalidate(disconnectedProvider);
+  ref.invalidate(mqttControllerProvider);
+  ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
 }
