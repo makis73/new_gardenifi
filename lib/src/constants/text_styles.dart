@@ -7,6 +7,11 @@ class TextStyles {
     fontWeight: FontWeight.bold,
   );
 
+  static const TextStyle mediumNormal = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.normal,
+  );
+
   static const TextStyle bigBold = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,

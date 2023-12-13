@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 Future<bool?> showAlertDialog({
@@ -11,18 +12,18 @@ Future<bool?> showAlertDialog({
   return showDialog(
     context: context,
     barrierDismissible: cancelActionText != null,
-    builder: (context) => AlertDialog.adaptive(
-      title: Text(title),
-      content: content != null ? Text(content) : null,
+    builder: (context) => AlertDialog(
+      title: Text(title, style: TextStyles.bigBold,),
+      content: content != null ? Text(content, style: TextStyles.smallNormal,) : null,
       actions: <Widget>[
               if (cancelActionText != null)
                 TextButton(
                   child: Text(cancelActionText),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.pop(context, true),
                 ),
               TextButton(
-                child: Text(defaultActionText),
-                onPressed: () => Navigator.pop(context),
+                child: Text(defaultActionText, style: TextStyles.mediumNormal),
+                onPressed: () => Navigator.pop(context, false),
               ),
             ]
           

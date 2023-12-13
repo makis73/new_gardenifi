@@ -28,7 +28,7 @@ class NoValvesWidget extends ConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  'Connect one or more valves on irrigation device and select the port number from the button below to enable them.'
+                  'Connect one or more valves on IoT device and select the port number from the button below to enable them.'
                       .hardcoded
                       .hardcoded,
                   style: TextStyles.smallNormal,
