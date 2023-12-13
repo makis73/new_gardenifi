@@ -3,12 +3,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/show_add_remove_valves_widget.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class MoreMenuButton extends ConsumerWidget {
-  const MoreMenuButton({super.key});
+  const MoreMenuButton({
+    super.key,
+    this.addRemoveValves = false,
+    this.initializeIoT = false,
+  });
+
+  final bool? addRemoveValves;
+  final bool? initializeIoT;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,17 +27,35 @@ class MoreMenuButton extends ConsumerWidget {
       child: MenuAnchor(
         alignmentOffset: const Offset(-130, 0),
         menuChildren: [
-          MenuItemButton(
-            leadingIcon: Image.asset(
-              'assets/icons/valve.png',
-              width: 25,
-              color: Colors.black.withOpacity(0.7),
+          if (addRemoveValves == true)
+            MenuItemButton(
+              leadingIcon: Image.asset(
+                'assets/icons/valve.png',
+                width: 25,
+                color: Colors.black.withOpacity(0.7),
+              ),
+              child: Text('Add/Remove valves'.hardcoded),
+              onPressed: () {
+                ShowAddRemoveValvesWidget.showBottomSheet(context);
+              },
             ),
-            child: Text('Add/Remove valves'.hardcoded),
-            onPressed: () {
-              ShowAddRemoveValvesWidget.showBottomSheet(context);
-            },
-          ),
+          if (initializeIoT == true)
+            MenuItemButton(
+              leadingIcon: const Icon(Icons.restart_alt),
+              child: Text('Initialize IoT device'.hardcoded),
+              onPressed: () async {
+                var res = await showAlertDialog(
+                  cancelActionText: 'Cancel'.hardcoded,
+                  defaultActionText: 'Ok'.hardcoded,
+                    context: context,
+                    title: 'Initialze IoT'.hardcoded,
+                    content:
+                        'Are you sure you want to initialze the IoT device'.hardcoded);
+                if (res == true) {
+                  Navigator.of(context).popAndPushNamed('welcomeScreen');
+                }
+              },
+            ),
           const Divider(
             endIndent: 30,
             indent: 30,

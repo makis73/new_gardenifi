@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
 import 'package:new_gardenifi_app/src/constants/colors.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
@@ -33,17 +32,30 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    var disstate = ref.read(disconnectedProvider);
-    log('didChange..: $disstate');
+    // Refresh screen when app resumes from background
     if (state == AppLifecycleState.resumed) {
       refreshMainScreen(ref);
     }
   }
 
+  void showSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        Text('Connected to broker'.hardcoded),
+        const Icon(
+          Icons.done,
+          color: Colors.greenAccent,
+        )
+      ]),
+      duration: const Duration(seconds: 3),
+      width: MediaQuery.of(context).size.width * 0.8,
+      behavior: SnackBarBehavior.floating,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
     final radius = screenHeight / 4;
 
     final mqttControllerValue = ref.watch(mqttControllerProvider);
@@ -55,20 +67,23 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
     final bool cantConnectToBroker = ref.watch(cantConnectProvider);
     final bool disconnectedFromBroker = ref.watch(disconnectedProvider);
 
-    ref.listen(
-      connectedProvider,
-      (previous, next) {
-        if (next) {
-          showSnackbar();
-        }
-      },
-    );
+    // When connection to broker is successful show snackbar
+    ref.listen(connectedProvider, (previous, next) {
+      if (next) {
+        showSnackbar();
+      }
+    });
 
     return Scaffold(
         backgroundColor: screenBackgroundColor,
         body: Column(
           children: [
-            BluetoothScreenUpper(radius: radius, showMenuButton: true, showLogo: true),
+            BluetoothScreenUpper(
+                radius: radius,
+                showMenuButton: true,
+                showAddRemoveMenu: true,
+                showInitializeMenu: true,
+                showLogo: true),
             mqttControllerValue.when(
               data: (data) {
                 return cantConnectToBroker
@@ -88,20 +103,5 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
             ),
           ],
         ));
-  }
-
-  void showSnackbar() {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Text('Connected to broker'.hardcoded),
-        const Icon(
-          Icons.done,
-          color: Colors.greenAccent,
-        )
-      ]),
-      duration: const Duration(seconds: 3),
-      width: MediaQuery.of(context).size.width * 0.8,
-      behavior: SnackBarBehavior.floating,
-    ));
   }
 }

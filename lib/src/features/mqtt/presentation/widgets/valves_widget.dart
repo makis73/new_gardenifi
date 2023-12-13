@@ -24,7 +24,6 @@ class ValveNumberWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var enabledValves = ref.watch(valvesTopicProvider);
-    var status = ref.watch(statusTopicProvider);
 
     return FloatingActionButton(
       backgroundColor:
@@ -39,10 +38,12 @@ class ValveNumberWidget extends ConsumerWidget {
         // if the port is already registered, remove it and send message to broker with new list to [valves] topic
         else if (enabledValves.contains(port)) {
           if (ref.read(statusTopicProvider)['out$port'] == 1) {
-            bool? res = await showAlertDialog(
+            await showAlertDialog(
+              defaultActionText: 'Ok'.hardcoded,
                 context: context,
                 title: 'Valve is On!'.hardcoded,
-                content: 'Please turn off valve before remove it from IoT device!'.hardcoded);
+                content:
+                    'Please turn off valve before remove it from IoT device!'.hardcoded);
             Navigator.pop(context);
           } else {
             enabledValves.remove(port);
@@ -59,7 +60,7 @@ class ValveNumberWidget extends ConsumerWidget {
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
           Text(
-            !enabledValves.contains(port) ? 'Add' : 'Remove',
+            !enabledValves.contains(port) ? 'Add'.hardcoded : 'Remove'.hardcoded,
             style: const TextStyle(color: Colors.black45, fontSize: 12),
           )
         ],

@@ -2,16 +2,6 @@ import 'package:flutter/material.dart';
 
 class TextStyles {
   // You can modify this styles as you want
-  static const TextStyle mediumBold = TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.bold,
-  );
-
-  static const TextStyle mediumNormal = TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.normal,
-  );
-
   static const TextStyle bigBold = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,
@@ -20,6 +10,16 @@ class TextStyles {
   static const TextStyle bigButtonStyle = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w400,
+  );
+
+  static const TextStyle mediumBold = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const TextStyle mediumNormal = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.normal,
   );
 
   static const TextStyle xSmallNormal = TextStyle(
@@ -36,8 +36,6 @@ class TextStyles {
     fontSize: 18,
     fontWeight: FontWeight.bold,
   );
-
-
 
   static const TextStyle alertMessage = TextStyle(
     fontSize: 18,

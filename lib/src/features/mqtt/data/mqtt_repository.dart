@@ -48,10 +48,10 @@ class MqttRepository {
     try {
       await _client.connect(username, password);
     } on NoConnectionException catch (_) {
-      // Raised by the client when connection fails.
+      // Raised by the client when connection fails - Rethrow to Controller
       rethrow;
     } on SocketException catch (_) {
-      // Raised by the socket layer
+      // Raised by the socket layer - Rethrow to Controller
       rethrow;
     }
   }
@@ -88,12 +88,12 @@ class MqttRepository {
 
   }
 
-  void _onAutoReconnect() {}
-
   void _onSubscribed(String topic) {
     subscriptionState = MqttSubscriptionState.subscribed;
   }
 }
+
+// ----------- PROVIDERS ------------------
 
 final repositoryProvider = Provider<MqttRepository>((ref) {
   return MqttRepository(ref);

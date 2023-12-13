@@ -45,8 +45,6 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       // disconnectFromBroker();
     }
 
-    // TODO: Show a snackbar that connected to broker [onConnected]
-
     subscribeToTopics();
   }
 
@@ -68,10 +66,10 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
     final valves = createTopicName(valvesTopic);
     final command = createTopicName(commandTopic);
 
+    mqttRepository.subscribeToTopic(client!, valves);
     mqttRepository.subscribeToTopic(client!, status);
     mqttRepository.subscribeToTopic(client!, config);
     mqttRepository.subscribeToTopic(client!, system);
-    mqttRepository.subscribeToTopic(client!, valves);
 
     client!.updates!.listen((event) {
       state = const AsyncData(null);

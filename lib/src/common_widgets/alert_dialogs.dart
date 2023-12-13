@@ -7,7 +7,7 @@ Future<bool?> showAlertDialog({
   required String title,
   String? content,
   String? cancelActionText,
-  String defaultActionText = 'OK',
+  required defaultActionText,
 }) async {
   return showDialog(
     context: context,
@@ -18,12 +18,12 @@ Future<bool?> showAlertDialog({
       actions: <Widget>[
               if (cancelActionText != null)
                 TextButton(
-                  child: Text(cancelActionText),
-                  onPressed: () => Navigator.pop(context, true),
+                  child: Text(cancelActionText, style: TextStyles.mediumNormal),
+                  onPressed: () => Navigator.pop(context, false),
                 ),
               TextButton(
                 child: Text(defaultActionText, style: TextStyles.mediumNormal),
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: () => Navigator.pop(context, true),
               ),
             ]
           
@@ -31,7 +31,7 @@ Future<bool?> showAlertDialog({
   );
 }
 
-/// Generic function to show a platform-aware Material or Cupertino error dialog
+// Generic function to show a platform-aware Material or Cupertino error dialog
 Future<void> showExceptionAlertDialog({
   required BuildContext context,
   required String title,

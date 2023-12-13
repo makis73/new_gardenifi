@@ -7,6 +7,8 @@ class BluetoothScreenUpper extends StatelessWidget {
     super.key,
     required this.radius,
     required this.showMenuButton,
+    this.showAddRemoveMenu = false,
+    this.showInitializeMenu = false,
     required this.showLogo,
     this.messageWidget,
   });
@@ -14,6 +16,8 @@ class BluetoothScreenUpper extends StatelessWidget {
   final double radius;
   final Widget? messageWidget;
   final bool showMenuButton;
+  final bool? showAddRemoveMenu;
+  final bool? showInitializeMenu;
   final bool showLogo;
 
   @override
@@ -46,10 +50,13 @@ class BluetoothScreenUpper extends StatelessWidget {
           ),
         ),
         if (showMenuButton)
-          const Positioned(
+           Positioned(
             right: 10,
             top: 30,
-            child: MoreMenuButton(),
+            child: MoreMenuButton(
+              addRemoveValves: showAddRemoveMenu,
+              initializeIoT: showInitializeMenu,
+            ),
           ),
         if (messageWidget != null) messageWidget!,
         if (showLogo)

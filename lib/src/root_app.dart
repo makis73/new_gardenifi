@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/bluetooth_connection_screen.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/screens/wifi_connection_screen.dart';
+import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/screens/wifi_setup_screen.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/programs_screen.dart';
 
 /// The Widget that configures your application.
@@ -25,6 +29,15 @@ class RootApp extends StatelessWidget {
       home: (deviceHasBeenInitialized == true || deviceHasBeenInitialized == null)
           ? const ProgramsScreen()
           : const WelcomeScreen(),
+      // initialRoute: '/',
+      routes: {
+        'welcomeScreen': (context) => const WelcomeScreen(),
+        'bleConnection': (context) => const BluetoothConnectionScreen(),
+        'wifiConnection': (context) => const WifiConnectionScreen(),
+        'wifiSetup': (context) => WiFiSetupScreen(
+            ModalRoute.of(context)!.settings.arguments as BluetoothDevice),
+        'programsScreen': (context) => const ProgramsScreen(),
+      },
     );
   }
 }
