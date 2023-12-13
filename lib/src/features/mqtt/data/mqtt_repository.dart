@@ -77,13 +77,15 @@ class MqttRepository {
     connectionState = MqttCurrentConnectionState.connected;
     log('APP::From repo: client connected');
     ref.read(disconnectedProvider.notifier).state = false;
-    // onConnectedCallback();
+    ref.read(connectedProvider.notifier).state = true;
   }
 
   void onDisconnected() {
     connectionState = MqttCurrentConnectionState.disconnected;
     log('APP::From repo: disconnected');
     ref.read(disconnectedProvider.notifier).state = true;
+    ref.read(connectedProvider.notifier).state = false;
+
   }
 
   void _onAutoReconnect() {}

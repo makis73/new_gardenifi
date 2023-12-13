@@ -16,21 +16,31 @@ class MoreMenuButton extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: MenuAnchor(
+        alignmentOffset: const Offset(-130, 0),
         menuChildren: [
           MenuItemButton(
-            child: Text(loc.exit),
-            onPressed: () {
-              SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-            },
-          ),
-          MenuItemButton(
+            leadingIcon: Image.asset(
+              'assets/icons/valve.png',
+              width: 25,
+              color: Colors.black.withOpacity(0.7),
+            ),
             child: Text('Add/Remove valves'.hardcoded),
             onPressed: () {
               ShowAddRemoveValvesWidget.showBottomSheet(context);
             },
           ),
+          const Divider(
+            endIndent: 30,
+            indent: 30,
+          ),
+          MenuItemButton(
+            leadingIcon: const Icon(Icons.exit_to_app),
+            child: Text(loc.exit),
+            onPressed: () {
+              SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+            },
+          ),
         ],
-        // child: const Icon(Icons.more_vert),
         builder: (context, controller, child) => IconButton(
           iconSize: 25,
           color: Colors.black54,

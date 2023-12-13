@@ -136,3 +136,5 @@ final configTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 final disconnectedProvider = StateProvider<bool>((ref) => false);
 
 final cantConnectProvider = StateProvider<bool>((ref) => false);
+
+final connectedProvider = StateProvider<bool>(((ref) => false));
