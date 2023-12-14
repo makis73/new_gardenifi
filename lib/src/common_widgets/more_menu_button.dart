@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/show_add_remove_valves_widget.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/show_add_remov_bottomsheet.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
@@ -36,7 +36,7 @@ class MoreMenuButton extends ConsumerWidget {
               ),
               child: Text('Add/Remove valves'.hardcoded),
               onPressed: () {
-                ShowAddRemoveValvesWidget.showBottomSheet(context);
+                ShowAddRemoveBottomSheet.showBottomSheet(context);
               },
             ),
           if (initializeIoT == true)
@@ -45,8 +45,8 @@ class MoreMenuButton extends ConsumerWidget {
               child: Text('Initialize IoT device'.hardcoded),
               onPressed: () async {
                 var res = await showAlertDialog(
-                  cancelActionText: 'Cancel'.hardcoded,
-                  defaultActionText: 'Ok'.hardcoded,
+                    cancelActionText: 'Cancel'.hardcoded,
+                    defaultActionText: 'Ok'.hardcoded,
                     context: context,
                     title: 'Initialze IoT'.hardcoded,
                     content:

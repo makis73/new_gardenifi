@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/show_add_remove_valves_widget.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/show_add_remov_bottomsheet.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class NoValvesWidget extends ConsumerWidget {
@@ -36,7 +36,7 @@ class NoValvesWidget extends ConsumerWidget {
                 ElevatedButton(
                   child: Text('Enable valves'.hardcoded),
                   onPressed: () {
-                    ShowAddRemoveValvesWidget.showBottomSheet(context);
+                    ShowAddRemoveBottomSheet.showBottomSheet(context);
                   },
                 ),
               ],

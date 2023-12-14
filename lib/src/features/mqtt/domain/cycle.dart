@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
+
+import 'package:new_gardenifi_app/utils.dart';
 
 class Cycle {
   String startTime;
@@ -11,8 +14,8 @@ class Cycle {
     required this.isCycleRunning,
   });
 
-  clone() =>
-      Cycle(startTime: startTime, duration: duration, isCycleRunning: isCycleRunning);
+  // clone() =>
+  //     Cycle(startTime: startTime, duration: duration, isCycleRunning: isCycleRunning);
 
   // Cycle.fromJson(Map<String, dynamic> json)
   //     : startTime = json['start'],
@@ -26,7 +29,8 @@ class Cycle {
   //     };
 
   @override
-  String toString() => 'Cycle(startTime: $startTime, duration: $duration, isCycleRunning: $isCycleRunning)';
+  String toString() =>
+      'Cycle(startTime: $startTime, duration: $duration, isCycleRunning: $isCycleRunning)';
 
   Cycle copyWith({
     String? startTime,
@@ -42,18 +46,21 @@ class Cycle {
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
-  
+    
+
     result.addAll({'startTime': startTime});
     result.addAll({'duration': duration});
     result.addAll({'isCycleRunning': isCycleRunning});
-  
+
     return result;
   }
 
   factory Cycle.fromMap(Map<String, dynamic> map) {
+    // Convert the UTC time to local time
+    var localTime = utcToLocal(map['start']);
     return Cycle(
-      startTime: map['startTime'] ?? '',
-      duration: map['duration'] ?? '',
+      startTime: localTime,
+      duration: map['min'] ?? '',
       isCycleRunning: map['isCycleRunning'] ?? false,
     );
   }
@@ -65,11 +72,11 @@ class Cycle {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is Cycle &&
-      other.startTime == startTime &&
-      other.duration == duration &&
-      other.isCycleRunning == isCycleRunning;
+        other.startTime == startTime &&
+        other.duration == duration &&
+        other.isCycleRunning == isCycleRunning;
   }
 
   @override

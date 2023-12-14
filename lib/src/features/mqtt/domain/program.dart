@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
@@ -20,26 +21,32 @@ class Program {
 
   List<String>? listOfDays;
 
-  //   Map<String, dynamic> toJson() {
-  //   return {
-  //     'out': out,
-  //     'name': name,
-  //     'days': ((days?.split(','))?.map((e) => translateDay(e)))?.join(','),
-  //     'cycles': cycles?.map((e) => e.toJson()).toList(),
-  //   };
-  // }
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
 
-  // Program.fromJson(Map<String, dynamic> json) {
-  //   out = json['out'];
-  //   name = json['name'];
-  //   List<String> daysList = json['days'].split(',');
-  //   String decodedDays = daysList.map((e) => decodeDay(e)).join(',');
-  //   days = decodedDays;
-  //   cycles = <Cycle>[];
-  //   for (var e in json['cycles']) {
-  //     cycles?.add(Cycle.fromJson(e));
-  //   }
-  // }
+    result.addAll({'out': out});
+    if (name != null) {
+      result.addAll({'name': name});
+    }
+    result.addAll({'days': days});
+    result.addAll({'cycles': cycles.map((x) => x.toMap()).toList()});
+
+    return result;
+  }
+
+  factory Program.fromMap(Map<String, dynamic> map) {
+    // log('cycles: ${map['cycles']}');
+    return Program(
+      out: map['out']?.toInt() ?? 0,
+      name: map['name'],
+      days: map['days'] ?? '',
+      cycles: List<Cycle>.from(map['cycles']?.map((x) => Cycle.fromMap(x))),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Program.fromJson(String source) => Program.fromMap(json.decode(source));
 
   @override
   String toString() {
@@ -47,11 +54,11 @@ class Program {
     return 'Program: valve: $out, name: $name, days: $daysString, $cycles';
   }
 
-  clone() => Program(
-      out: out,
-      name: name,
-      days: days,
-      cycles: cycles.map((e) => e.clone() as Cycle).toList());
+  // clone() => Program(
+  //     out: out,
+  //     name: name,
+  //     days: days,
+  //     cycles: cycles.map((e) => e.clone() as Cycle).toList());
 
   String startTimesToString(BuildContext context, List<Cycle> cycles) {
     List<String> startTimesList = [];
@@ -143,30 +150,4 @@ class Program {
     }
     return null;
   }
-
-  Map<String, dynamic> toMap() {
-    final result = <String, dynamic>{};
-
-    result.addAll({'out': out});
-    if (name != null) {
-      result.addAll({'name': name});
-    }
-    result.addAll({'days': days});
-    result.addAll({'cycles': cycles.map((x) => x.toMap()).toList()});
-
-    return result;
-  }
-
-  factory Program.fromMap(Map<String, dynamic> map) {
-    return Program(
-      out: map['out']?.toInt() ?? 0,
-      name: map['name'],
-      days: map['days'] ?? '',
-      cycles: List<Cycle>.from(map['cycles']?.map((x) => Cycle.fromMap(x))),
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Program.fromJson(String source) => Program.fromMap(json.decode(source));
 }

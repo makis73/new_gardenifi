@@ -1,69 +1,136 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
-import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
+import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
+import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
+import 'package:new_gardenifi_app/utils.dart';
 
-class ValveNumberWidget extends ConsumerWidget {
-  const ValveNumberWidget(this.port, {super.key});
+// {'valves': ['1', '2', '3', '4'], 'out1': 0, 'out2': 0, 'out3': 0, 'out4': 1, 'server_time': '2023/12/08 21:51:14', 'tz': 'UTC', 'hw_id': '100000005fd258b6'}
 
-  final String port;
-
-  // Method to sort by number the list of valves
-  List<String> sortList(List<String> list) {
-    var intList = list.map(int.parse).toList();
-    intList.sort();
-    var sortedList = intList.map((e) => e.toString()).toList();
-    return sortedList;
-  }
+class ValvesWidget extends ConsumerStatefulWidget {
+  const ValvesWidget({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    var enabledValves = ref.watch(valvesTopicProvider);
+  ConsumerState<ValvesWidget> createState() => _ValveCardsState();
+}
 
-    return FloatingActionButton(
-      backgroundColor:
-          enabledValves.contains(port) ? Colors.grey : Colors.green.withOpacity(0.5),
-      onPressed: () async {
-        // if the port is not registered, add it and send message to broker with new list to [valves] topic
-        if (!enabledValves.contains(port)) {
-          enabledValves.add(port);
-          ref.read(mqttControllerProvider.notifier).sendMessage(
-              valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)));
-        }
-        // if the port is already registered, remove it and send message to broker with new list to [valves] topic
-        else if (enabledValves.contains(port)) {
-          if (ref.read(statusTopicProvider)['out$port'] == 1) {
-            await showAlertDialog(
-              defaultActionText: 'Ok'.hardcoded,
-                context: context,
-                title: 'Valve is On!'.hardcoded,
-                content:
-                    'Please turn off valve before remove it from IoT device!'.hardcoded);
-            Navigator.pop(context);
-          } else {
-            enabledValves.remove(port);
-            ref.read(mqttControllerProvider.notifier).sendMessage(
-                valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)));
-          }
-        }
-      },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            port.toString(),
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            !enabledValves.contains(port) ? 'Add'.hardcoded : 'Remove'.hardcoded,
-            style: const TextStyle(color: Colors.black45, fontSize: 12),
-          )
-        ],
+class _ValveCardsState extends ConsumerState<ValvesWidget> {
+  //! WTF is not update isExpanded !!!!!
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final listOfValves = ref.watch(valvesTopicProvider);
+    final status = ref.watch(statusTopicProvider);
+    final programs = ref.watch(configTopicProvider);
+
+    log('PORGRAMS:: $programs');
+//
+    return Expanded(
+      child: RefreshIndicator(
+        onRefresh: () {
+          refreshMainScreen(ref);
+          return Future<void>.delayed(const Duration(seconds: 1));
+        },
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: listOfValves.length,
+                padding: const EdgeInsets.symmetric(vertical: 0),
+                itemBuilder: (context, index) {
+                  int valve = int.parse(listOfValves[index]);
+                  bool valveIsOn = status['out${index + 1}'] == 1 ? true : false;
+
+                  List<Text> textList = [];
+
+                  for (var program in programs) {
+                    if (program.out == valve) {
+                      textList = createSortedTimeTexts(program);
+                    }
+                  }
+
+                  Map onStatusMap = {"out": valve, "cmd": 1};
+                  Map offStatusMap = {"out": valve, "cmd": 0};
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ExpansionTile(
+                      title: Row(
+                        children: [
+                          Text(
+                            'Valve ${valve.toString()}'.hardcoded,
+                            style: TextStyles.mediumBold,
+                          ),
+                          gapW20,
+                          if (valveIsOn)
+                            const Icon(
+                              Icons.autorenew,
+                              color: Colors.green,
+                            ),
+                        ],
+                      ),
+                      subtitle: valveIsOn
+                          ? const Text(
+                              'Close at...',
+                              style: TextStyle(color: Colors.black),
+                            )
+                          : Column(
+                              children: [...textList],
+                            ),
+                      initiallyExpanded: isExpanded,
+                      collapsedBackgroundColor: Colors.white,
+                      collapsedTextColor: Colors.green[900],
+                      backgroundColor: Colors.green[100]!.withOpacity(0.5),
+                      shape:
+                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      collapsedShape:
+                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                                onPressed: () {
+                                  ref.read(mqttControllerProvider.notifier).sendMessage(
+                                      configTopic,
+                                      MqttQos.atLeastOnce,
+                                      jsonEncode(fakeProgram));
+                                },
+                                child: const Text('add')),
+                            Switch(
+                              value: valveIsOn,
+                              onChanged: (value) =>
+                                  ref.read(mqttControllerProvider.notifier).sendMessage(
+                                        commandTopic,
+                                        MqttQos.atLeastOnce,
+                                        valveIsOn
+                                            ? json.encode(offStatusMap)
+                                            : json.encode(onStatusMap),
+                                      ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            TextButton(
+                onPressed: () {
+                  setState(() {
+                    isExpanded = true;
+                  });
+                },
+                child: Text('Expand all'.hardcoded))
+          ],
+        ),
       ),
     );
   }

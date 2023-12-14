@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -53,3 +54,32 @@ void refreshMainScreen(WidgetRef ref) {
   ref.invalidate(mqttControllerProvider);
   ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
 }
+
+List<Text> createSortedTimeTexts(Program program) {
+  List<String> sortedTimeList = program.cycles.map((e) => e.startTime).toList();
+  sortedTimeList.sort((a, b) => a.compareTo(b));
+  List<Text> textList = sortedTimeList.map((e) => Text(e)).toList();
+  return textList;
+}
+
+var fakeProgram = [
+  {
+    "out": 1,
+    "name": "home",
+    "days": "thu",
+    "cycles": [
+      {"start": "13:10", "min": "5", "isCycleRunning": false},
+      {"start": "10:00", "min": "10", "isCycleRunning": false},
+      {"start": "08:00", "min": "8", "isCycleRunning": false},
+      {"start": "06:00", "min": "6", "isCycleRunning": false}
+    ]
+  },
+  {
+    "out": 2,
+    "name": null,
+    "days": "fri",
+    "cycles": [
+      {"start": "13:00", "min": "15", "isCycleRunning": false}
+    ]
+  }
+];

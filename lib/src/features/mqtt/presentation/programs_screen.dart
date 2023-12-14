@@ -9,7 +9,7 @@ import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/can_not
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/device_disconnected.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/disconnected_from_broker_widget.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/no_valves_widget.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/valve_card.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/valves_widget.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
@@ -95,7 +95,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
                             ? const NoValvesWidget()
                             : (disconnectedFromBroker)
                                 ? const DisconnectedFromBrokerWidget()
-                                : const ValveCards();
+                                : const ValvesWidget();
               },
               error: (error, stackTrace) => Center(child: Text(error.toString())),
               loading: () =>

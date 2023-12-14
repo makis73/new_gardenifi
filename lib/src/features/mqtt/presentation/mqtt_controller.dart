@@ -110,32 +110,14 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
             MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
         final String replacedString = tempMessage.replaceAll('\'', '"');
 
-
-        // final List<dynamic> mes =
-        //     (jsonDecode(replacedString) as List);
-
-        // log('mes:: $mes');
-
         List<Program> scheduleUtcFromBroker =
             (json.decode(replacedString) as List).map((e) {
           Program program = Program.fromMap(e);
-          log('Program: ${program.toString()}');
+          // log('MqttController:: ${program.toString()}');
           return program;
         }).toList();
 
-        // var scheduleUtcFromBroker = mes.map<Program>((element) {
-        //   Program pro = Program.fromJson(element);
-        //   log(pro.toString());
-        //   return pro;
-        // }).toList();
-
-        // var scheduleFromBroker =
-        //       ProgramProvider().scheduleToLocal(scheduleToUtcFromBroker);
-
-        // log('Schedule: $scheduleUtcFromBroker');
-
         ref.read(configTopicProvider.notifier).state = scheduleUtcFromBroker;
-        // log('Message from CONFIG: $mes');
       }
     });
   }
