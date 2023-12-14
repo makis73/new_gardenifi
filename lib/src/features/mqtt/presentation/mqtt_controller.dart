@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/domain/program.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
@@ -103,6 +104,39 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
         final Map<String, dynamic> mes = jsonDecode(replacedString);
         ref.read(commandTopicProvider.notifier).state = mes;
       }
+
+      if (topic == config) {
+        final String tempMessage =
+            MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+        final String replacedString = tempMessage.replaceAll('\'', '"');
+
+
+        // final List<dynamic> mes =
+        //     (jsonDecode(replacedString) as List);
+
+        // log('mes:: $mes');
+
+        List<Program> scheduleUtcFromBroker =
+            (json.decode(replacedString) as List).map((e) {
+          Program program = Program.fromMap(e);
+          log('Program: ${program.toString()}');
+          return program;
+        }).toList();
+
+        // var scheduleUtcFromBroker = mes.map<Program>((element) {
+        //   Program pro = Program.fromJson(element);
+        //   log(pro.toString());
+        //   return pro;
+        // }).toList();
+
+        // var scheduleFromBroker =
+        //       ProgramProvider().scheduleToLocal(scheduleToUtcFromBroker);
+
+        // log('Schedule: $scheduleUtcFromBroker');
+
+        ref.read(configTopicProvider.notifier).state = scheduleUtcFromBroker;
+        // log('Message from CONFIG: $mes');
+      }
     });
   }
 
@@ -129,7 +163,7 @@ final statusTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
 final commandTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
-final configTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
+final configTopicProvider = StateProvider<List<Program>>((ref) => []);
 
 final disconnectedProvider = StateProvider<bool>((ref) => false);
 

@@ -1,50 +1,70 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+
 import 'package:new_gardenifi_app/src/features/mqtt/domain/cycle.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class Program {
-  int? out;
+  int out;
   String? name;
-  String? days;
-  List<Cycle>? cycles;
+  String days;
+  List<Cycle> cycles;
 
   Program({
-    this.out,
+    required this.out,
     this.name,
-    this.days,
-    this.cycles,
+    required this.days,
+    required this.cycles,
   });
 
   List<String>? listOfDays;
 
+  //   Map<String, dynamic> toJson() {
+  //   return {
+  //     'out': out,
+  //     'name': name,
+  //     'days': ((days?.split(','))?.map((e) => translateDay(e)))?.join(','),
+  //     'cycles': cycles?.map((e) => e.toJson()).toList(),
+  //   };
+  // }
+
+  // Program.fromJson(Map<String, dynamic> json) {
+  //   out = json['out'];
+  //   name = json['name'];
+  //   List<String> daysList = json['days'].split(',');
+  //   String decodedDays = daysList.map((e) => decodeDay(e)).join(',');
+  //   days = decodedDays;
+  //   cycles = <Cycle>[];
+  //   for (var e in json['cycles']) {
+  //     cycles?.add(Cycle.fromJson(e));
+  //   }
+  // }
+
   @override
   String toString() {
-    if (days != null) {
-      String daysString = days!;
-      return '$daysString, $cycles';
-    } else {
-      return 'null days';
-    }
+    String daysString = days;
+    return 'Program: valve: $out, name: $name, days: $daysString, $cycles';
   }
 
   clone() => Program(
       out: out,
       name: name,
       days: days,
-      cycles: cycles!.map((e) => e.clone() as Cycle).toList());
+      cycles: cycles.map((e) => e.clone() as Cycle).toList());
 
   String startTimesToString(BuildContext context, List<Cycle> cycles) {
     List<String> startTimesList = [];
 
-    cycles.forEach((cycle) {
+    for (var cycle in cycles) {
       if (cycle.duration != '0') {
-        var startTime = cycle.startTime ;  
+        var startTime = cycle.startTime;
         var duration = cycle.duration;
         var endTime = timeConvert(context, startTime, duration);
 
         startTimesList.add('$startTime - $endTime\n');
       }
-    });
+    }
     // short the list of times
     startTimesList.sort((a, b) {
       return a.compareTo(b);
@@ -56,8 +76,7 @@ class Program {
   String shorteningDays(BuildContext context, String? days) {
     var listOfDays = days!.split(',');
 
-    var shortDaysList = listOfDays
-        .map((e) => e.substring(0, 3));
+    var shortDaysList = listOfDays.map((e) => e.substring(0, 3));
 
     Map daysMap = {
       'ΔΕΥΤΕΡΑ': 1,
@@ -80,7 +99,7 @@ class Program {
   }
 
   splitDays() {
-    listOfDays = days?.split(',');
+    listOfDays = days.split(',');
   }
 
   String? decodeDay(String day) {
@@ -102,27 +121,7 @@ class Program {
       case '':
         return null;
     }
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'out': out,
-      'name': name,
-      'days': ((days?.split(','))?.map((e) => translateDay(e)))?.join(','),
-      'cycles': cycles?.map((e) => e.toJson()).toList(),
-    };
-  }
-
-  Program.fromJson(Map<String, dynamic> json) {
-    out = json['out'];
-    name = json['name'];
-    List<String> daysList = json['days'].split(',');
-    String decodedDays = daysList.map((e) => decodeDay(e)).join(',');
-    days = decodedDays;
-    cycles = <Cycle>[];
-    for (var e in json['cycles']) {
-      cycles?.add(Cycle.fromJson(e));
-    }
+    return null;
   }
 
   String? translateDay(String day) {
@@ -142,5 +141,32 @@ class Program {
       case "Day_Sun_Value":
         return 'sun';
     }
+    return null;
   }
+
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
+
+    result.addAll({'out': out});
+    if (name != null) {
+      result.addAll({'name': name});
+    }
+    result.addAll({'days': days});
+    result.addAll({'cycles': cycles.map((x) => x.toMap()).toList()});
+
+    return result;
+  }
+
+  factory Program.fromMap(Map<String, dynamic> map) {
+    return Program(
+      out: map['out']?.toInt() ?? 0,
+      name: map['name'],
+      days: map['days'] ?? '',
+      cycles: List<Cycle>.from(map['cycles']?.map((x) => Cycle.fromMap(x))),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Program.fromJson(String source) => Program.fromMap(json.decode(source));
 }
