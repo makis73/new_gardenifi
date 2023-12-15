@@ -55,11 +55,13 @@ void refreshMainScreen(WidgetRef ref) {
   ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
 }
 
-List<Text> createSortedTimeTexts(Program program) {
-  List<String> sortedTimeList = program.cycles.map((e) => e.startTime).toList();
-  sortedTimeList.sort((a, b) => a.compareTo(b));
-  List<Text> textList = sortedTimeList.map((e) => Text(e)).toList();
-  return textList;
+List<String> createSortedTimeTexts(Program program) {
+  if (program.cycles.isNotEmpty) {
+    List<String> sortedTimeList = program.cycles.map((e) => e.startTime).toList();
+    sortedTimeList.sort((a, b) => a.compareTo(b));
+    return sortedTimeList;
+  }
+  return [];
 }
 
 var fakeProgram = [
@@ -71,15 +73,8 @@ var fakeProgram = [
       {"start": "13:10", "min": "5", "isCycleRunning": false},
       {"start": "10:00", "min": "10", "isCycleRunning": false},
       {"start": "08:00", "min": "8", "isCycleRunning": false},
-      {"start": "06:00", "min": "6", "isCycleRunning": false}
+      {"start": "06:15", "min": "6", "isCycleRunning": false}
     ]
   },
-  {
-    "out": 2,
-    "name": null,
-    "days": "fri",
-    "cycles": [
-      {"start": "13:00", "min": "15", "isCycleRunning": false}
-    ]
-  }
+  {"out": 2, "name": "", "days": "fri", "cycles": []}
 ];

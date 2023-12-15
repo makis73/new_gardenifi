@@ -8,13 +8,13 @@ import 'package:new_gardenifi_app/utils.dart';
 
 class Program {
   int out;
-  String? name;
+  String name = '';
   String days;
-  List<Cycle> cycles;
+  List<Cycle> cycles = [];
 
   Program({
     required this.out,
-    this.name,
+    required this.name,
     required this.days,
     required this.cycles,
   });
@@ -25,10 +25,11 @@ class Program {
     final result = <String, dynamic>{};
 
     result.addAll({'out': out});
-    if (name != null) {
-      result.addAll({'name': name});
-    }
+
+    result.addAll({'name': name});
+
     result.addAll({'days': days});
+
     result.addAll({'cycles': cycles.map((x) => x.toMap()).toList()});
 
     return result;
@@ -40,7 +41,7 @@ class Program {
       out: map['out']?.toInt() ?? 0,
       name: map['name'],
       days: map['days'] ?? '',
-      cycles: List<Cycle>.from(map['cycles']?.map((x) => Cycle.fromMap(x))),
+      cycles: (List<Cycle>.from(map['cycles']?.map((x) => Cycle.fromMap(x)))),
     );
   }
 
@@ -149,5 +150,19 @@ class Program {
         return 'sun';
     }
     return null;
+  }
+
+  Program copyWith({
+    int? out,
+    String? name,
+    String? days,
+    List<Cycle>? cycles,
+  }) {
+    return Program(
+      out: out ?? this.out,
+      name: name ?? this.name,
+      days: days ?? this.days,
+      cycles: cycles ?? this.cycles,
+    );
   }
 }

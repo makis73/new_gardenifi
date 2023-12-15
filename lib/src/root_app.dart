@@ -5,7 +5,7 @@ import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/screens/wifi_connection_screen.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/screens/wifi_setup_screen.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/programs_screen.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/screens/programs_screen.dart';
 
 /// The Widget that configures your application.
 class RootApp extends StatelessWidget {

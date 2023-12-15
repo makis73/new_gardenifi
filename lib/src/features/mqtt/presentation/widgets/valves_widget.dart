@@ -7,7 +7,10 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/screens/create_program_screen.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/tile_title_widget.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
@@ -24,14 +27,21 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
   //! WTF is not update isExpanded !!!!!
   bool isExpanded = false;
 
+  Map openValve(int valve) {
+    return {"out": valve, "cmd": 1};
+  }
+
+  Map closeValve(int valve) {
+    return {"out": valve, "cmd": 0};
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final listOfValves = ref.watch(valvesTopicProvider);
     final status = ref.watch(statusTopicProvider);
     final programs = ref.watch(configTopicProvider);
 
-    log('PORGRAMS:: $programs');
-//
     return Expanded(
       child: RefreshIndicator(
         onRefresh: () {
@@ -48,40 +58,28 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   int valve = int.parse(listOfValves[index]);
                   bool valveIsOn = status['out${index + 1}'] == 1 ? true : false;
 
-                  List<Text> textList = [];
-
+                  // Get cycle times and sort them before appear to UI
+                  List<String>? cycleTimesList = [];
                   for (var program in programs) {
                     if (program.out == valve) {
-                      textList = createSortedTimeTexts(program);
+                      cycleTimesList = createSortedTimeTexts(program);
                     }
                   }
-
-                  Map onStatusMap = {"out": valve, "cmd": 1};
-                  Map offStatusMap = {"out": valve, "cmd": 0};
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ExpansionTile(
-                      title: Row(
-                        children: [
-                          Text(
-                            'Valve ${valve.toString()}'.hardcoded,
-                            style: TextStyles.mediumBold,
-                          ),
-                          gapW20,
-                          if (valveIsOn)
-                            const Icon(
-                              Icons.autorenew,
-                              color: Colors.green,
-                            ),
-                        ],
-                      ),
+                      title: TileTitle(valve: valve, valveIsOn: valveIsOn),
                       subtitle: valveIsOn
                           ? const Text(
                               'Close at...',
                               style: TextStyle(color: Colors.black),
                             )
                           : Column(
-                              children: [...textList],
+                              children: [
+                                // ...cycleTimesList
+                                if (cycleTimesList!.isNotEmpty)
+                                  Text('Next run at ${cycleTimesList[0]}')
+                              ],
                             ),
                       initiallyExpanded: isExpanded,
                       collapsedBackgroundColor: Colors.white,
@@ -102,7 +100,15 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                       MqttQos.atLeastOnce,
                                       jsonEncode(fakeProgram));
                                 },
-                                child: const Text('add')),
+                                child: const Text('Send')),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => CreateProgramScreen(valve: valve,)));
+                                },
+                                child: const Text('Create Program')),
                             Switch(
                               value: valveIsOn,
                               onChanged: (value) =>
@@ -110,8 +116,8 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                         commandTopic,
                                         MqttQos.atLeastOnce,
                                         valveIsOn
-                                            ? json.encode(offStatusMap)
-                                            : json.encode(onStatusMap),
+                                            ? json.encode(closeValve(valve))
+                                            : json.encode(openValve(valve)),
                                       ),
                             )
                           ],
