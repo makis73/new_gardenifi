@@ -10,6 +10,7 @@ import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/cycles_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/showDuratonPicker.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class CreateProgramScreen extends ConsumerStatefulWidget {
@@ -36,9 +37,11 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
     final daysSelected = ref.watch(daysOfProgramProvider);
     final startTime = ref.watch(startTimeOfProgramProvider);
     final cycles = ref.watch(cyclesProvider);
-    // log('days: $daysSelected');
+    // final duration = ref.watch(durationProvider);
+    log('days: $daysSelected');
     // log('startTime: $startTime');
-    // log('cycles: $cycles');
+    log('cycles: $cycles');
+    // log('duration: ${duration.inMinutes}');
 
     return Scaffold(
         body: Column(
@@ -56,73 +59,50 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
         const DaysOfWeekWidget(),
         // TODO: If user has not selected days he would not let choose time
         TextButton(
-            onPressed: daysSelected.isEmpty
-                ? null
-                : () async {
-                    TimeOfDay? time = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                      barrierLabel: "Select start time".hardcoded,
-                      barrierColor: Colors.white,
-                    );
+          onPressed: daysSelected.isEmpty
+              ? null
+              : () async {
+                  TimeOfDay? time = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                    barrierLabel: "Select start time".hardcoded,
+                    barrierColor: Colors.white,
+                  );
 
-                    if (time != null) {
-                      ref.read(startTimeOfProgramProvider.notifier).state =
-                          time.format(context);
-                      cycle = Cycle(startTime: time.format(context));
+                  if (time != null) {
+                    ref.read(startTimeOfProgramProvider.notifier).state =
+                        time.format(context);
+
+                    cycle = Cycle(startTime: time.format(context));
+
+                    ref.read(cyclesProvider.notifier).state = [...cycles, cycle];
+
+                    var duration = await showDurationPickerDialog(context);
+
+                    if (duration != null) {
+                      // ref.read(durationProvider.notifier).state = duration;
+                      cycle.duration = duration.inMinutes.toString();
                       ref.read(cyclesProvider.notifier).state = [...cycles, cycle];
-                      // showDurationPickerDialog();
                     }
-                  },
-            child: const Text('Add an irrigation cycle')),
-        TextButton(
-            onPressed: () async {
-              // showDurationPicker(context: context, initialTime: Duration.zero);
-              var duration = await showDurationPickerDialog();
-              // TODO: pass duration to provider
-              log('duration = $duration');
-            },
-            child: const Text('Add duration')),
+                  }
+                },
+          child: const Text('Add an irrigation cycle'),
+        ),
+        // TextButton(
+        //     onPressed: () async {
+        //       var duration = await showDurationPickerDialog();
+        //       if (duration != null) {
+        //         ref.read(durationProvider.notifier).state = duration;
+        //       }
+        //     },
+        //     child: const Text('Add duration')),
         if (cycles.isNotEmpty) const CyclesWidget(),
       ],
     ));
-  }
-
-  Future<Duration?> showDurationPickerDialog() async {
-    Duration duration = Duration.zero;
-    var res = await showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setState) {
-          return AlertDialog(
-              title: Text(
-                'Select duration'.hardcoded,
-              ),
-              content: DurationPicker(
-                baseUnit: BaseUnit.minute,
-                onChange: (val) {
-                  setState(() => duration = val);
-                },
-                duration: duration,
-                snapToMins: 5.0,
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('Cancel'.hardcoded, style: TextStyles.mediumNormal),
-                  onPressed: () => Navigator.pop(context, false),
-                ),
-                TextButton(
-                  child: Text('Ok'.hardcoded, style: TextStyles.mediumNormal),
-                  onPressed: () => Navigator.pop(context, true),
-                ),
-              ]);
-        });
-      },
-    );
-    return (res) ? duration : null;
   }
 }
 
 final daysOfProgramProvider = StateProvider<List<DaysOfWeek>>((ref) => []);
 final startTimeOfProgramProvider = StateProvider<String>((ref) => '');
 final cyclesProvider = StateProvider<List<Cycle>>(((ref) => []));
+// final durationProvider = StateProvider<Duration>((ref) => Duration.zero);

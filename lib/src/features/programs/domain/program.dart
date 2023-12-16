@@ -68,7 +68,7 @@ class Program {
       if (cycle.duration != '0') {
         var startTime = cycle.startTime;
         var duration = cycle.duration;
-        var endTime = timeConvert(context, startTime, duration);
+        var endTime = getEndTime(context, startTime, duration);
 
         startTimesList.add('$startTime - $endTime\n');
       }
