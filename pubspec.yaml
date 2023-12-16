@@ -10,6 +10,7 @@ environment:
   sdk: '>=3.1.0 <4.0.0'
 
 dependencies:
+  duration_picker: ^1.1.1
   flutter:
     sdk: flutter
   flutter_blue_plus: ^1.28.10

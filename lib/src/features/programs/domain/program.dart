@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-import 'package:new_gardenifi_app/src/features/mqtt/domain/cycle.dart';
+import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class Program {

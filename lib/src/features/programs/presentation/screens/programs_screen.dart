@@ -8,8 +8,8 @@ import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/can_not_connect_to_broker_widget.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/device_disconnected.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/disconnected_from_broker_widget.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/no_valves_widget.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/valves_widget.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/no_valves_widget.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/valves_widget.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 

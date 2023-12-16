@@ -7,10 +7,10 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/domain/program.dart';
+import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/screens/create_program_screen.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/tile_title_widget.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/tile_title_widget.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 

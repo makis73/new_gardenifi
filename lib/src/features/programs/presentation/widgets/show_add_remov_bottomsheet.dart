@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/add_remove_valve_widget.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/add_remove_valve_widget.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class ShowAddRemoveBottomSheet {

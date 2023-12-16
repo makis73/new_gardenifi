@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/screens/create_program_screen.dart';
-import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/days_of_week_widget.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 
 class DayButton extends ConsumerStatefulWidget {
   const DayButton({required this.day, required this.maxWidth, super.key});

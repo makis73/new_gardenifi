@@ -6,12 +6,12 @@ import 'package:new_gardenifi_app/utils.dart';
 class Cycle {
   String startTime;
   String duration;
-  bool isCycleRunning;
+  bool isCycleRunning = false;
 
   Cycle({
     required this.startTime,
-    required this.duration,
-    required this.isCycleRunning,
+    this.duration = '',
+    this.isCycleRunning =  false,
   });
 
   // clone() =>
