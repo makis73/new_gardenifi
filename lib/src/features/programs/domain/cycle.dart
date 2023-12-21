@@ -1,84 +1,40 @@
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:new_gardenifi_app/utils.dart';
-
 class Cycle {
-  String startTime;
-  String duration;
-  bool isCycleRunning = false;
+  String start;
+  String min;
 
   Cycle({
-    required this.startTime,
-    this.duration = '',
-    this.isCycleRunning =  false,
+    required this.start,
+    this.min = '',
   });
 
-  // clone() =>
-  //     Cycle(startTime: startTime, duration: duration, isCycleRunning: isCycleRunning);
+  factory Cycle.fromJson(Map<String, dynamic> data) {
+    final start = data['start'];
+    if (start is! String) {
+      throw FormatException(
+          'Invalid JSON: requird "start" field of type String in $data');
+    }
+    final min = data['min'] as String;
+    return Cycle(start: start, min: min);
+  }
 
-  // Cycle.fromJson(Map<String, dynamic> json)
-  //     : startTime = json['start'],
-  //       duration = json['min'],
-  //       isCycleRunning = json['isCycleRunning'];
-
-  // Map<String, dynamic> toJson() => {
-  //       'start': startTime,
-  //       'min': duration,
-  //       'isCycleRunning': isCycleRunning,
-  //     };
-
-  @override
-  String toString() =>
-      'Cycle(startTime: $startTime, duration: $duration, isCycleRunning: $isCycleRunning)';
+  Map<String, dynamic> toJson() {
+    return {
+      'start': start,
+      'min': min,
+    };
+  }
 
   Cycle copyWith({
     String? startTime,
     String? duration,
-    bool? isCycleRunning,
+    bool? cycleRunning,
   }) {
     return Cycle(
-      startTime: startTime ?? this.startTime,
-      duration: duration ?? this.duration,
-      isCycleRunning: isCycleRunning ?? this.isCycleRunning,
+      start: startTime ?? start,
+      min: duration ?? min,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    final result = <String, dynamic>{};
-    
-
-    result.addAll({'startTime': startTime});
-    result.addAll({'duration': duration});
-    result.addAll({'isCycleRunning': isCycleRunning});
-
-    return result;
-  }
-
-  factory Cycle.fromMap(Map<String, dynamic> map) {
-    // Convert the UTC time to local time
-    var localTime = utcToLocal(map['start']);
-    return Cycle(
-      startTime: localTime,
-      duration: map['min'] ?? '',
-      isCycleRunning: map['isCycleRunning'] ?? false,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Cycle.fromJson(String source) => Cycle.fromMap(json.decode(source));
-
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Cycle &&
-        other.startTime == startTime &&
-        other.duration == duration &&
-        other.isCycleRunning == isCycleRunning;
-  }
-
-  @override
-  int get hashCode => startTime.hashCode ^ duration.hashCode ^ isCycleRunning.hashCode;
+  String toString() => 'Cycle(start: $start, min: $min)';
 }

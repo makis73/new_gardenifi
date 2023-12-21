@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
+import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/showDuratonPicker.dart';
@@ -26,7 +27,10 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
           var cycle = cycles[index];
           return Card(
             child: ListTile(
-              title: Text('Cycle ${(index + 1).toString()}'.hardcoded),
+              title: Text(
+                'Cycle ${(index + 1).toString()}'.hardcoded,
+                style: TextStyles.smallBold,
+              ),
               subtitle: Row(
                 children: [
                   Text('Start: '.hardcoded),
@@ -34,7 +38,8 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                     onPressed: () async {
                       TimeOfDay? time = await showTimePicker(
                         context: context,
-                        initialTime: convertStringToTimeOfDay(context, cycles[index].startTime),
+                        initialTime:
+                            convertStringToTimeOfDay(context, cycles[index].start),
                         barrierLabel: "Select start time".hardcoded,
                         barrierColor: Colors.white,
                       );
@@ -45,7 +50,8 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                         var newCycle = cycle.copyWith(startTime: time.format(context));
                         // cycle = Cycle(startTime: time.format(context));
                         cycles.removeAt(index);
-                        ref.read(cyclesProvider.notifier).state = [...cycles, newCycle];
+                        ref.read(cyclesProvider.notifier).state =
+                            addCycleAndSortList(cycles, newCycle);
                       }
                     },
                     style: FilledButton.styleFrom(
@@ -53,7 +59,7 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                       foregroundColor: Colors.black,
                       padding: EdgeInsets.zero,
                     ),
-                    child: Text(cycles[index].startTime),
+                    child: Text(cycles[index].start),
                   ),
                   gapW32,
                   Text('duration: '.hardcoded),
@@ -75,7 +81,7 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                       foregroundColor: Colors.black,
                       padding: EdgeInsets.zero,
                     ),
-                    child: Text(cycles[index].duration),
+                    child: Text(cycles[index].min),
                   ),
                 ],
               ),

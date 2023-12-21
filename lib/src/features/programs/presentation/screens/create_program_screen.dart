@@ -1,17 +1,22 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
+import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/cycles_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/showDuratonPicker.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
+import 'package:new_gardenifi_app/utils.dart';
 
 class CreateProgramScreen extends ConsumerStatefulWidget {
   const CreateProgramScreen({required this.valve, super.key});
@@ -38,9 +43,9 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
     final startTime = ref.watch(startTimeOfProgramProvider);
     final cycles = ref.watch(cyclesProvider);
     // final duration = ref.watch(durationProvider);
-    log('days: $daysSelected');
+    // log('days: $daysSelected');
     // log('startTime: $startTime');
-    log('cycles: $cycles');
+    // log('cycles: $cycles');
     // log('duration: ${duration.inMinutes}');
 
     return Scaffold(
@@ -73,7 +78,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                     ref.read(startTimeOfProgramProvider.notifier).state =
                         time.format(context);
 
-                    cycle = Cycle(startTime: time.format(context));
+                    cycle = Cycle(start: time.format(context));
 
                     ref.read(cyclesProvider.notifier).state = [...cycles, cycle];
 
@@ -81,25 +86,66 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 
                     if (duration != null) {
                       // ref.read(durationProvider.notifier).state = duration;
-                      cycle.duration = duration.inMinutes.toString();
-                      ref.read(cyclesProvider.notifier).state = [...cycles, cycle];
+                      cycle.min = duration.inMinutes.toString();
+
+                      // var newCycles = [...cycles, cycle];
+                      // newCycles.sort((a, b) => a.startTime.compareTo(b.startTime));
+                      // log('newCycles: $newCycles');
+                      ref.read(cyclesProvider.notifier).state =
+                          addCycleAndSortList(cycles, cycle);
                     }
                   }
                 },
           child: const Text('Add an irrigation cycle'),
         ),
-        // TextButton(
-        //     onPressed: () async {
-        //       var duration = await showDurationPickerDialog();
-        //       if (duration != null) {
-        //         ref.read(durationProvider.notifier).state = duration;
-        //       }
-        //     },
-        //     child: const Text('Add duration')),
         if (cycles.isNotEmpty) const CyclesWidget(),
+        TextButton(
+            onPressed: () {
+              var listOfDays = convertListDaysOfWeekToListString(daysSelected).join(',');
+              var program = Program(
+                out: widget.valve,
+                days: listOfDays,
+                cycles: cycles,
+              );
+              var encodedProgram = program.toJson();
+              var currentSchedule = ref.read(configTopicProvider);
+
+              var index = currentSchedule.indexWhere(
+                (element) => element.out.toString() == widget.valve.toString(),
+              );
+
+              if (index != -1) {
+                currentSchedule[index] = program;
+                log('currentSchedule: ${currentSchedule[index]}');
+                var formatedSchedule = json.encode(currentSchedule);
+                // var replaced = formatedSchedule.replaceAll('"', '\'');
+                log('formatedSchedule: $formatedSchedule');
+              } else {
+                // var jsonProgram = jsonEncode(program);
+                // log('jsonProgram: $jsonProgram');
+
+                var schedule = [];
+                schedule.add(program);
+                var programEncoded = jsonEncode(schedule);
+                log('send: $programEncoded');
+               
+
+                ref.read(mqttControllerProvider.notifier).sendMessage(
+                    configTopic, MqttQos.atLeastOnce, programEncoded);
+              }
+            },
+            child: Text('Save'.hardcoded))
       ],
     ));
   }
+}
+
+List<String> convertListDaysOfWeekToListString(List<DaysOfWeek> listDaysOfWeek) {
+  var listOfDaysString = listDaysOfWeek.map((e) {
+    var nameOfDay = e.name;
+    return nameOfDay.toDecapitalized();
+  }).toList();
+  return listOfDaysString;
 }
 
 final daysOfProgramProvider = StateProvider<List<DaysOfWeek>>((ref) => []);

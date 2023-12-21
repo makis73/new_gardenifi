@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,8 +23,7 @@ Future<bool?> checkInitializationStatus() async {
 }
 
 TimeOfDay convertStringToTimeOfDay(BuildContext context, String startTime) {
-  DateTime dateTime =
-      DateFormat.Hm().parse(startTime);
+  DateTime dateTime = DateFormat.Hm().parse(startTime);
   TimeOfDay timeOfDay = TimeOfDay.fromDateTime(dateTime);
   return timeOfDay;
 }
@@ -59,29 +59,70 @@ void refreshMainScreen(WidgetRef ref) {
   ref.invalidate(cantConnectProvider);
   ref.invalidate(disconnectedProvider);
   ref.invalidate(mqttControllerProvider);
+  ref.invalidate(configTopicProvider);
+  ref.invalidate(statusTopicProvider);
+  ref.invalidate(valvesTopicProvider);
   ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
 }
 
 List<String> createSortedTimeTexts(Program program) {
   if (program.cycles.isNotEmpty) {
-    List<String> sortedTimeList = program.cycles.map((e) => e.startTime).toList();
+    List<String> sortedTimeList = program.cycles.map((e) => e.start).toList();
     sortedTimeList.sort((a, b) => a.compareTo(b));
     return sortedTimeList;
   }
   return [];
 }
+//TODO: Delete this 
+// var fakeProgram = [
+//   {
+//     "out": 1,
+//     "name": "home",
+//     "days": "thu",
+//     "cycles": [
+//       {"start": "13:10", "min": "5", "isCycleRunning": false},
+//       {"start": "10:00", "min": "10", "isCycleRunning": false},
+//       {"start": "08:00", "min": "8", "isCycleRunning": false},
+//       {"start": "06:15", "min": "6", "isCycleRunning": false}
+//     ]
+//   },
+//   {"out": 2, "name": "", "days": "fri", "cycles": []}
+// ];
 
-var fakeProgram = [
-  {
-    "out": 1,
-    "name": "home",
-    "days": "thu",
-    "cycles": [
-      {"start": "13:10", "min": "5", "isCycleRunning": false},
-      {"start": "10:00", "min": "10", "isCycleRunning": false},
-      {"start": "08:00", "min": "8", "isCycleRunning": false},
-      {"start": "06:15", "min": "6", "isCycleRunning": false}
-    ]
-  },
-  {"out": 2, "name": "", "days": "fri", "cycles": []}
-];
+List<Cycle> addCycleAndSortList(List<Cycle> cycles, Cycle cycle) {
+  var newCycles = [...cycles, cycle];
+  newCycles.sort(((a, b) => a.start.compareTo(b.start)));
+  return newCycles;
+}
+
+extension StringCasingExtension on String {
+  String toDecapitalized() => length > 0 ? '${this[0].toLowerCase()}${substring(1)}' : '';
+}
+
+// TODO: Do i need this ????
+String startTimesToString(BuildContext context, List<Cycle> cycles) {
+  List<String> startTimesList = [];
+
+  for (var cycle in cycles) {
+    if (cycle.min != '0') {
+      var startTime = cycle.start;
+      var duration = cycle.min;
+      var endTime = getEndTime(context, startTime, duration);
+
+      startTimesList.add('$startTime - $endTime\n');
+    }
+  }
+  // short the list of times
+  startTimesList.sort((a, b) {
+    return a.compareTo(b);
+  });
+
+  return startTimesList.join();
+}
+
+// Formating string of day to 2 chars string
+String shorteningDays(BuildContext context, String? days) {
+  var listOfDays = days!.split(',');
+  var shortDaysList = listOfDays.map((e) => e.substring(0, 3));
+  return shortDaysList.join(', ');
+}

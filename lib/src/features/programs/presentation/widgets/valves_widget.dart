@@ -4,17 +4,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
-import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
-import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/tile_title_widget.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
-
-// {'valves': ['1', '2', '3', '4'], 'out1': 0, 'out2': 0, 'out3': 0, 'out4': 1, 'server_time': '2023/12/08 21:51:14', 'tz': 'UTC', 'hw_id': '100000005fd258b6'}
 
 class ValvesWidget extends ConsumerStatefulWidget {
   const ValvesWidget({super.key});
@@ -34,7 +29,6 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
   Map closeValve(int valve) {
     return {"out": valve, "cmd": 0};
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -95,18 +89,12 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                           children: [
                             TextButton(
                                 onPressed: () {
-                                  ref.read(mqttControllerProvider.notifier).sendMessage(
-                                      configTopic,
-                                      MqttQos.atLeastOnce,
-                                      jsonEncode(fakeProgram));
-                                },
-                                child: const Text('Send')),
-                            TextButton(
-                                onPressed: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => CreateProgramScreen(valve: valve,)));
+                                          builder: (context) => CreateProgramScreen(
+                                                valve: valve,
+                                              )));
                                 },
                                 child: const Text('Create Program')),
                             Switch(

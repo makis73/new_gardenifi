@@ -64,6 +64,8 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
     final commandTopicMessage = ref.watch(commandTopicProvider);
     final configTopicMessage = ref.watch(configTopicProvider);
 
+    // log('Program from broker: $configTopicMessage');
+
     final bool cantConnectToBroker = ref.watch(cantConnectProvider);
     final bool disconnectedFromBroker = ref.watch(disconnectedProvider);
 

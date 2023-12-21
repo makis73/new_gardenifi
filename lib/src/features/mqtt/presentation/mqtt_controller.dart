@@ -18,7 +18,6 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
   MqttServerClient? client;
   final Ref ref;
   late String hwId;
-  // late Timer timer;
 
   Future<void> setupAndConnectClient() async {
     final mqttRepository = ref.read(repositoryProvider);
@@ -43,7 +42,6 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       ref.read(cantConnectProvider.notifier).state = true;
       // Stop loading
       state = const AsyncData(null);
-      // disconnectFromBroker();
     }
 
     subscribeToTopics();
@@ -73,7 +71,9 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
     mqttRepository.subscribeToTopic(client!, system);
 
     client!.updates!.listen((event) {
+      // Stop loading state
       state = const AsyncData(null);
+      // Get the message from the broker (from any topic)
       final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
       final topic = event[0].topic;
 
@@ -96,6 +96,7 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
         final Map<String, dynamic> mes = jsonDecode(replacedString);
         ref.read(statusTopicProvider.notifier).state = mes;
       }
+
       if (topic == command) {
         final String tempMessage =
             MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
@@ -108,15 +109,13 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       if (topic == config) {
         final String tempMessage =
             MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-        final String replacedString = tempMessage.replaceAll('\'', '"');
-
-        List<Program> scheduleUtcFromBroker =
-            (json.decode(replacedString) as List).map((e) {
-          Program program = Program.fromMap(e);
-          // log('MqttController:: ${program.toString()}');
+        // Convert received message to List<Program>
+        List<Program> scheduleUtcFromBroker = (json.decode(tempMessage) as List).map((e) {
+          Program program = Program.fromJson(e);
+          log('scheduleUtcFromBroker: $program');
           return program;
         }).toList();
-
+        // update the provider who holds the programs
         ref.read(configTopicProvider.notifier).state = scheduleUtcFromBroker;
       }
     });
