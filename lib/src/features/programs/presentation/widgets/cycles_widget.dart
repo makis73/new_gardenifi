@@ -45,7 +45,8 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                       );
 
                       if (time != null) {
-                        var newCycle = cycle.copyWith(startTime: time.format(context));
+                        var newCycle =
+                            cycle.copyWith(startTime: time.format(context));
                         // cycle = Cycle(startTime: time.format(context));
                         cycles.removeAt(index);
                         ref.read(cyclesOfProgramProvider.notifier).state =
@@ -57,7 +58,7 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                       foregroundColor: Colors.black,
                       padding: EdgeInsets.zero,
                     ),
-                    child: Text(cycles[index].start),
+                    child: Text(utcToLocal(cycles[index].start)),
                   ),
                   gapW32,
                   Text('duration: '.hardcoded),

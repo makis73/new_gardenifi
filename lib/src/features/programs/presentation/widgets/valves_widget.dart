@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:new_gardenifi_app/src/common_widgets/snackbar.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
@@ -56,6 +57,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   List<String>? cycleTimesList = [];
                   for (var program in programs) {
                     if (program.out == valve) {
+                      // TODO: Do i need it? it returns a sorted string with start times
                       cycleTimesList = createSortedTimeTexts(program);
                     }
                   }
@@ -94,7 +96,18 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                       MaterialPageRoute(
                                           builder: (context) => CreateProgramScreen(
                                                 valve: valve,
-                                              )));
+                                              ))).then((value) {
+                                    if (value) {
+                                      showSnackbar(context, 'Program send to broker.',
+                                          Icons.done, Colors.greenAccent);
+                                    } else {
+                                      showSnackbar(
+                                          context,
+                                          'Could not send program to broker. Try again',
+                                          Icons.clear,
+                                          Colors.red[800]);
+                                    }
+                                  });
                                 },
                                 child: cycleTimesList!.isEmpty
                                     ? const Text('Create Program')

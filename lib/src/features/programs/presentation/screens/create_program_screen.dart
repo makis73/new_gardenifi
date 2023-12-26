@@ -12,6 +12,7 @@ import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/cycles_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/showDuratonPicker.dart';
@@ -99,6 +100,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 
                   if (time != null) {
                     // Create a new cycle with selected start time
+                   
                     cycle = Cycle(start: time.format(context));
                     // Update the provider who keeps the state of cycle
                     ref.read(cyclesOfProgramProvider.notifier).state = [
@@ -130,24 +132,18 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
               );
 
               var index = currentSchedule.indexWhere(
-                (element) => element.out.toString() == widget.valve.toString(),
+                (program) => program.out == widget.valve,
               );
 
+              // If already exist a program for this valve, replace it with the new created, else add this to the schedule(List<Program)
               if (index != -1) {
                 currentSchedule[index] = program;
-                var scheduleEncoded = json.encode(currentSchedule);
-                ref
-                    .read(mqttControllerProvider.notifier)
-                    .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded);
-                Navigator.pop(context);
+                var res = ref.read(programProvider).sendSchedule(currentSchedule);
+                Navigator.pop(context, res);
               } else {
-                var schedule = [];
-                schedule.add(program);
-                var scheduleEncoded = jsonEncode(schedule);
-                ref
-                    .read(mqttControllerProvider.notifier)
-                    .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded);
-                Navigator.pop(context);
+                currentSchedule.add(program);
+                var res = ref.read(programProvider).sendSchedule(currentSchedule);
+                Navigator.pop(context, res);
               }
             },
             child: Text('Save'.hardcoded)),
