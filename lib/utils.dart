@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<bool?> checkInitializationStatus() async {
@@ -73,7 +74,7 @@ List<String> createSortedTimeTexts(Program program) {
   }
   return [];
 }
-//TODO: Delete this 
+//TODO: Delete this
 // var fakeProgram = [
 //   {
 //     "out": 1,
@@ -125,4 +126,28 @@ String shorteningDays(BuildContext context, String? days) {
   var listOfDays = days!.split(',');
   var shortDaysList = listOfDays.map((e) => e.substring(0, 3));
   return shortDaysList.join(', ');
+}
+
+List<DaysOfWeek> stringToDaysOfWeek(String days) {
+  List<DaysOfWeek> listOfDaysOfWeek = [];
+  List<String> listOfStringDays = days.split(',');
+  for (var day in listOfStringDays) {
+    switch (day) {
+      case 'mon':
+        listOfDaysOfWeek.add(DaysOfWeek.Mon);
+      case 'tue':
+        listOfDaysOfWeek.add(DaysOfWeek.Tue);
+      case 'wed':
+        listOfDaysOfWeek.add(DaysOfWeek.Wed);
+      case 'thu':
+        listOfDaysOfWeek.add(DaysOfWeek.Thu);
+      case 'fri':
+        listOfDaysOfWeek.add(DaysOfWeek.Fri);
+      case 'sat':
+        listOfDaysOfWeek.add(DaysOfWeek.Sat);
+      case 'sun':
+        listOfDaysOfWeek.add(DaysOfWeek.Sun);
+    }
+  }
+  return listOfDaysOfWeek;
 }

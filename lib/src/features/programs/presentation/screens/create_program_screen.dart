@@ -29,24 +29,47 @@ class CreateProgramScreen extends ConsumerStatefulWidget {
 }
 
 class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen> {
-  late Program newProgram;
-
   late Cycle cycle;
-  final Duration _duration = Duration.zero;
+
+  // Get the cyclces if they exist from the program for this valve
+  List<Cycle> getCycles(List<Program> schedule) {
+    try {
+      return schedule.firstWhere((program) => program.out == widget.valve).cycles;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Get the days if they exist from the program for this valve
+  List<DaysOfWeek> getDays(List<Program> schedule) {
+    try {
+      String days = schedule.firstWhere((program) => program.out == widget.valve).days;
+      return stringToDaysOfWeek(days);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var currentSchedule = ref.read(configTopicProvider);
+      ref.read(daysOfProgramProvider.notifier).state = getDays(currentSchedule);
+      ref.read(cyclesOfProgramProvider.notifier).state = getCycles(currentSchedule);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final radius = screenHeight / 4;
 
+    var currentSchedule = ref.watch(configTopicProvider);
+    var cyclesOfCurrentProgram = ref.watch(cyclesOfProgramProvider);
+    var daysOfCurrentProgram = ref.watch(daysOfProgramProvider);
+
     final daysSelected = ref.watch(daysOfProgramProvider);
-    final startTime = ref.watch(startTimeOfProgramProvider);
-    final cycles = ref.watch(cyclesProvider);
-    // final duration = ref.watch(durationProvider);
-    // log('days: $daysSelected');
-    // log('startTime: $startTime');
-    // log('cycles: $cycles');
-    // log('duration: ${duration.inMinutes}');
 
     return Scaffold(
         body: Column(
@@ -58,13 +81,13 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
             showInitializeMenu: true,
             showLogo: true),
         Center(
-          child: Text('Program for valve ${widget.valve}'),
+          child: Text('Program for valve ${widget.valve}'.hardcoded),
         ),
         Text('Select the days you want to irrigate'.hardcoded),
         const DaysOfWeekWidget(),
         // TODO: If user has not selected days he would not let choose time
         TextButton(
-          onPressed: daysSelected.isEmpty
+          onPressed: (daysOfCurrentProgram.isEmpty)
               ? null
               : () async {
                   TimeOfDay? time = await showTimePicker(
@@ -75,40 +98,36 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                   );
 
                   if (time != null) {
-                    ref.read(startTimeOfProgramProvider.notifier).state =
-                        time.format(context);
-
+                    // Create a new cycle with selected start time
                     cycle = Cycle(start: time.format(context));
-
-                    ref.read(cyclesProvider.notifier).state = [...cycles, cycle];
-
+                    // Update the provider who keeps the state of cycle
+                    ref.read(cyclesOfProgramProvider.notifier).state = [
+                      ...cyclesOfCurrentProgram,
+                      cycle
+                    ];
+                    // Select the duration for that cycle
                     var duration = await showDurationPickerDialog(context);
 
                     if (duration != null) {
-                      // ref.read(durationProvider.notifier).state = duration;
+                      // Add the selected duration to the previous new created cycle
                       cycle.min = duration.inMinutes.toString();
-
-                      // var newCycles = [...cycles, cycle];
-                      // newCycles.sort((a, b) => a.startTime.compareTo(b.startTime));
-                      // log('newCycles: $newCycles');
-                      ref.read(cyclesProvider.notifier).state =
-                          addCycleAndSortList(cycles, cycle);
+                      // Update the provider
+                      ref.read(cyclesOfProgramProvider.notifier).state =
+                          addCycleAndSortList(cyclesOfCurrentProgram, cycle);
                     }
                   }
                 },
           child: const Text('Add an irrigation cycle'),
         ),
-        if (cycles.isNotEmpty) const CyclesWidget(),
+        if (cyclesOfCurrentProgram.isNotEmpty) const CyclesWidget(),
         TextButton(
             onPressed: () {
               var listOfDays = convertListDaysOfWeekToListString(daysSelected).join(',');
               var program = Program(
                 out: widget.valve,
                 days: listOfDays,
-                cycles: cycles,
+                cycles: cyclesOfCurrentProgram,
               );
-              var encodedProgram = program.toJson();
-              var currentSchedule = ref.read(configTopicProvider);
 
               var index = currentSchedule.indexWhere(
                 (element) => element.out.toString() == widget.valve.toString(),
@@ -116,25 +135,33 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 
               if (index != -1) {
                 currentSchedule[index] = program;
-                log('currentSchedule: ${currentSchedule[index]}');
-                var formatedSchedule = json.encode(currentSchedule);
-                // var replaced = formatedSchedule.replaceAll('"', '\'');
-                log('formatedSchedule: $formatedSchedule');
+                var scheduleEncoded = json.encode(currentSchedule);
+                ref
+                    .read(mqttControllerProvider.notifier)
+                    .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded);
+                Navigator.pop(context);
               } else {
-                // var jsonProgram = jsonEncode(program);
-                // log('jsonProgram: $jsonProgram');
-
                 var schedule = [];
                 schedule.add(program);
-                var programEncoded = jsonEncode(schedule);
-                log('send: $programEncoded');
-               
-
-                ref.read(mqttControllerProvider.notifier).sendMessage(
-                    configTopic, MqttQos.atLeastOnce, programEncoded);
+                var scheduleEncoded = jsonEncode(schedule);
+                ref
+                    .read(mqttControllerProvider.notifier)
+                    .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded);
+                Navigator.pop(context);
               }
             },
-            child: Text('Save'.hardcoded))
+            child: Text('Save'.hardcoded)),
+        TextButton(
+          child: Text('Delete'.hardcoded),
+          onPressed: () {
+            ref.read(daysOfProgramProvider.notifier).state = [];
+            ref.read(cyclesOfProgramProvider.notifier).state = [];
+
+            ref
+                .read(mqttControllerProvider.notifier)
+                .sendMessage(configTopic, MqttQos.atLeastOnce, jsonEncode([]));
+          },
+        )
       ],
     ));
   }
@@ -148,7 +175,6 @@ List<String> convertListDaysOfWeekToListString(List<DaysOfWeek> listDaysOfWeek) 
   return listOfDaysString;
 }
 
-final daysOfProgramProvider = StateProvider<List<DaysOfWeek>>((ref) => []);
-final startTimeOfProgramProvider = StateProvider<String>((ref) => '');
-final cyclesProvider = StateProvider<List<Cycle>>(((ref) => []));
-// final durationProvider = StateProvider<Duration>((ref) => Duration.zero);
+final daysOfProgramProvider = StateProvider.autoDispose<List<DaysOfWeek>>((ref) => []);
+final startTimeOfProgramProvider = StateProvider.autoDispose<String>((ref) => '');
+final cyclesOfProgramProvider = StateProvider.autoDispose<List<Cycle>>(((ref) => []));

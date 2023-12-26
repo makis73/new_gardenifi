@@ -96,7 +96,9 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                                 valve: valve,
                                               )));
                                 },
-                                child: const Text('Create Program')),
+                                child: cycleTimesList!.isEmpty
+                                    ? const Text('Create Program')
+                                    : const Text('Edit program')),
                             Switch(
                               value: valveIsOn,
                               onChanged: (value) =>

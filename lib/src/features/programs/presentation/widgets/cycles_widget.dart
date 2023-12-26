@@ -18,7 +18,7 @@ class CyclesWidget extends ConsumerStatefulWidget {
 class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
   @override
   Widget build(BuildContext context) {
-    List<Cycle> cycles = ref.watch(cyclesProvider);
+    List<Cycle> cycles = ref.watch(cyclesOfProgramProvider);
     return Expanded(
       child: ListView.builder(
         itemCount: cycles.length,
@@ -45,12 +45,10 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                       );
 
                       if (time != null) {
-                        ref.read(startTimeOfProgramProvider.notifier).state =
-                            time.format(context);
                         var newCycle = cycle.copyWith(startTime: time.format(context));
                         // cycle = Cycle(startTime: time.format(context));
                         cycles.removeAt(index);
-                        ref.read(cyclesProvider.notifier).state =
+                        ref.read(cyclesOfProgramProvider.notifier).state =
                             addCycleAndSortList(cycles, newCycle);
                       }
                     },
@@ -73,7 +71,10 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                             cycle.copyWith(duration: duration.inMinutes.toString());
 
                         cycles.removeAt(index);
-                        ref.read(cyclesProvider.notifier).state = [...cycles, newCycle];
+                        ref.read(cyclesOfProgramProvider.notifier).state = [
+                          ...cycles,
+                          newCycle
+                        ];
                       }
                     },
                     style: FilledButton.styleFrom(
