@@ -4,7 +4,7 @@ import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 Future<Duration?> showDurationPickerDialog(BuildContext context) async {
-    Duration duration = Duration.zero;
+    Duration duration = Duration(minutes: 1);
     var res = await showDialog(
       context: context,
       builder: (context) {

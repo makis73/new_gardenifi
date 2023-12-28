@@ -58,7 +58,7 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                       foregroundColor: Colors.black,
                       padding: EdgeInsets.zero,
                     ),
-                    child: Text(utcToLocal(cycles[index].start)),
+                    child: Text(cycles[index].start),
                   ),
                   gapW32,
                   Text('duration: '.hardcoded),

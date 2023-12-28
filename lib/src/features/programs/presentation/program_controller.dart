@@ -30,6 +30,15 @@ class ProgramController {
       return false;
     }
   }
+
+  List<Program> convertScheduleToLocalTZ(List<Program> schedule) {
+    for (var program in schedule) {
+      for (var cycle in program.cycles) {
+        cycle.start = utcToLocal(cycle.start);
+      }
+    }
+    return schedule;
+  }
 }
 
 final programProvider = Provider<ProgramController>((ref) {

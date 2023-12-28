@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
@@ -112,9 +113,13 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
         // Convert received message to List<Program>
         List<Program> scheduleUtcFromBroker = (json.decode(tempMessage) as List).map((e) {
           Program program = Program.fromJson(e);
-          log('scheduleUtcFromBroker: $program');
           return program;
         }).toList();
+        log('MqttController:: Schedule from broker: $scheduleUtcFromBroker');
+
+        var localizedSchedule = ref.read(programProvider).convertScheduleToLocalTZ(scheduleUtcFromBroker);
+        log('MqttController:: Localized Schedule from broker: $localizedSchedule');
+
         // update the provider who holds the programs
         ref.read(configTopicProvider.notifier).state = scheduleUtcFromBroker;
       }

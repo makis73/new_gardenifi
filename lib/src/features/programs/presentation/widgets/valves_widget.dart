@@ -35,7 +35,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
   Widget build(BuildContext context) {
     final listOfValves = ref.watch(valvesTopicProvider);
     final status = ref.watch(statusTopicProvider);
-    final programs = ref.watch(configTopicProvider);
+    final schedule = ref.watch(configTopicProvider);
 
     return Expanded(
       child: RefreshIndicator(
@@ -55,9 +55,9 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
 
                   // Get cycle times and sort them before appear to UI
                   List<String>? cycleTimesList = [];
-                  for (var program in programs) {
+                  for (var program in schedule) {
                     if (program.out == valve) {
-                      // TODO: Do i need it? it returns a sorted string with start times
+                     // TODO: Do i need it? it returns a sorted string with start times
                       cycleTimesList = createSortedTimeTexts(program);
                     }
                   }
@@ -97,10 +97,10 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                           builder: (context) => CreateProgramScreen(
                                                 valve: valve,
                                               ))).then((value) {
-                                    if (value) {
+                                    if (value != null && value == true) {
                                       showSnackbar(context, 'Program send to broker.',
                                           Icons.done, Colors.greenAccent);
-                                    } else {
+                                    } else if (value != null && value == false) {
                                       showSnackbar(
                                           context,
                                           'Could not send program to broker. Try again',

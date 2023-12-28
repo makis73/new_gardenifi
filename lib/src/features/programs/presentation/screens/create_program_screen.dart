@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
+import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
@@ -64,17 +65,17 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final radius = screenHeight / 4;
+    final radius = screenHeight / 6;
 
-    var currentSchedule = ref.watch(configTopicProvider);
-    var cyclesOfCurrentProgram = ref.watch(cyclesOfProgramProvider);
-    var daysOfCurrentProgram = ref.watch(daysOfProgramProvider);
-
+    final currentSchedule = ref.watch(configTopicProvider);
+    final cyclesOfCurrentProgram = ref.watch(cyclesOfProgramProvider);
+    final daysOfCurrentProgram = ref.watch(daysOfProgramProvider);
     final daysSelected = ref.watch(daysOfProgramProvider);
 
     return Scaffold(
         body: Column(
-      children: [
+          mainAxisSize: MainAxisSize.min,
+              children: [
         BluetoothScreenUpper(
             radius: radius,
             showMenuButton: true,
@@ -82,12 +83,23 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
             showInitializeMenu: true,
             showLogo: true),
         Center(
-          child: Text('Program for valve ${widget.valve}'.hardcoded),
+          child: Text(
+            'Edit/Create program'.hardcoded,
+            style: TextStyles.mediumBold,
+          ),
         ),
+        Center(
+          child: Text(
+            'Valve ${widget.valve}'.hardcoded,
+            style: TextStyles.mediumBold.copyWith(color: Colors.green),
+          ),
+        ),
+        const Divider(indent: 50, endIndent: 50),
         Text('Select the days you want to irrigate'.hardcoded),
         const DaysOfWeekWidget(),
+        const Divider(indent: 50, endIndent: 50),
         // TODO: If user has not selected days he would not let choose time
-        TextButton(
+        TextButton.icon(
           onPressed: (daysOfCurrentProgram.isEmpty)
               ? null
               : () async {
@@ -97,10 +109,8 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                     barrierLabel: "Select start time".hardcoded,
                     barrierColor: Colors.white,
                   );
-
                   if (time != null) {
                     // Create a new cycle with selected start time
-                   
                     cycle = Cycle(start: time.format(context));
                     // Update the provider who keeps the state of cycle
                     ref.read(cyclesOfProgramProvider.notifier).state = [
@@ -109,7 +119,6 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                     ];
                     // Select the duration for that cycle
                     var duration = await showDurationPickerDialog(context);
-
                     if (duration != null) {
                       // Add the selected duration to the previous new created cycle
                       cycle.min = duration.inMinutes.toString();
@@ -119,9 +128,12 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                     }
                   }
                 },
-          child: const Text('Add an irrigation cycle'),
+          label: Text('Add an irrigation cycle'.hardcoded),
+          icon: Icon(Icons.add_circle_outline),
         ),
+        // ! Widget overflow on landscape !
         if (cyclesOfCurrentProgram.isNotEmpty) const CyclesWidget(),
+        // TODO: Save button must be disabled if no program is created
         TextButton(
             onPressed: () {
               var listOfDays = convertListDaysOfWeekToListString(daysSelected).join(',');
@@ -130,11 +142,10 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                 days: listOfDays,
                 cycles: cyclesOfCurrentProgram,
               );
-
+        
               var index = currentSchedule.indexWhere(
                 (program) => program.out == widget.valve,
               );
-
               // If already exist a program for this valve, replace it with the new created, else add this to the schedule(List<Program)
               if (index != -1) {
                 currentSchedule[index] = program;
@@ -146,20 +157,22 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                 Navigator.pop(context, res);
               }
             },
-            child: Text('Save'.hardcoded)),
+            child: Text('Save program'.hardcoded)),
+        
         TextButton(
-          child: Text('Delete'.hardcoded),
+          child: Text('Delete program'.hardcoded, style: TextStyles.xSmallNormal.copyWith(color: Colors.red[800]),),
           onPressed: () {
+            // TODO: Move the delete logic to program controller and delete only the program for the specified valve
             ref.read(daysOfProgramProvider.notifier).state = [];
             ref.read(cyclesOfProgramProvider.notifier).state = [];
-
+        
             ref
                 .read(mqttControllerProvider.notifier)
                 .sendMessage(configTopic, MqttQos.atLeastOnce, jsonEncode([]));
           },
         )
-      ],
-    ));
+              ],
+            ));
   }
 }
 
