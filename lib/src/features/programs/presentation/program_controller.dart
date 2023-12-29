@@ -15,7 +15,7 @@ class ProgramController {
   ProgramController(this.ref);
   final Ref ref;
 
-  bool sendSchedule(List<Program> schedule) {
+  int sendSchedule(List<Program> schedule) {
     for (Program program in schedule) {
       for (var cycle in program.cycles) {
         log('start: ${cycle.start}');
@@ -29,23 +29,21 @@ class ProgramController {
       ref
           .read(mqttControllerProvider.notifier)
           .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded);
-      return true;
+      return 1;
     } catch (e) {
       log('PROGRAM_CONTROLLER:: Error while sending schedule to broker (error: ${e.toString()})');
-      return false;
+      return -1;
     }
   }
 
-  // TODO: Implement this
-  deleteProgram(int valve) {
+  int deleteProgram(int valve) {
     var schedule = ref.read(configTopicProvider);
-
     var index = schedule.indexWhere(
       (program) => program.out == valve,
     );
     schedule.removeAt(index);
-    log('ProgramController:: newschedule: $schedule');
     sendSchedule(schedule);
+    return 2;
   }
 
   void convertScheduleToLocalTZ(List<Program> schedule) {

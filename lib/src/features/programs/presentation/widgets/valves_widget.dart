@@ -104,15 +104,18 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                           builder: (context) => CreateProgramScreen(
                                                 valve: valve,
                                               ))).then((value) {
-                                    if (value != null && value == true) {
+                                    if (value != null && value == 1) {
                                       showSnackbar(context, 'Program send to broker.',
                                           Icons.done, Colors.greenAccent);
-                                    } else if (value != null && value == false) {
+                                    } else if (value != null && value == -1) {
                                       showSnackbar(
                                           context,
                                           'Could not send program to broker. Try again',
                                           Icons.clear,
                                           Colors.red[800]);
+                                    } else if (value != null && value == 2) {
+                                      showSnackbar(context, 'Program deleted', Icons.done,
+                                          Colors.greenAccent);
                                     }
                                   });
                                 },

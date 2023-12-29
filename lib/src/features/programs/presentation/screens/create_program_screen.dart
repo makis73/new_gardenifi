@@ -51,6 +51,13 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
     super.initState();
   }
 
+  bool hasProgram() {
+    var index = ref
+        .read(configTopicProvider)
+        .indexWhere((program) => program.out == widget.valve);
+    return (index != -1) ? true : false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -60,6 +67,8 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
     final cyclesOfCurrentProgram = ref.watch(cyclesOfProgramProvider);
     final daysOfCurrentProgram = ref.watch(daysOfProgramProvider);
     final daysSelected = ref.watch(daysOfProgramProvider);
+
+    final hasChanged = ref.watch(hasProgramChangedProvider);
 
     return Scaffold(
         body: Column(
@@ -96,6 +105,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                     initialTime: TimeOfDay.now(),
                     barrierLabel: "Select start time".hardcoded,
                     barrierColor: Colors.white,
+                    barrierDismissible: false,
                   );
                   if (time != null) {
                     // Create a new cycle with selected start time
@@ -108,6 +118,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                     // Select the duration for that cycle
                     var duration = await showDurationPickerDialog(context);
                     if (duration != null) {
+                      ref.read(hasProgramChangedProvider.notifier).state = true;
                       // Add the selected duration to the previous new created cycle
                       cycle.min = duration.inMinutes.toString();
                       // Update the provider
@@ -121,49 +132,49 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
         ),
         // ! Widget overflow on landscape !
         if (cyclesOfCurrentProgram.isNotEmpty) const CyclesWidget(),
-        // TODO: Save button must be disabled if no program is created
-        TextButton(
-            onPressed: () {
-              var listOfDays = convertListDaysOfWeekToListString(daysSelected).join(',');
-              var program = Program(
-                out: widget.valve,
-                days: listOfDays,
-                cycles: cyclesOfCurrentProgram,
-              );
-              // Check if there is already a program for this valve and return 1 or -1
-              var index = currentSchedule.indexWhere(
-                (program) => program.out == widget.valve,
-              );
-              // If already exist a program for this valve, replace it with the new created, else add this to the schedule(List<Program)
-              if (index != -1) {
-                currentSchedule[index] = program;
-              } else {
-                currentSchedule.add(program);
+        if (hasChanged)
+          TextButton(
+              onPressed: () {
+                var listOfDays =
+                    convertListDaysOfWeekToListString(daysSelected).join(',');
+                var program = Program(
+                  out: widget.valve,
+                  days: listOfDays,
+                  cycles: cyclesOfCurrentProgram,
+                );
+                // Check if there is already a program for this valve and return 1 or -1
+                var index = currentSchedule.indexWhere(
+                  (program) => program.out == widget.valve,
+                );
+                // If already exist a program for this valve, replace it with the new created, else add this to the schedule(List<Program)
+                if (index != -1) {
+                  currentSchedule[index] = program;
+                } else {
+                  currentSchedule.add(program);
+                }
+                var res = ref.read(programProvider).sendSchedule(currentSchedule);
+                Navigator.pop(context, res);
+              },
+              child: Text('Save program'.hardcoded)),
+        if (hasProgram())
+          TextButton(
+            child: Text(
+              'Delete program'.hardcoded,
+              style: TextStyles.xSmallNormal.copyWith(color: Colors.red[800]),
+            ),
+            onPressed: () async {
+              var delete = await showAlertDialog(
+                  context: context,
+                  title: 'Program Deletion'.hardcoded,
+                  defaultActionText: 'Yes'.hardcoded,
+                  cancelActionText: 'Cancel'.hardcoded,
+                  content: 'Are you sure you want to delete this program?'.hardcoded);
+              if (delete == true) {
+                var res = ref.read(programProvider).deleteProgram(widget.valve);
+                Navigator.pop(context, res);
               }
-              var res = ref.read(programProvider).sendSchedule(currentSchedule);
-              Navigator.pop(context, res);
             },
-            child: Text('Save program'.hardcoded)),
-
-        TextButton(
-          child: Text(
-            'Delete program'.hardcoded,
-            style: TextStyles.xSmallNormal.copyWith(color: Colors.red[800]),
-          ),
-          onPressed: () async {
-            var res = await showAlertDialog(
-                context: context,
-                title: 'Program Deletion'.hardcoded,
-                defaultActionText: 'Yes'.hardcoded,
-                cancelActionText: 'Cancel'.hardcoded,
-                content: 'Are you sure you want to delete this program?'.hardcoded);
-            if (res == true) {
-              ref.read(programProvider).deleteProgram(widget.valve);
-            Navigator.pop(context);
-            }
-            
-          },
-        )
+          )
       ],
     ));
   }
@@ -174,3 +185,4 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 final daysOfProgramProvider = StateProvider.autoDispose<List<DaysOfWeek>>((ref) => []);
 final startTimeOfProgramProvider = StateProvider.autoDispose<String>((ref) => '');
 final cyclesOfProgramProvider = StateProvider.autoDispose<List<Cycle>>(((ref) => []));
+final hasProgramChangedProvider = StateProvider.autoDispose<bool>((ref) => false);

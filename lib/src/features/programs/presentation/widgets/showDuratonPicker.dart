@@ -7,6 +7,7 @@ Future<Duration?> showDurationPickerDialog(BuildContext context) async {
     Duration duration = Duration(minutes: 1);
     var res = await showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(

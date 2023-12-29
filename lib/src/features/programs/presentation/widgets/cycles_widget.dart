@@ -19,6 +19,7 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
   @override
   Widget build(BuildContext context) {
     List<Cycle> cycles = ref.watch(cyclesOfProgramProvider);
+    bool hasChanged = ref.watch(hasProgramChangedProvider);
     return Expanded(
       child: ListView.builder(
         itemCount: cycles.length,
@@ -42,15 +43,15 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                             convertStringToTimeOfDay(context, cycles[index].start),
                         barrierLabel: "Select start time".hardcoded,
                         barrierColor: Colors.white,
+                        barrierDismissible: false,
                       );
 
                       if (time != null) {
-                        var newCycle =
-                            cycle.copyWith(startTime: time.format(context));
-                        // cycle = Cycle(startTime: time.format(context));
+                        var newCycle = cycle.copyWith(startTime: time.format(context));
                         cycles.removeAt(index);
                         ref.read(cyclesOfProgramProvider.notifier).state =
                             addCycleAndSortList(cycles, newCycle);
+                        ref.read(hasProgramChangedProvider.notifier).state = true;
                       }
                     },
                     style: FilledButton.styleFrom(
@@ -67,7 +68,6 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                       var duration = await showDurationPickerDialog(context);
 
                       if (duration != null) {
-                        // ref.read(durationProvider.notifier).state = duration;
                         var newCycle =
                             cycle.copyWith(duration: duration.inMinutes.toString());
 
@@ -76,6 +76,7 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                           ...cycles,
                           newCycle
                         ];
+                        ref.read(hasProgramChangedProvider.notifier).state = true;
                       }
                     },
                     style: FilledButton.styleFrom(
