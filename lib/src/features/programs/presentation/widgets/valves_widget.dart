@@ -7,7 +7,10 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/common_widgets/snackbar.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
+import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/tile_title_widget.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
@@ -55,12 +58,19 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
 
                   // Get cycle times and sort them before appear to UI
                   List<String>? cycleTimesList = [];
+                  List<DaysOfWeek> days = [];
+                  String times = '';
                   for (var program in schedule) {
                     if (program.out == valve) {
-                     // TODO: Do i need it? it returns a sorted string with start times
+                      // TODO: Do i need it? it returns a sorted string with start times
                       cycleTimesList = createSortedTimeTexts(program);
+                      days = stringToDaysOfWeek(program.days);
+                      times =
+                          ref.watch(programProvider).startTimesToString(program.cycles);
                     }
                   }
+                  String closestDay = ref.watch(programProvider).getClosestDay(days, times);
+
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ExpansionTile(
@@ -74,7 +84,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                               children: [
                                 // ...cycleTimesList
                                 if (cycleTimesList!.isNotEmpty)
-                                  Text('Next run at ${cycleTimesList[0]}')
+                                  Text('Next run: $closestDay')
                               ],
                             ),
                       initiallyExpanded: isExpanded,

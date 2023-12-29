@@ -85,26 +85,6 @@ extension StringCasingExtension on String {
   String toDecapitalized() => length > 0 ? '${this[0].toLowerCase()}${substring(1)}' : '';
 }
 
-// TODO: Do i need this ????
-String startTimesToString(BuildContext context, List<Cycle> cycles) {
-  List<String> startTimesList = [];
-
-  for (var cycle in cycles) {
-    if (cycle.min != '0') {
-      var startTime = cycle.start;
-      var duration = cycle.min;
-      var endTime = getEndTime(context, startTime, duration);
-
-      startTimesList.add('$startTime - $endTime\n');
-    }
-  }
-  // short the list of times
-  startTimesList.sort((a, b) {
-    return a.compareTo(b);
-  });
-
-  return startTimesList.join();
-}
 
 // Formating string of day to 2 chars string
 String shorteningDays(BuildContext context, String? days) {
@@ -135,4 +115,26 @@ List<DaysOfWeek> stringToDaysOfWeek(String days) {
     }
   }
   return listOfDaysOfWeek;
+}
+
+
+
+  DaysOfWeek? todayToDaysOfWeek(String day) {
+  switch (day) {
+    case 'Mon':
+      return DaysOfWeek.Mon;
+    case 'Tue':
+      return DaysOfWeek.Tue;
+    case 'Wed':
+      return DaysOfWeek.Wed;
+    case 'Thu':
+      return DaysOfWeek.Thu;
+    case 'Fri':
+      return DaysOfWeek.Fri;
+    case 'Sat':
+      return DaysOfWeek.Sat;
+    case 'Sun':
+      return DaysOfWeek.Sun;
+  }
+  return null;
 }

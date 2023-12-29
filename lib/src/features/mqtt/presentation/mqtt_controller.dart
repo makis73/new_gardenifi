@@ -115,10 +115,9 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
           Program program = Program.fromJson(e);
           return program;
         }).toList();
-        log('MqttController:: Schedule from broker: $scheduleUtcFromBroker');
 
-        var localizedSchedule = ref.read(programProvider).convertScheduleToLocalTZ(scheduleUtcFromBroker);
-        log('MqttController:: Localized Schedule from broker: $localizedSchedule');
+        // Convert the times of the received programs to local timezone
+        ref.read(programProvider).convertScheduleToLocalTZ(scheduleUtcFromBroker);
 
         // update the provider who holds the programs
         ref.read(configTopicProvider.notifier).state = scheduleUtcFromBroker;

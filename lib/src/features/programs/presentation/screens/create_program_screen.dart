@@ -43,20 +43,13 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
   }
 
   // Get the days if they exist from the program for this valve
-  List<DaysOfWeek> getDays(List<Program> schedule) {
-    try {
-      String days = schedule.firstWhere((program) => program.out == widget.valve).days;
-      return stringToDaysOfWeek(days);
-    } catch (e) {
-      return [];
-    }
-  }
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var currentSchedule = ref.read(configTopicProvider);
-      ref.read(daysOfProgramProvider.notifier).state = getDays(currentSchedule);
+      ref.read(daysOfProgramProvider.notifier).state =
+          ref.read(programProvider).getDays(currentSchedule, widget.valve);
       ref.read(cyclesOfProgramProvider.notifier).state = getCycles(currentSchedule);
     });
     super.initState();
@@ -74,8 +67,8 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 
     return Scaffold(
         body: Column(
-          mainAxisSize: MainAxisSize.min,
-              children: [
+      mainAxisSize: MainAxisSize.min,
+      children: [
         BluetoothScreenUpper(
             radius: radius,
             showMenuButton: true,
@@ -129,7 +122,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                   }
                 },
           label: Text('Add an irrigation cycle'.hardcoded),
-          icon: Icon(Icons.add_circle_outline),
+          icon: const Icon(Icons.add_circle_outline),
         ),
         // ! Widget overflow on landscape !
         if (cyclesOfCurrentProgram.isNotEmpty) const CyclesWidget(),
@@ -142,7 +135,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                 days: listOfDays,
                 cycles: cyclesOfCurrentProgram,
               );
-        
+
               var index = currentSchedule.indexWhere(
                 (program) => program.out == widget.valve,
               );
@@ -158,21 +151,24 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
               }
             },
             child: Text('Save program'.hardcoded)),
-        
+
         TextButton(
-          child: Text('Delete program'.hardcoded, style: TextStyles.xSmallNormal.copyWith(color: Colors.red[800]),),
+          child: Text(
+            'Delete program'.hardcoded,
+            style: TextStyles.xSmallNormal.copyWith(color: Colors.red[800]),
+          ),
           onPressed: () {
             // TODO: Move the delete logic to program controller and delete only the program for the specified valve
             ref.read(daysOfProgramProvider.notifier).state = [];
             ref.read(cyclesOfProgramProvider.notifier).state = [];
-        
+
             ref
                 .read(mqttControllerProvider.notifier)
                 .sendMessage(configTopic, MqttQos.atLeastOnce, jsonEncode([]));
           },
         )
-              ],
-            ));
+      ],
+    ));
   }
 }
 
