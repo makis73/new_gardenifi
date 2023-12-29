@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/common_widgets/snackbar.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
+import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
@@ -84,7 +85,12 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                               style: TextStyle(color: Colors.black),
                             )
                           : (cycles!.isNotEmpty)
-                              ? Text('Next run: $closestDay'.hardcoded)
+                              ? Row(
+                                children: [
+                                  Text('Next run: '.hardcoded),
+                                  Text(closestDay, style: TextStyles.xSmallNormal.copyWith(color: Colors.black),)
+                                ],
+                              )
                               : Text('No program'.hardcoded),
                       initiallyExpanded: isExpanded,
                       collapsedBackgroundColor: Colors.white,
