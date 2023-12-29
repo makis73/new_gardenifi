@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Cycle {
   String start;
   String min;
@@ -37,4 +38,16 @@ class Cycle {
 
   @override
   String toString() => 'Cycle(start: $start, min: $min)';
+
+  @override
+  bool operator ==(covariant Cycle other) {
+    if (identical(this, other)) return true;
+  
+    return 
+      other.start == start &&
+      other.min == min;
+  }
+
+  @override
+  int get hashCode => start.hashCode ^ min.hashCode;
 }

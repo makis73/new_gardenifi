@@ -6,8 +6,7 @@ import 'package:new_gardenifi_app/src/features/programs/presentation/screens/cre
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 
 class DayButton extends ConsumerStatefulWidget {
-  const DayButton(
-      {required this.day, required this.maxWidth, super.key});
+  const DayButton({required this.day, required this.maxWidth, super.key});
 
   final DaysOfWeek day;
   final double maxWidth;
@@ -19,7 +18,6 @@ class DayButton extends ConsumerStatefulWidget {
 class _DayButtonState extends ConsumerState<DayButton> {
   @override
   void initState() {
-   
     super.initState();
   }
 
@@ -44,6 +42,9 @@ class _DayButtonState extends ConsumerState<DayButton> {
                 minimumSize: Size(constraints.maxWidth, 50),
                 backgroundColor: isSelected ? Colors.green[400] : null),
             onPressed: () {
+              if (ref.read(cyclesOfProgramProvider).isNotEmpty) {
+                ref.read(hasProgramChangedProvider.notifier).state = true;
+              }
               setState(() {
                 if (!isSelected) {
                   var state = ref.read(daysOfProgramProvider);

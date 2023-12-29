@@ -8,6 +8,7 @@ import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
@@ -18,10 +19,7 @@ class ProgramController {
   int sendSchedule(List<Program> schedule) {
     for (Program program in schedule) {
       for (var cycle in program.cycles) {
-        log('start: ${cycle.start}');
-
         cycle.start = localToUtc(cycle.start);
-        log('start: ${cycle.start}');
       }
     }
     try {
@@ -44,6 +42,18 @@ class ProgramController {
     schedule.removeAt(index);
     sendSchedule(schedule);
     return 2;
+  }
+
+  // ! What if delete the last cycle? 
+  deleteCycle(int cycleIndex) {
+    var cycles = ref.read(cyclesOfProgramProvider);
+    log('ProgramController:: cyclesProvider BEFORE: ${ref.read(cyclesOfProgramProvider)}');
+
+    log('cycleToDelete: ${cycles[cycleIndex]}');
+    cycles.removeAt(cycleIndex);
+    ref.read(cyclesOfProgramProvider.notifier).state = [...cycles];
+    ref.read(hasProgramChangedProvider.notifier).state = true;
+    log('ProgramController:: cyclesProvider AFTER: ${ref.read(cyclesOfProgramProvider)}');
   }
 
   void convertScheduleToLocalTZ(List<Program> schedule) {

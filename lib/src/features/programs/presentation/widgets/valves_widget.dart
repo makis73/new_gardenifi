@@ -41,6 +41,8 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
     final status = ref.watch(statusTopicProvider);
     final schedule = ref.watch(configTopicProvider);
 
+    // log('ValvesWidget:: schedule: $schedule');
+
     return Expanded(
       child: RefreshIndicator(
         onRefresh: () {
@@ -116,6 +118,11 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                     } else if (value != null && value == 2) {
                                       showSnackbar(context, 'Program deleted', Icons.done,
                                           Colors.greenAccent);
+                                    } 
+                                    else if (value == null) {
+                                      if (ref.read(hasProgramChangedProvider)) {
+                                        refreshMainScreen(ref);
+                                      }
                                     }
                                   });
                                 },

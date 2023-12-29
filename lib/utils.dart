@@ -85,7 +85,6 @@ extension StringCasingExtension on String {
   String toDecapitalized() => length > 0 ? '${this[0].toLowerCase()}${substring(1)}' : '';
 }
 
-
 // Formating string of day to 2 chars string
 String shorteningDays(BuildContext context, String? days) {
   var listOfDays = days!.split(',');
@@ -117,9 +116,7 @@ List<DaysOfWeek> stringToDaysOfWeek(String days) {
   return listOfDaysOfWeek;
 }
 
-
-
-  DaysOfWeek? todayToDaysOfWeek(String day) {
+DaysOfWeek? todayToDaysOfWeek(String day) {
   switch (day) {
     case 'Mon':
       return DaysOfWeek.Mon;
@@ -148,12 +145,12 @@ List<String> convertListDaysOfWeekToListString(List<DaysOfWeek> listDaysOfWeek) 
 }
 
 // Compare a given time with current time
-  bool timeIsAfterNow(String time) {
-    var timeNow = DateFormat('HH:mm').format(DateTime.now());
-    var res = time.compareTo(timeNow);
-    if (res == 1) {
-      return true;
-    } else {
-      return false;
-    }
+bool timeIsAfterNow(String time) {
+  var timeNow = DateFormat('HH:mm').format(DateTime.now());
+  var res = time.compareTo(timeNow);
+  if (res == 1) {
+    return true;
+  } else {
+    return false;
   }
+}
