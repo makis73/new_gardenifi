@@ -38,7 +38,7 @@ String getEndTime(BuildContext context, String startTime, String duration) {
 
 String utcToLocal(String time) {
   var x = DateFormat('M/d/y').format(DateTime.now());
-  DateTime localDateTime = DateFormat('M/d/y hh:mm').parseUTC('$x $time').toLocal();
+  DateTime localDateTime = DateFormat('M/d/y HH:mm').parseUTC('$x $time').toLocal();
   // Convert DateTime local time to [String]
   String localTimeString = DateFormat('HH:mm').format(localDateTime);
 
@@ -47,7 +47,7 @@ String utcToLocal(String time) {
 
 String localToUtc(String time) {
   var x = DateFormat('M/d/y').format(DateTime.now());
-  DateTime localTime = DateFormat('M/d/y hh:mm').parse('$x $time');
+  DateTime localTime = DateFormat('M/d/y HH:mm').parse('$x $time');
   // Convert [DateTime] to UTC
   DateTime utcTime = localTime.toUtc();
 

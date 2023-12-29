@@ -80,13 +80,8 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                               'Close at...',
                               style: TextStyle(color: Colors.black),
                             )
-                          : Column(
-                              children: [
-                                // ...cycleTimesList
-                                if (cycleTimesList!.isNotEmpty)
-                                  Text('Next run: $closestDay')
-                              ],
-                            ),
+                          : (cycleTimesList!.isNotEmpty) ?
+                            Text('Next run: $closestDay') : null,
                       initiallyExpanded: isExpanded,
                       collapsedBackgroundColor: Colors.white,
                       collapsedTextColor: Colors.green[900],

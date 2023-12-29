@@ -18,7 +18,10 @@ class ProgramController {
   bool sendSchedule(List<Program> schedule) {
     for (Program program in schedule) {
       for (var cycle in program.cycles) {
+        log('start: ${cycle.start}');
+
         cycle.start = localToUtc(cycle.start);
+        log('start: ${cycle.start}');
       }
     }
     try {

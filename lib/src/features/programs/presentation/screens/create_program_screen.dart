@@ -103,6 +103,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                     barrierColor: Colors.white,
                   );
                   if (time != null) {
+                    log('CreateProgramScreen: time = $time');
                     // Create a new cycle with selected start time
                     cycle = Cycle(start: time.format(context));
                     // Update the provider who keeps the state of cycle
