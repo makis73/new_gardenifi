@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:duration_picker/duration_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
-import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
@@ -41,8 +39,6 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
       return [];
     }
   }
-
-  // Get the days if they exist from the program for this valve
 
   @override
   void initState() {
@@ -91,7 +87,6 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
         Text('Select the days you want to irrigate'.hardcoded),
         const DaysOfWeekWidget(),
         const Divider(indent: 50, endIndent: 50),
-        // TODO: If user has not selected days he would not let choose time
         TextButton.icon(
           onPressed: (daysOfCurrentProgram.isEmpty)
               ? null
@@ -103,7 +98,6 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                     barrierColor: Colors.white,
                   );
                   if (time != null) {
-                    log('CreateProgramScreen: time = $time');
                     // Create a new cycle with selected start time
                     cycle = Cycle(start: time.format(context));
                     // Update the provider who keeps the state of cycle
@@ -136,20 +130,18 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                 days: listOfDays,
                 cycles: cyclesOfCurrentProgram,
               );
-
+              // Check if there is already a program for this valve and return 1 or -1
               var index = currentSchedule.indexWhere(
                 (program) => program.out == widget.valve,
               );
               // If already exist a program for this valve, replace it with the new created, else add this to the schedule(List<Program)
               if (index != -1) {
                 currentSchedule[index] = program;
-                var res = ref.read(programProvider).sendSchedule(currentSchedule);
-                Navigator.pop(context, res);
               } else {
                 currentSchedule.add(program);
-                var res = ref.read(programProvider).sendSchedule(currentSchedule);
-                Navigator.pop(context, res);
               }
+              var res = ref.read(programProvider).sendSchedule(currentSchedule);
+              Navigator.pop(context, res);
             },
             child: Text('Save program'.hardcoded)),
 
@@ -158,14 +150,18 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
             'Delete program'.hardcoded,
             style: TextStyles.xSmallNormal.copyWith(color: Colors.red[800]),
           ),
-          onPressed: () {
-            // TODO: Move the delete logic to program controller and delete only the program for the specified valve
-            ref.read(daysOfProgramProvider.notifier).state = [];
-            ref.read(cyclesOfProgramProvider.notifier).state = [];
-
-            ref
-                .read(mqttControllerProvider.notifier)
-                .sendMessage(configTopic, MqttQos.atLeastOnce, jsonEncode([]));
+          onPressed: () async {
+            var res = await showAlertDialog(
+                context: context,
+                title: 'Program Deletion'.hardcoded,
+                defaultActionText: 'Yes'.hardcoded,
+                cancelActionText: 'Cancel'.hardcoded,
+                content: 'Are you sure you want to delete this program?'.hardcoded);
+            if (res == true) {
+              ref.read(programProvider).deleteProgram(widget.valve);
+            Navigator.pop(context);
+            }
+            
           },
         )
       ],
@@ -173,13 +169,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
   }
 }
 
-List<String> convertListDaysOfWeekToListString(List<DaysOfWeek> listDaysOfWeek) {
-  var listOfDaysString = listDaysOfWeek.map((e) {
-    var nameOfDay = e.name;
-    return nameOfDay.toDecapitalized();
-  }).toList();
-  return listOfDaysString;
-}
+// ----------- PROVIDERS ------------
 
 final daysOfProgramProvider = StateProvider.autoDispose<List<DaysOfWeek>>((ref) => []);
 final startTimeOfProgramProvider = StateProvider.autoDispose<String>((ref) => '');

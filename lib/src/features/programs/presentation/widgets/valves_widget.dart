@@ -7,6 +7,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/common_widgets/snackbar.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
+import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
@@ -56,20 +57,20 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   int valve = int.parse(listOfValves[index]);
                   bool valveIsOn = status['out${index + 1}'] == 1 ? true : false;
 
-                  // Get cycle times and sort them before appear to UI
-                  List<String>? cycleTimesList = [];
+                  List<Cycle>? cycles = [];
                   List<DaysOfWeek> days = [];
                   String times = '';
                   for (var program in schedule) {
                     if (program.out == valve) {
                       // TODO: Do i need it? it returns a sorted string with start times
-                      cycleTimesList = createSortedTimeTexts(program);
+                      cycles = program.cycles;
                       days = stringToDaysOfWeek(program.days);
-                      times =
-                          ref.watch(programProvider).startTimesToString(program.cycles);
+                      times = ref
+                          .watch(programProvider)
+                          .getStartTimesAsString(program.cycles);
                     }
                   }
-                  String closestDay = ref.watch(programProvider).getClosestDay(days, times);
+                  String closestDay = ref.watch(programProvider).getNextRun(days, times);
 
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -80,8 +81,9 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                               'Close at...',
                               style: TextStyle(color: Colors.black),
                             )
-                          : (cycleTimesList!.isNotEmpty) ?
-                            Text('Next run: $closestDay') : null,
+                          : (cycles!.isNotEmpty)
+                              ? Text('Next run: $closestDay'.hardcoded)
+                              : Text('No program'.hardcoded),
                       initiallyExpanded: isExpanded,
                       collapsedBackgroundColor: Colors.white,
                       collapsedTextColor: Colors.green[900],
@@ -114,7 +116,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                     }
                                   });
                                 },
-                                child: cycleTimesList!.isEmpty
+                                child: cycles!.isEmpty
                                     ? const Text('Create Program')
                                     : const Text('Edit program')),
                             Switch(

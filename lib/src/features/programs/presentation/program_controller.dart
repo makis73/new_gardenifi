@@ -36,6 +36,18 @@ class ProgramController {
     }
   }
 
+  // TODO: Implement this
+  deleteProgram(int valve) {
+    var schedule = ref.read(configTopicProvider);
+
+    var index = schedule.indexWhere(
+      (program) => program.out == valve,
+    );
+    schedule.removeAt(index);
+    log('ProgramController:: newschedule: $schedule');
+    sendSchedule(schedule);
+  }
+
   void convertScheduleToLocalTZ(List<Program> schedule) {
     for (var program in schedule) {
       for (var cycle in program.cycles) {
@@ -54,13 +66,12 @@ class ProgramController {
   }
 
   String getClosestTime(String times) {
-    var timeNow = DateFormat('hh:mm').format(DateTime.now());
-
+    var timeNow = DateFormat('HH:mm').format(DateTime.now());
     var listOfTimes = times.split(' ,');
     if (!listOfTimes.contains(timeNow)) {
       listOfTimes.add(timeNow);
     }
-
+    // If program contains a start time after current time, return this. Else return the first of the list.
     try {
       listOfTimes.sort((a, b) => a.compareTo(b));
       var index = listOfTimes.indexWhere((element) => element == timeNow);
@@ -70,49 +81,34 @@ class ProgramController {
     }
   }
 
-  bool compareTimes(String time) {
-    var timeNow = DateFormat('hh:mm').format(DateTime.now());
-    var res = time.compareTo(timeNow);
-    if (res == 1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  String getClosestDay(List<DaysOfWeek> list, String times) {
+  // Get the the next run of the program
+  String getNextRun(List<DaysOfWeek> listOfDays, String times) {
     var today = DateFormat('E').format(DateTime.now());
     var todayDay = todayToDaysOfWeek(today);
-
     var closestTime = getClosestTime(times);
 
-    // ------------------------------
-
-    if (!list.contains(todayDay)) {
-      list.add(todayDay!);
+    if (!listOfDays.contains(todayDay)) {
+      listOfDays.add(todayDay!);
     }
     try {
-      list.sort((a, b) => a.index.compareTo(b.index));
-      var index = list.indexWhere((element) => element == todayDay);
-      if (compareTimes(closestTime)) {
-        return '${list[index].name} $closestTime';
+      listOfDays.sort((a, b) => a.index.compareTo(b.index));
+      var index = listOfDays.indexWhere((element) => element == todayDay);
+      if (timeIsAfterNow(closestTime)) {
+        return 'Today $closestTime';
       } else {
-        return '${list[index + 1].name} $closestTime';
+        return '${listOfDays[index + 1].name} $closestTime';
       }
     } catch (e) {
-      return '${list[0].name} $closestTime';
+      return 'Next ${listOfDays[0].name} $closestTime';
     }
   }
 
-  // TODO: Do i need this ????
-  String startTimesToString(List<Cycle> cycles) {
+  String getStartTimesAsString(List<Cycle> cycles) {
     List<String> startTimesList = [];
 
     for (var cycle in cycles) {
       if (cycle.min != '0') {
         var startTime = cycle.start;
-        var duration = cycle.min;
-
         startTimesList.add('$startTime ');
       }
     }
@@ -120,10 +116,11 @@ class ProgramController {
     startTimesList.sort((a, b) {
       return a.compareTo(b);
     });
-
     return startTimesList.join(',');
   }
 }
+
+// ----------- PROVIDERS ---------------
 
 final programProvider = Provider<ProgramController>((ref) {
   return ProgramController(ref);

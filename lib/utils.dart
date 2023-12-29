@@ -138,3 +138,22 @@ List<DaysOfWeek> stringToDaysOfWeek(String days) {
   }
   return null;
 }
+
+List<String> convertListDaysOfWeekToListString(List<DaysOfWeek> listDaysOfWeek) {
+  var listOfDaysString = listDaysOfWeek.map((e) {
+    var nameOfDay = e.name;
+    return nameOfDay.toDecapitalized();
+  }).toList();
+  return listOfDaysString;
+}
+
+// Compare a given time with current time
+  bool timeIsAfterNow(String time) {
+    var timeNow = DateFormat('HH:mm').format(DateTime.now());
+    var res = time.compareTo(timeNow);
+    if (res == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
