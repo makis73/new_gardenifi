@@ -42,8 +42,6 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
     final status = ref.watch(statusTopicProvider);
     final schedule = ref.watch(configTopicProvider);
 
-    // log('VALVES_WIDGET:: status: $status');
-
     return Expanded(
       child: RefreshIndicator(
         onRefresh: () {
@@ -60,20 +58,19 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   int valve = int.parse(listOfValves[index]);
                   bool valveIsOn = status['out$valve'] == 1 ? true : false;
 
-                  List<Cycle>? cycles = [];
-                  List<DaysOfWeek> days = [];
-                  String times = '';
-                  for (var program in schedule) {
-                    if (program.out == valve) {
-                      // TODO: Do i need it? it returns a sorted string with start times
-                      cycles = program.cycles;
-                      days = stringToDaysOfWeek(program.days);
-                      times = ref
-                          .watch(programProvider)
-                          .getStartTimesAsString(program.cycles);
-                    }
-                  }
-                  String closestDay = ref.watch(programProvider).getNextRun(days, times);
+                  // Check if there is a program for this valve.
+                  Program? program =
+                      ref.read(programProvider).getProgram(schedule, valve);
+
+                  // If a program for this valve exists get cycles, days and start times
+                  List<Cycle> cycles = program != null ? program.cycles : [];
+                  List<DaysOfWeek> days =
+                      program != null ? stringToDaysOfWeek(program.days) : [];
+                  String times = program != null
+                      ? ref.watch(programProvider).getStartTimesAsString(program.cycles)
+                      : '';
+                  // Get the next run of this valve.
+                  String nextRun = ref.watch(programProvider).getNextRun(days, times);
 
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -84,15 +81,13 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                               'Close at...',
                               style: TextStyle(color: Colors.black),
                             )
-                          : (cycles!.isNotEmpty)
+                          : (cycles.isNotEmpty)
                               ? Row(
                                   children: [
                                     Text('Next run: '.hardcoded),
-                                    Text(
-                                      closestDay,
-                                      style: TextStyles.xSmallNormal
-                                          .copyWith(color: Colors.black),
-                                    )
+                                    Text(nextRun,
+                                        style: TextStyles.xSmallNormal
+                                            .copyWith(color: Colors.black))
                                   ],
                                 )
                               : Text('No program'.hardcoded),
@@ -135,7 +130,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                     }
                                   });
                                 },
-                                child: cycles!.isEmpty
+                                child: cycles.isEmpty
                                     ? const Text('Create Program')
                                     : const Text('Edit program')),
                             Switch(

@@ -44,16 +44,12 @@ class ProgramController {
     return 2;
   }
 
-  // ! What if delete the last cycle? 
+  // ! What if delete the last cycle?
   deleteCycle(int cycleIndex) {
     var cycles = ref.read(cyclesOfProgramProvider);
-    log('ProgramController:: cyclesProvider BEFORE: ${ref.read(cyclesOfProgramProvider)}');
-
-    log('cycleToDelete: ${cycles[cycleIndex]}');
     cycles.removeAt(cycleIndex);
     ref.read(cyclesOfProgramProvider.notifier).state = [...cycles];
     ref.read(hasProgramChangedProvider.notifier).state = true;
-    log('ProgramController:: cyclesProvider AFTER: ${ref.read(cyclesOfProgramProvider)}');
   }
 
   void convertScheduleToLocalTZ(List<Program> schedule) {
@@ -62,6 +58,15 @@ class ProgramController {
         cycle.start = utcToLocal(cycle.start);
       }
     }
+  }
+
+  Program? getProgram(List<Program> schedule, int valve) {
+    for (var program in schedule) {
+      if (program.out == valve) {
+        return program;
+      }
+    }
+    return null;
   }
 
   List<DaysOfWeek> getDays(List<Program> schedule, int valve) {

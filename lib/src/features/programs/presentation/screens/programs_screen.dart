@@ -11,7 +11,6 @@ import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/device_
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/disconnected_from_broker_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/no_valves_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/valves_widget.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class ProgramsScreen extends ConsumerStatefulWidget {
@@ -47,10 +46,6 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
     final mqttControllerValue = ref.watch(mqttControllerProvider);
     final valvesTopicMessage = ref.watch(valvesTopicProvider);
     final statusTopicMessage = ref.watch(statusTopicProvider);
-    final commandTopicMessage = ref.watch(commandTopicProvider);
-    final configTopicMessage = ref.watch(configTopicProvider);
-
-    // log('Program from broker: $configTopicMessage');
 
     final bool cantConnectToBroker = ref.watch(cantConnectProvider);
     final bool disconnectedFromBroker = ref.watch(disconnectedProvider);

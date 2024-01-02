@@ -77,14 +77,12 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       // Get the message from the broker (from any topic)
       final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
       final topic = event[0].topic;
+      
+      final String message =
+          MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
 
       if (topic == valves) {
-        final String message =
-            MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-
         final correctedMessage = message.replaceAll("'", "\"");
-
-        // log('Message received on topic: ${topic.toUpperCase()} - $correctedMessage');
 
         List<String> listOfValvesFromBroker =
             (jsonDecode(correctedMessage) as List<dynamic>).cast<String>();
@@ -92,37 +90,22 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       }
 
       if (topic == status) {
-        final String tempMessage =
-            MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-        final String replacedString = tempMessage.replaceAll('\'', '"');
-
-        // log('Message received on topic: ${topic.toUpperCase()} - $replacedString');
-
+        final String replacedString = message.replaceAll('\'', '"');
 
         final Map<String, dynamic> mes = jsonDecode(replacedString);
         ref.read(statusTopicProvider.notifier).state = mes;
       }
 
       if (topic == command) {
-        final String tempMessage =
-            MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-        final String replacedString = tempMessage.replaceAll('\'', '"');
-
-        // log('Message received on topic: ${topic.toUpperCase()} - $replacedString');
-
+        final String replacedString = message.replaceAll('\'', '"');
 
         final Map<String, dynamic> mes = jsonDecode(replacedString);
         ref.read(commandTopicProvider.notifier).state = mes;
       }
 
       if (topic == config) {
-        final String tempMessage =
-            MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-
-        // log('Message received on topic: ${topic.toUpperCase()} - $tempMessage');
-
         // Convert received message to List<Program>
-        List<Program> scheduleUtcFromBroker = (json.decode(tempMessage) as List).map((e) {
+        List<Program> scheduleUtcFromBroker = (json.decode(message) as List).map((e) {
           Program program = Program.fromJson(e);
           return program;
         }).toList();

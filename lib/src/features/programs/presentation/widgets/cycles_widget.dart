@@ -23,7 +23,6 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
   @override
   Widget build(BuildContext context) {
     List<Cycle> cycles = ref.watch(cyclesOfProgramProvider);
-    log('CyclesWidget:: cycles: $cycles');
     return Expanded(
       child: ListView.builder(
         itemCount: cycles.length,
