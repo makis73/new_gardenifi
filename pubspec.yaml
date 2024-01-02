@@ -16,6 +16,7 @@ dependencies:
   flutter_blue_plus: ^1.28.10
   flutter_localizations:
     sdk: flutter
+  
   flutter_riverpod: ^2.4.5
   google_fonts: ^6.1.0
   intl: ^0.18.1
@@ -27,6 +28,23 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^2.0.0
+  flutter_native_splash: ^2.3.9
+
+flutter_native_splash:
+  color: "#cefad0"
+  image: assets/images/splash_light.png
+  color_dark: "#18392b"
+  image_dark: assets/images/splash_dark.png
+
+  android_12:
+    color: "#cefad0"
+    image: assets/images/splash_light.png
+    color_dark: "#18392b"
+    image_dark: assets/images/splash_dark.png
+
+  web: false
+  
+
 
 flutter:
   uses-material-design: true
