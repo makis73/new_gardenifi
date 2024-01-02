@@ -39,8 +39,6 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
     }
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;

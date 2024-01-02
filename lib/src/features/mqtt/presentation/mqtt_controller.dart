@@ -84,6 +84,8 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
 
         final correctedMessage = message.replaceAll("'", "\"");
 
+        // log('Message received on topic: ${topic.toUpperCase()} - $correctedMessage');
+
         List<String> listOfValvesFromBroker =
             (jsonDecode(correctedMessage) as List<dynamic>).cast<String>();
         ref.read(valvesTopicProvider.notifier).state = listOfValvesFromBroker;
@@ -94,6 +96,9 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
             MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
         final String replacedString = tempMessage.replaceAll('\'', '"');
 
+        // log('Message received on topic: ${topic.toUpperCase()} - $replacedString');
+
+
         final Map<String, dynamic> mes = jsonDecode(replacedString);
         ref.read(statusTopicProvider.notifier).state = mes;
       }
@@ -103,6 +108,9 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
             MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
         final String replacedString = tempMessage.replaceAll('\'', '"');
 
+        // log('Message received on topic: ${topic.toUpperCase()} - $replacedString');
+
+
         final Map<String, dynamic> mes = jsonDecode(replacedString);
         ref.read(commandTopicProvider.notifier).state = mes;
       }
@@ -110,6 +118,9 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       if (topic == config) {
         final String tempMessage =
             MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+
+        // log('Message received on topic: ${topic.toUpperCase()} - $tempMessage');
+
         // Convert received message to List<Program>
         List<Program> scheduleUtcFromBroker = (json.decode(tempMessage) as List).map((e) {
           Program program = Program.fromJson(e);

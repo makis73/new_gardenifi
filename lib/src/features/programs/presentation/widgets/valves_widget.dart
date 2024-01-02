@@ -42,7 +42,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
     final status = ref.watch(statusTopicProvider);
     final schedule = ref.watch(configTopicProvider);
 
-    // log('ValvesWidget:: schedule: $schedule');
+    // log('VALVES_WIDGET:: status: $status');
 
     return Expanded(
       child: RefreshIndicator(
@@ -58,7 +58,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                 padding: const EdgeInsets.symmetric(vertical: 0),
                 itemBuilder: (context, index) {
                   int valve = int.parse(listOfValves[index]);
-                  bool valveIsOn = status['out${index + 1}'] == 1 ? true : false;
+                  bool valveIsOn = status['out$valve'] == 1 ? true : false;
 
                   List<Cycle>? cycles = [];
                   List<DaysOfWeek> days = [];
@@ -86,11 +86,15 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                             )
                           : (cycles!.isNotEmpty)
                               ? Row(
-                                children: [
-                                  Text('Next run: '.hardcoded),
-                                  Text(closestDay, style: TextStyles.xSmallNormal.copyWith(color: Colors.black),)
-                                ],
-                              )
+                                  children: [
+                                    Text('Next run: '.hardcoded),
+                                    Text(
+                                      closestDay,
+                                      style: TextStyles.xSmallNormal
+                                          .copyWith(color: Colors.black),
+                                    )
+                                  ],
+                                )
                               : Text('No program'.hardcoded),
                       initiallyExpanded: isExpanded,
                       collapsedBackgroundColor: Colors.white,
@@ -124,8 +128,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                     } else if (value != null && value == 2) {
                                       showSnackbar(context, 'Program deleted', Icons.done,
                                           Colors.greenAccent);
-                                    } 
-                                    else if (value == null) {
+                                    } else if (value == null) {
                                       if (ref.read(hasProgramChangedProvider)) {
                                         refreshMainScreen(ref);
                                       }
