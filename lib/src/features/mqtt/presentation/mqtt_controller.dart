@@ -80,6 +80,7 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       
       final String message =
           MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+          
 
       if (topic == valves) {
         final correctedMessage = message.replaceAll("'", "\"");

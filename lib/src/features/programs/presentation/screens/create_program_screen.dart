@@ -19,9 +19,10 @@ import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class CreateProgramScreen extends ConsumerStatefulWidget {
-  const CreateProgramScreen({required this.valve, super.key});
+  const CreateProgramScreen({required this.valve, required this.name, super.key});
 
   final int valve;
+  final String name;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -30,6 +31,10 @@ class CreateProgramScreen extends ConsumerStatefulWidget {
 
 class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen> {
   late Cycle cycle;
+  String newName = '';
+  bool editName = false;
+
+  TextEditingController nameController = TextEditingController();
 
   // Get the cyclces if they exist from the program for this valve
   List<Cycle> getCycles(List<Program> schedule) {
@@ -37,6 +42,14 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
       return schedule.firstWhere((program) => program.out == widget.valve).cycles;
     } catch (e) {
       return [];
+    }
+  }
+
+  String getName(List<Program> schedule) {
+    try {
+      return schedule.firstWhere((program) => program.out == widget.valve).name;
+    } catch (e) {
+      return '';
     }
   }
 
@@ -60,6 +73,9 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 
   @override
   Widget build(BuildContext context) {
+    log('CreateProgramScreen:: widget.name: ${widget.name}');
+    log('CreateProgramScreen:: newname: ${newName}');
+
     final screenHeight = MediaQuery.of(context).size.height;
     final radius = screenHeight / 6;
 
@@ -105,12 +121,43 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                 style: TextStyles.mediumBold,
               ),
             ),
-            Center(
-              child: Text(
-                'Valve ${widget.valve}'.hardcoded,
-                style: TextStyles.mediumBold.copyWith(color: Colors.green),
-              ),
-            ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              editName
+                  ? SizedBox(
+                      width: 150,
+                      child: TextField(
+                        controller: nameController..text = widget.name,
+                        style: TextStyles.mediumNormal.copyWith(color: Colors.green),
+                        autofocus: true,
+                        // onChanged: (value) {
+                        //   newName = nameController.text;
+                        // },
+                        onSubmitted: (value) {
+                          newName = nameController.text;
+                          setState(() {
+                            editName = false;
+                          });
+                          ref.read(hasProgramChangedProvider.notifier).state = true;
+                        },
+                      ),
+                    )
+                  : Text(
+                      newName.isNotEmpty ? newName : widget.name,
+                      style: TextStyles.mediumBold.copyWith(color: Colors.green),
+                    ),
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      editName = true;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.edit,
+                    size: 18,
+                    color: Colors.black54,
+                  ))
+            ]),
+
             const Divider(indent: 50, endIndent: 50),
             Text('Select the days you want to irrigate'.hardcoded),
             const DaysOfWeekWidget(),
@@ -160,6 +207,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                       convertListDaysOfWeekToListString(daysSelected).join(',');
                   var program = Program(
                     out: widget.valve,
+                    name: newName,
                     days: listOfDays,
                     cycles: cyclesOfCurrentProgram,
                   );

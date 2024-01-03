@@ -69,6 +69,9 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   List<Map<String, String>> mapOfTimes = program != null
                       ? ref.watch(programProvider).getTimesAsMap(program.cycles)
                       : [];
+                  String name = program != null
+                      ? program.name
+                      : 'Valve ${valve.toString()}'.hardcoded;
                   // Get the next run of this valve.
                   var listOfStartTimes =
                       ref.read(programProvider).getStartTimesAsString(mapOfTimes);
@@ -82,7 +85,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ExpansionTile(
-                      title: TileTitle(valve: valve, valveIsOn: valveIsOn),
+                      title: TileTitle(name: name, valveIsOn: valveIsOn),
                       subtitle: valveIsOn
                           ? Text(
                               nextEnd != null ? 'Closes at $nextEnd'.hardcoded : '',
@@ -117,19 +120,24 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                       MaterialPageRoute(
                                           builder: (context) => CreateProgramScreen(
                                                 valve: valve,
+                                                name: name,
                                               ))).then((value) {
                                     if (value != null && value == 1) {
-                                      showSnackbar(context, 'Program send to broker.'.hardcoded,
-                                          Icons.done, Colors.greenAccent);
+                                      showSnackbar(
+                                          context,
+                                          'Program send to broker.'.hardcoded,
+                                          Icons.done,
+                                          Colors.greenAccent);
                                     } else if (value != null && value == -1) {
                                       showSnackbar(
                                           context,
-                                          'Could not send program to broker. Try again'.hardcoded,
+                                          'Could not send program to broker. Try again'
+                                              .hardcoded,
                                           Icons.clear,
                                           Colors.red[800]);
                                     } else if (value != null && value == 2) {
-                                      showSnackbar(context, 'Program deleted'.hardcoded, Icons.done,
-                                          Colors.greenAccent);
+                                      showSnackbar(context, 'Program deleted'.hardcoded,
+                                          Icons.done, Colors.greenAccent);
                                     } else if (value == null) {
                                       if (ref.read(hasProgramChangedProvider)) {
                                         refreshMainScreen(ref);

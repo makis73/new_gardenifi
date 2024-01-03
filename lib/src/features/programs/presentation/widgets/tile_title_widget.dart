@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class TileTitle extends StatelessWidget {
   const TileTitle({
     super.key,
-    required this.valve,
+    required this.name,
     required this.valveIsOn,
   });
 
-  final int valve;
+  final String name;
   final bool valveIsOn;
 
   @override
@@ -18,7 +17,7 @@ class TileTitle extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'Valve ${valve.toString()}'.hardcoded,
+          name,
           style: TextStyles.mediumBold,
         ),
         gapW20,
