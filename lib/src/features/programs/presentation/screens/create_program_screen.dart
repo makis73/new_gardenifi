@@ -73,9 +73,6 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 
   @override
   Widget build(BuildContext context) {
-    log('CreateProgramScreen:: widget.name: ${widget.name}');
-    log('CreateProgramScreen:: newname: ${newName}');
-
     final screenHeight = MediaQuery.of(context).size.height;
     final radius = screenHeight / 6;
 
@@ -129,9 +126,6 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                         controller: nameController..text = widget.name,
                         style: TextStyles.mediumNormal.copyWith(color: Colors.green),
                         autofocus: true,
-                        // onChanged: (value) {
-                        //   newName = nameController.text;
-                        // },
                         onSubmitted: (value) {
                           newName = nameController.text;
                           setState(() {

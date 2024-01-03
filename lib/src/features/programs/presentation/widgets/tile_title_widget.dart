@@ -16,9 +16,12 @@ class TileTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(
-          name,
-          style: TextStyles.mediumBold,
+        Expanded(
+          child: Text(
+            name,
+            style: TextStyles.mediumBold,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
         gapW20,
         if (valveIsOn)

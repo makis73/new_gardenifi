@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -5,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
+import 'package:typed_data/typed_buffers.dart';
+import 'package:typed_data/typed_data.dart' as td;
 
 enum MqttCurrentConnectionState {
   idle,
@@ -67,7 +70,12 @@ class MqttRepository {
   void publishMessage(String topic, MqttQos qos, String message) {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     if (message.isNotEmpty) {
-      builder.addString(message);
+      var buf = Uint8Buffer();
+
+      buf.addAll(utf8.encode(message));
+      builder.addBuffer(buf);
+
+      // builder.addString(message);
       final payload = builder.payload;
       _client.publishMessage(topic, qos, payload!, retain: true);
     }
@@ -85,7 +93,6 @@ class MqttRepository {
     // log('APP::From repo: disconnected');
     ref.read(disconnectedProvider.notifier).state = true;
     ref.read(connectedProvider.notifier).state = false;
-
   }
 
   void _onSubscribed(String topic) {

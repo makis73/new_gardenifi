@@ -59,19 +59,20 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   bool valveIsOn = status['out$valve'] == 1 ? true : false;
 
                   // Check if there is a program for this valve.
-                  Program? program =
+                  Program? program = 
                       ref.read(programProvider).getProgram(schedule, valve);
 
-                  // If a program for this valve exists get cycles, days and start times
+                  // If a program for this valve exists get cycles, days, start times and name
                   List<Cycle> cycles = program != null ? program.cycles : [];
                   List<DaysOfWeek> days =
                       program != null ? stringToDaysOfWeek(program.days) : [];
                   List<Map<String, String>> mapOfTimes = program != null
                       ? ref.watch(programProvider).getTimesAsMap(program.cycles)
                       : [];
-                  String name = program != null
+                  String name = (program != null && program.name.isNotEmpty)
                       ? program.name
                       : 'Valve ${valve.toString()}'.hardcoded;
+
                   // Get the next run of this valve.
                   var listOfStartTimes =
                       ref.read(programProvider).getStartTimesAsString(mapOfTimes);

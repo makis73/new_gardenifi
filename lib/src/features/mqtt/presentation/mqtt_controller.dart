@@ -77,10 +77,11 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
       // Get the message from the broker (from any topic)
       final MqttPublishMessage receivedMessage = event[0].payload as MqttPublishMessage;
       final topic = event[0].topic;
-      
-      final String message =
+
+      final String tempMessage =
           MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
-          
+
+      final message = const Utf8Decoder().convert(tempMessage.codeUnits);
 
       if (topic == valves) {
         final correctedMessage = message.replaceAll("'", "\"");
