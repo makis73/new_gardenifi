@@ -52,7 +52,7 @@ class AddRemoveValveWidget extends ConsumerWidget {
                 title: 'Valve deletion'.hardcoded,
                 defaultActionText: 'Yes'.hardcoded,
                 content:
-                    'Are you sure you want to remove this valve? All programs of this valve will be alse deleted.',
+                    'Are you sure you want to remove this valve? All programs of this valve will be also deleted.',
                 cancelActionText: 'Cancel'.hardcoded);
             if (res == true) {
               enabledValves.remove(port);

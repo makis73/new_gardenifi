@@ -1,12 +1,9 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
-import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
@@ -19,10 +16,10 @@ import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class CreateProgramScreen extends ConsumerStatefulWidget {
-  const CreateProgramScreen({required this.valve, required this.name, super.key});
+   CreateProgramScreen({required this.valve, required this.name, super.key});
 
   final int valve;
-  final String name;
+  String name;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -31,7 +28,6 @@ class CreateProgramScreen extends ConsumerStatefulWidget {
 
 class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen> {
   late Cycle cycle;
-  String newName = '';
   bool editName = false;
 
   TextEditingController nameController = TextEditingController();
@@ -73,10 +69,6 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 
   @override
   Widget build(BuildContext context) {
-    log('CreateProgramScreen:: newName: $newName');
-    log('CreateProgramScreen:: controller: ${nameController.text}');
-    log('CreateProgramScreen:: widget.name: ${widget.name}');
-
     final screenHeight = MediaQuery.of(context).size.height;
     final radius = screenHeight / 6;
 
@@ -131,7 +123,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                         style: TextStyles.mediumNormal.copyWith(color: Colors.green),
                         autofocus: true,
                         onSubmitted: (value) {
-                          newName = nameController.text;
+                          widget.name = nameController.text;
                           setState(() {
                             editName = false;
                           });
@@ -140,7 +132,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                       ),
                     )
                   : Text(
-                      newName.isNotEmpty ? newName : widget.name,
+                      widget.name,
                       style: TextStyles.mediumBold.copyWith(color: Colors.green),
                     ),
               IconButton(
@@ -205,7 +197,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
                       convertListDaysOfWeekToListString(daysSelected).join(',');
                   var program = Program(
                     out: widget.valve,
-                    name: newName,
+                    name: widget.name,
                     days: listOfDays,
                     cycles: cyclesOfCurrentProgram,
                   );
