@@ -16,7 +16,7 @@ import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class CreateProgramScreen extends ConsumerStatefulWidget {
-   CreateProgramScreen({required this.valve, required this.name, super.key});
+  CreateProgramScreen({required this.valve, required this.name, super.key});
 
   final int valve;
   String name;
@@ -102,50 +102,56 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BluetoothScreenUpper(
-                radius: radius,
-                showMenuButton: false,
-                showLogo: true),
+            BluetoothScreenUpper(radius: radius, showMenuButton: false, showLogo: true),
             Center(
               child: Text(
                 'Edit/Create program'.hardcoded,
                 style: TextStyles.mediumBold,
               ),
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              editName
-                  ? SizedBox(
-                      width: 150,
-                      child: TextField(
-                        controller: nameController..text = widget.name,
-                        style: TextStyles.mediumNormal.copyWith(color: Colors.green),
-                        autofocus: true,
-                        onSubmitted: (value) {
-                          widget.name = nameController.text;
-                          setState(() {
-                            editName = false;
-                          });
-                          ref.read(hasProgramChangedProvider.notifier).state = true;
-                        },
-                      ),
-                    )
-                  : Text(
-                      widget.name,
-                      style: TextStyles.mediumBold.copyWith(color: Colors.green),
-                    ),
-              IconButton(
-                  onPressed: () {
-                    setState(() {
-                      editName = true;
-                    });
-                  },
-                  icon: const Icon(
-                    Icons.edit,
-                    size: 18,
-                    color: Colors.black54,
-                  ))
-            ]),
-
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  editName
+                      ? SizedBox(
+                          width: 250,
+                          child: TextField(
+                            controller: nameController..text = widget.name,
+                            style: TextStyles.mediumNormal.copyWith(color: Colors.green),
+                            autofocus: true,
+                            onSubmitted: (value) {
+                              widget.name = nameController.text;
+                              setState(() {
+                                editName = false;
+                              });
+                              ref.read(hasProgramChangedProvider.notifier).state = true;
+                            },
+                          ),
+                        )
+                      : Expanded(
+                          child: Center(
+                            child: Text(
+                              widget.name,
+                              style: TextStyles.mediumBold.copyWith(color: Colors.green),
+                            ),
+                          ),
+                        ),
+                  if (!editName) IconButton(
+                      onPressed: () {
+                        setState(() {
+                          editName = true;
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.edit,
+                        size: 18,
+                        color: Colors.black54,
+                      ))
+                ],
+              ),
+            ),
             const Divider(indent: 50, endIndent: 50),
             Text('Select the days you want to irrigate'.hardcoded),
             const DaysOfWeekWidget(),
