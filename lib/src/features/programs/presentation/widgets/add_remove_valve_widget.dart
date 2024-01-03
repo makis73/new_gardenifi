@@ -6,6 +6,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class AddRemoveValveWidget extends ConsumerWidget {
@@ -35,7 +36,7 @@ class AddRemoveValveWidget extends ConsumerWidget {
           ref.read(mqttControllerProvider.notifier).sendMessage(
               valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)));
         }
-        // if the port is already registered, remove it and send message to broker with new list to [valves] topic
+        // if the port is already registered prompt user and then remove it and send message to broker with new list to [valves] topic.
         else if (enabledValves.contains(port)) {
           if (ref.read(statusTopicProvider)['out$port'] == 1) {
             await showAlertDialog(
@@ -46,9 +47,22 @@ class AddRemoveValveWidget extends ConsumerWidget {
                     'Please turn off valve before remove it from IoT device!'.hardcoded);
             Navigator.pop(context);
           } else {
-            enabledValves.remove(port);
-            ref.read(mqttControllerProvider.notifier).sendMessage(
-                valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)));
+            var res = await showAlertDialog(
+                context: context,
+                title: 'Valve deletion'.hardcoded,
+                defaultActionText: 'Yes'.hardcoded,
+                content:
+                    'Are you sure you want to remove this valve? All programs of this valve will be alse deleted.',
+                cancelActionText: 'Cancel'.hardcoded);
+            if (res == true) {
+              enabledValves.remove(port);
+              ref.read(programProvider).deleteProgram(int.parse(port));
+              ref.read(mqttControllerProvider.notifier).sendMessage(
+                  valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)));
+              Navigator.pop(context);
+            } else {
+              Navigator.pop(context);
+            }
           }
         }
       },

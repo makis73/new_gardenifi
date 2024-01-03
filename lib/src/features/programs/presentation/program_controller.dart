@@ -34,18 +34,21 @@ class ProgramController {
     }
   }
 
-  int deleteProgram(int valve) {
+  int? deleteProgram(int valve) {
     var schedule = ref.read(configTopicProvider);
     var index = schedule.indexWhere(
       (program) => program.out == valve,
     );
-    schedule.removeAt(index);
-    sendSchedule(schedule);
-    return 2;
+    if (index != -1) {
+      schedule.removeAt(index);
+      sendSchedule(schedule);
+      return 2;
+    }
+    return null;
   }
 
   //TODO:  What if delete the last cycle?
-  deleteCycle(int cycleIndex) {
+  void deleteCycle(int cycleIndex) {
     var cycles = ref.read(cyclesOfProgramProvider);
     cycles.removeAt(cycleIndex);
     ref.read(cyclesOfProgramProvider.notifier).state = [...cycles];
