@@ -73,6 +73,10 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 
   @override
   Widget build(BuildContext context) {
+    log('CreateProgramScreen:: newName: $newName');
+    log('CreateProgramScreen:: controller: ${nameController.text}');
+    log('CreateProgramScreen:: widget.name: ${widget.name}');
+
     final screenHeight = MediaQuery.of(context).size.height;
     final radius = screenHeight / 6;
 
