@@ -75,7 +75,6 @@ class MqttRepository {
       buf.addAll(utf8.encode(message));
       builder.addBuffer(buf);
 
-      // builder.addString(message);
       final payload = builder.payload;
       _client.publishMessage(topic, qos, payload!, retain: true);
     }

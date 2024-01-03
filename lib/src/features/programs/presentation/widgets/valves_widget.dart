@@ -59,7 +59,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   bool valveIsOn = status['out$valve'] == 1 ? true : false;
 
                   // Check if there is a program for this valve.
-                  Program? program = 
+                  Program? program =
                       ref.read(programProvider).getProgram(schedule, valve);
 
                   // If a program for this valve exists get cycles, days, start times and name
@@ -125,20 +125,22 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                               ))).then((value) {
                                     if (value != null && value == 1) {
                                       showSnackbar(
-                                          context,
-                                          'Program send to broker.'.hardcoded,
-                                          Icons.done,
-                                          Colors.greenAccent);
+                                          context, 'Program send to broker.'.hardcoded,
+                                          icon: Icons.done, color: Colors.greenAccent);
                                     } else if (value != null && value == -1) {
                                       showSnackbar(
                                           context,
                                           'Could not send program to broker. Try again'
                                               .hardcoded,
-                                          Icons.clear,
-                                          Colors.red[800]);
+                                          icon: Icons.clear,
+                                          color: Colors.red[800]);
                                     } else if (value != null && value == 2) {
-                                      showSnackbar(context, 'Program deleted'.hardcoded,
-                                          Icons.done, Colors.greenAccent);
+                                      showSnackbar(
+                                        context,
+                                        'Program deleted'.hardcoded,
+                                        icon: Icons.done,
+                                        color: Colors.greenAccent,
+                                      );
                                     } else if (value == null) {
                                       if (ref.read(hasProgramChangedProvider)) {
                                         refreshMainScreen(ref);

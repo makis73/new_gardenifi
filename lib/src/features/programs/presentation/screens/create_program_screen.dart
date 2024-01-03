@@ -104,9 +104,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
           children: [
             BluetoothScreenUpper(
                 radius: radius,
-                showMenuButton: true,
-                showAddRemoveMenu: true,
-                showInitializeMenu: true,
+                showMenuButton: false,
                 showLogo: true),
             Center(
               child: Text(

@@ -53,7 +53,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
     // When connection to broker is successful show snackbar
     ref.listen(connectedProvider, (previous, next) {
       if (next) {
-        showSnackbar(context, 'Connected to broker.', Icons.done, Colors.greenAccent);
+        showSnackbar(context, 'Connected to broker.', icon: Icons.done, color: Colors.greenAccent);
       }
     });
 

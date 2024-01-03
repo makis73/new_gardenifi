@@ -63,6 +63,13 @@ class ProgramController {
     }
   }
 
+  void rebootDevice() {
+    Map rebootStatusMap = {"cmd": 4};
+    ref
+        .read(mqttControllerProvider.notifier)
+        .sendMessage(commandTopic, MqttQos.atLeastOnce, jsonEncode(rebootStatusMap));
+  }
+
   Program? getProgram(List<Program> schedule, int valve) {
     for (var program in schedule) {
       if (program.out == valve) {
