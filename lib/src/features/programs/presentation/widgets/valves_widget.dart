@@ -66,20 +66,27 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   List<Cycle> cycles = program != null ? program.cycles : [];
                   List<DaysOfWeek> days =
                       program != null ? stringToDaysOfWeek(program.days) : [];
-                  String times = program != null
-                      ? ref.watch(programProvider).getStartTimesAsString(program.cycles)
-                      : '';
+                  List<Map<String, String>> mapOfTimes = program != null
+                      ? ref.watch(programProvider).getTimesAsMap(program.cycles)
+                      : [];
                   // Get the next run of this valve.
-                  String nextRun = ref.watch(programProvider).getNextRun(days, times);
+                  var listOfStartTimes =
+                      ref.read(programProvider).getStartTimesAsString(mapOfTimes);
+                  String nextRun =
+                      ref.watch(programProvider).getNextRun(days, listOfStartTimes);
+                  // Get the time the valve will close
+                  String? nextEnd = ref
+                      .watch(programProvider)
+                      .getNextEnd(mapOfTimes, nextRun.substring(nextRun.length - 5));
 
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ExpansionTile(
                       title: TileTitle(valve: valve, valveIsOn: valveIsOn),
                       subtitle: valveIsOn
-                          ? const Text(
-                              'Close at...',
-                              style: TextStyle(color: Colors.black),
+                          ? Text(
+                              nextEnd != null ? 'Closes at $nextEnd'.hardcoded : '',
+                              style: const TextStyle(color: Colors.black),
                             )
                           : (cycles.isNotEmpty)
                               ? Row(
@@ -112,16 +119,16 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                                 valve: valve,
                                               ))).then((value) {
                                     if (value != null && value == 1) {
-                                      showSnackbar(context, 'Program send to broker.',
+                                      showSnackbar(context, 'Program send to broker.'.hardcoded,
                                           Icons.done, Colors.greenAccent);
                                     } else if (value != null && value == -1) {
                                       showSnackbar(
                                           context,
-                                          'Could not send program to broker. Try again',
+                                          'Could not send program to broker. Try again'.hardcoded,
                                           Icons.clear,
                                           Colors.red[800]);
                                     } else if (value != null && value == 2) {
-                                      showSnackbar(context, 'Program deleted', Icons.done,
+                                      showSnackbar(context, 'Program deleted'.hardcoded, Icons.done,
                                           Colors.greenAccent);
                                     } else if (value == null) {
                                       if (ref.read(hasProgramChangedProvider)) {
@@ -131,8 +138,8 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                   });
                                 },
                                 child: cycles.isEmpty
-                                    ? const Text('Create Program')
-                                    : const Text('Edit program')),
+                                    ? Text('Create Program'.hardcoded)
+                                    : Text('View/Edit program'.hardcoded)),
                             Switch(
                               value: valveIsOn,
                               onChanged: (value) =>

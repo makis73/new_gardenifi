@@ -44,7 +44,7 @@ class ProgramController {
     return 2;
   }
 
-  // ! What if delete the last cycle?
+  //TODO:  What if delete the last cycle?
   deleteCycle(int cycleIndex) {
     var cycles = ref.read(cyclesOfProgramProvider);
     cycles.removeAt(cycleIndex);
@@ -80,7 +80,7 @@ class ProgramController {
 
   String getClosestTime(String times) {
     var timeNow = DateFormat('HH:mm').format(DateTime.now());
-    var listOfTimes = times.split(' ,');
+    var listOfTimes = times.split(',');
     if (!listOfTimes.contains(timeNow)) {
       listOfTimes.add(timeNow);
     }
@@ -116,20 +116,42 @@ class ProgramController {
     }
   }
 
-  String getStartTimesAsString(List<Cycle> cycles) {
-    List<String> startTimesList = [];
+  // Get the time the valve will close
+  String? getNextEnd(List<Map<String, String>> maps, String nextRun) {
+    for (var map in maps) {
+      var nowString = DateFormat('HH:mm').format(DateTime.now());
+      var now = DateFormat('HH:mm').parse(nowString);
+      var start = DateFormat('HH:mm').parse(map['start']!);
+      var end = DateFormat('HH:mm').parse(map['end']!);
+      if ((start.isBefore(now) || start.isAtSameMomentAs(now)) && now.isBefore(end)) {
+        return map['end'];
+      }
+    }
+    return null;
+  }
 
+  List<Map<String, String>> getTimesAsMap(List<Cycle> cycles) {
+    List<Map<String, String>> listOfMap = [];
     for (var cycle in cycles) {
       if (cycle.min != '0') {
         var startTime = cycle.start;
-        startTimesList.add('$startTime ');
+        var startTimeInDateTime = DateFormat('HH:mm').parse(startTime);
+        var endTimeInDateTime =
+            startTimeInDateTime.add(Duration(minutes: int.parse(cycle.min)));
+        var endTimeString = DateFormat('HH:mm').format(endTimeInDateTime);
+
+        listOfMap.add({'start': startTime, 'end': endTimeString});
       }
     }
-    // short the list of times
-    startTimesList.sort((a, b) {
-      return a.compareTo(b);
-    });
-    return startTimesList.join(',');
+    return listOfMap;
+  }
+
+  String getStartTimesAsString(List<Map<String, String>> times) {
+    var timesList = [];
+    for (var map in times) {
+      timesList.add(map['start']);
+    }
+    return timesList.join(',');
   }
 }
 
