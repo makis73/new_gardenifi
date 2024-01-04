@@ -109,20 +109,21 @@ class ProgramController {
     var today = DateFormat('E').format(DateTime.now());
     var todayDay = todayToDaysOfWeek(today);
     var closestTime = getClosestTime(times);
+    var newListDays = [...listOfDays];
 
     if (!listOfDays.contains(todayDay)) {
-      listOfDays.add(todayDay!);
+      newListDays.add(todayDay!);
     }
     try {
-      listOfDays.sort((a, b) => a.index.compareTo(b.index));
-      var index = listOfDays.indexWhere((element) => element == todayDay);
-      if (timeIsAfterNow(closestTime)) {
+      newListDays.sort((a, b) => a.index.compareTo(b.index));
+      var index = newListDays.indexWhere((element) => element == todayDay);
+      if (listOfDays.contains(todayDay) && timeIsAfterNow(closestTime)) {
         return 'Today $closestTime';
       } else {
-        return '${listOfDays[index + 1].name} $closestTime';
+        return '${newListDays[index + 1].name} $closestTime';
       }
     } catch (e) {
-      return 'Next ${listOfDays[0].name} $closestTime';
+      return 'Next ${newListDays[0].name} $closestTime';
     }
   }
 
