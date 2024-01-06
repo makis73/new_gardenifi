@@ -26,7 +26,7 @@ class ProgramController {
       var scheduleEncoded = jsonEncode(schedule);
       ref
           .read(mqttControllerProvider.notifier)
-          .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded);
+          .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded, true);
       return 1;
     } catch (e) {
       log('PROGRAM_CONTROLLER:: Error while sending schedule to broker (error: ${e.toString()})');
@@ -35,6 +35,7 @@ class ProgramController {
   }
 
   int? deleteProgram(int valve) {
+    var deleteCmd = {'out': valve, 'cmd': 5};
     var schedule = ref.read(configTopicProvider);
     var index = schedule.indexWhere(
       (program) => program.out == valve,
@@ -42,6 +43,8 @@ class ProgramController {
     if (index != -1) {
       schedule.removeAt(index);
       sendSchedule(schedule);
+      ref.read(mqttControllerProvider.notifier).sendMessage(
+          commandTopic, MqttQos.atLeastOnce, jsonEncode(deleteCmd), false);
       return 2;
     }
     return null;
@@ -65,9 +68,8 @@ class ProgramController {
 
   void rebootDevice() {
     Map rebootStatusMap = {"cmd": 4};
-    ref
-        .read(mqttControllerProvider.notifier)
-        .sendMessage(commandTopic, MqttQos.atLeastOnce, jsonEncode(rebootStatusMap));
+    ref.read(mqttControllerProvider.notifier).sendMessage(
+        commandTopic, MqttQos.atLeastOnce, jsonEncode(rebootStatusMap), false);
   }
 
   Program? getProgram(List<Program> schedule, int valve) {

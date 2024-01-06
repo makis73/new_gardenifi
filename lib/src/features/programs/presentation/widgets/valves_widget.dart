@@ -78,10 +78,15 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                       ref.read(programProvider).getStartTimesAsString(mapOfTimes);
                   String nextRun =
                       ref.watch(programProvider).getNextRun(days, listOfStartTimes);
+
+                  // ! Here is the bug
                   // Get the time the valve will close
-                  String? nextEnd = ref
-                      .watch(programProvider)
-                      .getNextEnd(mapOfTimes, nextRun.substring(nextRun.length - 5));
+                  String? nextEnd;
+                  if (nextRun.length > 4) {
+                    nextEnd = ref
+                        .watch(programProvider)
+                        .getNextEnd(mapOfTimes, nextRun.substring(nextRun.length - 5));
+                  }
 
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -160,6 +165,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                         valveIsOn
                                             ? json.encode(closeValve(valve))
                                             : json.encode(openValve(valve)),
+                                            true,
                                       ),
                             )
                           ],

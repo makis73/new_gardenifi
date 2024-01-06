@@ -121,10 +121,10 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
     });
   }
 
-  void sendMessage(String topic, MqttQos qos, String message) {
+  void sendMessage(String topic, MqttQos qos, String message, bool retain) {
     final mqttRepository = ref.read(repositoryProvider);
     final topicToSend = createTopicName(topic);
-    mqttRepository.publishMessage(topicToSend, qos, message);
+    mqttRepository.publishMessage(topicToSend, qos, message, retain);
   }
 
   void disconnectFromBroker() {

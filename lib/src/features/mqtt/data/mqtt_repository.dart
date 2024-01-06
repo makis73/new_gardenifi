@@ -67,7 +67,7 @@ class MqttRepository {
     _client.subscribe(topicName, MqttQos.atMostOnce);
   }
 
-  void publishMessage(String topic, MqttQos qos, String message) {
+  void publishMessage(String topic, MqttQos qos, String message, bool retain) {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     if (message.isNotEmpty) {
       var buf = Uint8Buffer();
@@ -76,7 +76,7 @@ class MqttRepository {
       builder.addBuffer(buf);
 
       final payload = builder.payload;
-      _client.publishMessage(topic, qos, payload!, retain: true);
+      _client.publishMessage(topic, qos, payload!, retain: retain);
     }
   }
 

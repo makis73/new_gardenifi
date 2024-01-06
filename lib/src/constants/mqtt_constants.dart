@@ -6,9 +6,9 @@ const String configTopic = 'config';
 const String systemTopic = 'system';
 const String valvesTopic = 'valves';
 
-Map onStatusMap = {"cmd": 1};
-Map offStatusMap = {"cmd": 0};
-Map rebootStatusMap = {"cmd": 4};
-Map deleteProgramMap = {"cmd": 5};
+Map onStatusCmd = {"cmd": 1};
+Map offStatusCmd = {"cmd": 0};
+Map rebootStatusCmd = {"cmd": 4};
+// Map deleteProgramCmd = {"cmd": 5};
 
 

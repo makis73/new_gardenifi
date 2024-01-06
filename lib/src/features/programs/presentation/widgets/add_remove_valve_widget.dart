@@ -34,7 +34,7 @@ class AddRemoveValveWidget extends ConsumerWidget {
         if (!enabledValves.contains(port)) {
           enabledValves.add(port);
           ref.read(mqttControllerProvider.notifier).sendMessage(
-              valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)));
+              valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)), true);
         }
         // if the port is already registered prompt user and then remove it and send message to broker with new list to [valves] topic.
         else if (enabledValves.contains(port)) {
@@ -58,7 +58,7 @@ class AddRemoveValveWidget extends ConsumerWidget {
               enabledValves.remove(port);
               ref.read(programProvider).deleteProgram(int.parse(port));
               ref.read(mqttControllerProvider.notifier).sendMessage(
-                  valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)));
+                  valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)), true);
               Navigator.pop(context);
             } else {
               Navigator.pop(context);
