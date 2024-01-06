@@ -108,7 +108,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                 )
                               : Text('No program'.hardcoded),
                       initiallyExpanded: isExpanded,
-                      collapsedBackgroundColor: Colors.white,
+                      collapsedBackgroundColor: valveIsOn ? Colors.lightBlue.withOpacity(0.1) : Colors.white,
                       collapsedTextColor: Colors.green[900],
                       backgroundColor: Colors.green[100]!.withOpacity(0.5),
                       shape:
