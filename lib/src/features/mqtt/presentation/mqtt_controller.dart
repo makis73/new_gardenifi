@@ -62,14 +62,14 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
     await loadHardwareId();
     final status = createTopicName(statusTopic);
     final config = createTopicName(configTopic);
-    final system = createTopicName(systemTopic);
+    final metadata = createTopicName(metadatTopic);
     final valves = createTopicName(valvesTopic);
     final command = createTopicName(commandTopic);
 
     mqttRepository.subscribeToTopic(client!, valves);
     mqttRepository.subscribeToTopic(client!, status);
     mqttRepository.subscribeToTopic(client!, config);
-    mqttRepository.subscribeToTopic(client!, system);
+    mqttRepository.subscribeToTopic(client!, metadata);
 
     client!.updates!.listen((event) {
       // Stop loading state
@@ -98,11 +98,11 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
         ref.read(statusTopicProvider.notifier).state = mes;
       }
 
-      if (topic == command) {
+      if (topic == metadata) {
         final String replacedString = message.replaceAll('\'', '"');
 
         final Map<String, dynamic> mes = jsonDecode(replacedString);
-        ref.read(commandTopicProvider.notifier).state = mes;
+        ref.read(metadataTopicProvider.notifier).state = mes;
       }
 
       if (topic == config) {
@@ -142,7 +142,7 @@ final valvesTopicProvider = StateProvider<List<String>>((ref) => []);
 
 final statusTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
-final commandTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
+final metadataTopicProvider = StateProvider<Map<String, dynamic>>((ref) => {});
 
 final configTopicProvider = StateProvider<List<Program>>((ref) => []);
 

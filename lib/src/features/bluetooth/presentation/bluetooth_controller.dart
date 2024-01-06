@@ -128,7 +128,7 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     var networksFromJson = WifiNetworks.fromJson(stringOfWifis);
     listOfWifiNetwork += networksFromJson.nets;
 
-    //  The device along with wifi networks sends mqtt credentials and the unique [hardwareId] that i will need later. So I store them locally.
+    //  The device along with wifi networks sends mqtt credentials and the unique [hardwareId].
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('hwId', networksFromJson.hwId);
     prefs.setString('mqtt_host', networksFromJson.mqttBroker.host);

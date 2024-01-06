@@ -7,6 +7,7 @@ import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
 import 'package:new_gardenifi_app/src/common_widgets/snackbar.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/about_dialog.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/show_add_remov_bottomsheet.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
@@ -79,6 +80,11 @@ class MoreMenuButton extends ConsumerWidget {
           const Divider(
             endIndent: 30,
             indent: 30,
+          ),
+          MenuItemButton(
+            leadingIcon: const Icon(Icons.info_outline),
+            child: Text('About'.hardcoded),
+            onPressed: () => aboutDialog(context: context, ref: ref),
           ),
           MenuItemButton(
             leadingIcon: const Icon(Icons.exit_to_app),

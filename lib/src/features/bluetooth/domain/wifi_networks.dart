@@ -15,7 +15,6 @@ class WifiNetworks {
   factory WifiNetworks.fromJson(dynamic json) {
     
     String result = json.replaceAll("'", "\"");
-    print('result = $result');
     dynamic jsonObject = jsonDecode(result);
     var page = jsonObject['page'];
     var pages = jsonObject['pages'];
