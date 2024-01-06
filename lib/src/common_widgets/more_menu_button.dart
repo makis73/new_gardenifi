@@ -86,7 +86,7 @@ class MoreMenuButton extends ConsumerWidget {
                   title: 'Update',
                   defaultActionText: 'Ok'.hardcoded,
                   content:
-                      'You will update the server of IoT device. Your programs will not be lost'
+                      'You will update the server of IoT device. Your programs will not be lost.'
                           .hardcoded,
                   cancelActionText: 'Cancel'.hardcoded);
               if (res == true) {

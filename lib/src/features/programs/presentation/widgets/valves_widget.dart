@@ -18,27 +18,28 @@ import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class ValvesWidget extends ConsumerStatefulWidget {
-  const ValvesWidget({super.key});
+  const ValvesWidget({required this.listOfValves, super.key});
+
+  final List<String> listOfValves;
 
   @override
   ConsumerState<ValvesWidget> createState() => _ValveCardsState();
 }
 
 class _ValveCardsState extends ConsumerState<ValvesWidget> {
-  //! WTF is not update isExpanded !!!!!
+  List<ExpansionTileController> conList = [];
   bool isExpanded = false;
 
-  Map openValve(int valve) {
+  Map openValveCmd(int valve) {
     return {"out": valve, "cmd": 1};
   }
 
-  Map closeValve(int valve) {
+  Map closeValveCmd(int valve) {
     return {"out": valve, "cmd": 0};
   }
 
   @override
   Widget build(BuildContext context) {
-    final listOfValves = ref.watch(valvesTopicProvider);
     final status = ref.watch(statusTopicProvider);
     final schedule = ref.watch(configTopicProvider);
 
@@ -52,10 +53,13 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
           children: [
             Expanded(
               child: ListView.builder(
-                itemCount: listOfValves.length,
+                itemCount: widget.listOfValves.length,
                 padding: const EdgeInsets.symmetric(vertical: 0),
                 itemBuilder: (context, index) {
-                  int valve = int.parse(listOfValves[index]);
+                  ExpansionTileController con = ExpansionTileController();
+                  conList.add(con);
+
+                  int valve = int.parse(widget.listOfValves[index]);
                   bool valveIsOn = status['out$valve'] == 1 ? true : false;
 
                   // Check if there is a program for this valve.
@@ -79,7 +83,6 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   String nextRun =
                       ref.watch(programProvider).getNextRun(days, listOfStartTimes);
 
-                  // ! Here is the bug
                   // Get the time the valve will close
                   String? nextEnd;
                   if (nextRun.length > 4) {
@@ -91,6 +94,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ExpansionTile(
+                      controller: con,
                       title: TileTitle(name: name, valveIsOn: valveIsOn),
                       subtitle: valveIsOn
                           ? Text(
@@ -107,8 +111,8 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                   ],
                                 )
                               : Text('No program'.hardcoded),
-                      initiallyExpanded: isExpanded,
-                      collapsedBackgroundColor: valveIsOn ? Colors.lightBlue.withOpacity(0.1) : Colors.white,
+                      collapsedBackgroundColor:
+                          valveIsOn ? Colors.lightBlue.withOpacity(0.1) : Colors.white,
                       collapsedTextColor: Colors.green[900],
                       backgroundColor: Colors.green[100]!.withOpacity(0.5),
                       shape:
@@ -163,9 +167,9 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                         commandTopic,
                                         MqttQos.atLeastOnce,
                                         valveIsOn
-                                            ? json.encode(closeValve(valve))
-                                            : json.encode(openValve(valve)),
-                                            true,
+                                            ? json.encode(closeValveCmd(valve))
+                                            : json.encode(openValveCmd(valve)),
+                                        true,
                                       ),
                             )
                           ],
@@ -178,11 +182,25 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
             ),
             TextButton(
                 onPressed: () {
-                  setState(() {
-                    isExpanded = true;
-                  });
+                  if (!conList[0].isExpanded) {
+                    setState(() {
+                      isExpanded = true;
+                    });
+                    for (var con in conList) {
+                      con.expand();
+                    }
+                  } else {
+                    setState(() {
+                      isExpanded = false;
+                    });
+                    for (var con in conList) {
+                      con.collapse();
+                    }
+                  }
                 },
-                child: Text('Expand all'.hardcoded))
+                child: isExpanded
+                    ? Text('Collapse all'.hardcoded)
+                    : Text('Expand all'.hardcoded))
           ],
         ),
       ),

@@ -8,6 +8,5 @@ const String valvesTopic = 'valves';
 
 Map rebootCmd = {"cmd": 4};
 Map updateCmd = {"cmd": 6};
-// Map deleteProgramCmd = {"cmd": 5};
 
 

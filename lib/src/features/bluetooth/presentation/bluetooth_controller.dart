@@ -159,7 +159,6 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     // Device will sent back "1" if connected to internet successful or "0" if not
     await Future.delayed(Duration(seconds: 5));
     var response = await readFromDevice(statusCharacteristic!);
-    log('response = ${String.fromCharCodes(response)}');
     return String.fromCharCodes(response);
   }
 }

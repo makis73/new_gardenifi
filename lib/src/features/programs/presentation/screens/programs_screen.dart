@@ -44,7 +44,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
     final radius = screenHeight / 4;
 
     final mqttControllerValue = ref.watch(mqttControllerProvider);
-    final valvesTopicMessage = ref.watch(valvesTopicProvider);
+    final listOfValves = ref.watch(valvesTopicProvider);
     final statusTopicMessage = ref.watch(statusTopicProvider);
 
     final bool cantConnectToBroker = ref.watch(cantConnectProvider);
@@ -74,11 +74,11 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
                     : (statusTopicMessage.containsKey('err') &&
                             statusTopicMessage['err'] == 'LOST_CONNECTION')
                         ? const DeviceDisconnectedWidget()
-                        : (valvesTopicMessage.isEmpty)
+                        : (listOfValves.isEmpty)
                             ? const NoValvesWidget()
                             : (disconnectedFromBroker)
                                 ? const DisconnectedFromBrokerWidget()
-                                : const ValvesWidget();
+                                : ValvesWidget(listOfValves: listOfValves);
               },
               error: (error, stackTrace) => Center(child: Text(error.toString())),
               loading: () =>
