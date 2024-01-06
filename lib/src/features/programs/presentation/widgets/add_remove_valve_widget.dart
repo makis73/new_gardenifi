@@ -59,9 +59,7 @@ class AddRemoveValveWidget extends ConsumerWidget {
               ref.read(programProvider).deleteProgram(int.parse(port));
               ref.read(mqttControllerProvider.notifier).sendMessage(
                   valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)), true);
-              Navigator.pop(context);
             } else {
-              Navigator.pop(context);
             }
           }
         }

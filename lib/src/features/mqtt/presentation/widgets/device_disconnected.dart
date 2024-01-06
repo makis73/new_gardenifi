@@ -18,7 +18,7 @@ class DeviceDisconnectedWidget extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Device disconnectet from internet!'.hardcoded,
+                'Device disconnected from broker!'.hardcoded,
                 style: TextStyles.mediumBold.copyWith(color: Colors.red[900]),
                 textAlign: TextAlign.center,
               ),

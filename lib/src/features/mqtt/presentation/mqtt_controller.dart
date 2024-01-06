@@ -131,6 +131,18 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
     final mqttRepository = ref.read(repositoryProvider);
     mqttRepository.disconnect(client!);
   }
+
+  void rebootDevice() {
+    ref
+        .read(mqttControllerProvider.notifier)
+        .sendMessage(commandTopic, MqttQos.atLeastOnce, jsonEncode(rebootCmd), false);
+  }
+
+  void updateSever() {
+    ref
+        .read(mqttControllerProvider.notifier)
+        .sendMessage(commandTopic, MqttQos.atLeastOnce, jsonEncode(updateCmd), false);
+  }
 }
 
 // ------------> Providers <--------------

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
 import 'package:new_gardenifi_app/src/common_widgets/snackbar.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/screens/welcome_screen.dart';
+import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/about_dialog.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/show_add_remov_bottomsheet.dart';
@@ -72,10 +73,28 @@ class MoreMenuButton extends ConsumerWidget {
                   cancelActionText: 'Cancel'.hardcoded);
               if (res == true) {
                 showSnackbar(context, 'IoT will reboot now!');
-                ref.read(programProvider).rebootDevice();
+                ref.read(mqttControllerProvider.notifier).rebootDevice();
               }
             },
             child: Text('Reboot IoT device'.hardcoded),
+          ),
+          MenuItemButton(
+            leadingIcon: const Icon(Icons.system_update_alt),
+            onPressed: () async {
+              var res = await showAlertDialog(
+                  context: context,
+                  title: 'Update',
+                  defaultActionText: 'Ok'.hardcoded,
+                  content:
+                      'You will update the server of IoT device. Your programs will not be lost'
+                          .hardcoded,
+                  cancelActionText: 'Cancel'.hardcoded);
+              if (res == true) {
+                showSnackbar(context, 'IoT device will udate the server now!');
+                ref.read(mqttControllerProvider.notifier).updateSever();
+              }
+            },
+            child: Text('Update server'.hardcoded),
           ),
           const Divider(
             endIndent: 30,
