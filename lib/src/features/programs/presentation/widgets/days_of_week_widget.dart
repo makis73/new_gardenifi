@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/day_button.dart';
 
 enum DaysOfWeek {

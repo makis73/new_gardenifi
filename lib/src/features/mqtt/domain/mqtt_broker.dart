@@ -14,6 +14,6 @@ class MqttBroker {
 
   @override
   String toString() {
-    return '{${this.host}, ${this.port}, ${this.user}, ${this.pass}}';
+    return '{$host, $port, $user, $pass}';
   }
 }

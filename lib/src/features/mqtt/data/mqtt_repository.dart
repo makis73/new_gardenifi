@@ -7,7 +7,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:typed_data/typed_buffers.dart';
-import 'package:typed_data/typed_data.dart' as td;
+import 'package:typed_data/typed_data.dart';
 
 enum MqttCurrentConnectionState {
   idle,

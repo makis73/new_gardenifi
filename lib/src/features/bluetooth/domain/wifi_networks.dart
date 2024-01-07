@@ -33,6 +33,6 @@ class WifiNetworks {
 
   @override
   String toString() {
-    return '{${this.page}, ${this.pages}, ${this.nets}, ${this.hwId}, ${this.mqttBroker} ';
+    return '{$page, $pages, $nets, $hwId, $mqttBroker ';
   }
 }

@@ -64,7 +64,6 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
     final config = createTopicName(configTopic);
     final metadata = createTopicName(metadatTopic);
     final valves = createTopicName(valvesTopic);
-    final command = createTopicName(commandTopic);
 
     mqttRepository.subscribeToTopic(client!, valves);
     mqttRepository.subscribeToTopic(client!, status);

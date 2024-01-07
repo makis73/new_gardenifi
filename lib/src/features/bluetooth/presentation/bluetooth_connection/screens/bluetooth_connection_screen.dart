@@ -123,7 +123,6 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
             });
             return buildConnectionWidget(raspiDevice);
           } else {
-            // TODO: This widget pops up after a while when connection lost and reconect! WTF happens?
             return DeviceNotFoundWidget(ref: ref);
           }
         },

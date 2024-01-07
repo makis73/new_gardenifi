@@ -50,7 +50,6 @@ class ProgramController {
     return null;
   }
 
-  //TODO:  What if delete the last cycle?
   void deleteCycle(int cycleIndex) {
     var cycles = ref.read(cyclesOfProgramProvider);
     cycles.removeAt(cycleIndex);
