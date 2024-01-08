@@ -180,7 +180,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                 },
               ),
             ),
-            TextButton(
+            if (MediaQuery.of(context).orientation == Orientation.portrait) TextButton(
                 onPressed: () {
                   if (!conList[0].isExpanded) {
                     setState(() {

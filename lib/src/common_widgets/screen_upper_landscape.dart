@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:new_gardenifi_app/src/common_widgets/gardenifi_logo.dart';
 import 'package:new_gardenifi_app/src/common_widgets/more_menu_button.dart';
+import 'package:new_gardenifi_app/src/constants/gaps.dart';
 
-class BluetoothScreenUpper extends StatelessWidget {
-  const BluetoothScreenUpper({
+class ScreenUpperLandscape extends StatelessWidget {
+  const ScreenUpperLandscape({
     super.key,
     required this.radius,
     required this.showMenuButton,
@@ -23,7 +24,7 @@ class BluetoothScreenUpper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: radius,
+      // height: radius,
       child: Stack(children: [
         Positioned(
           left: -radius / 1.5,
@@ -49,26 +50,26 @@ class BluetoothScreenUpper extends StatelessWidget {
             ),
           ),
         ),
-        if (showMenuButton)
-           Positioned(
-            right: 10,
-            top: 30,
-            child: MoreMenuButton(
-              addRemoveValves: showAddRemoveMenu,
-              initializeIoT: showInitializeMenu,
-            ),
-          ),
-        if (messageWidget != null) messageWidget!,
-        if (showLogo)
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.center,
-              child: GardenifiLogo(
-                height: radius,
-                divider: 4,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal:15.0),
+          child: Column(children: [
+            if (showMenuButton)
+              MoreMenuButton(
+                addRemoveValves: showAddRemoveMenu,
+                initializeIoT: showInitializeMenu,
               ),
-            ),
-          )
+              gapH32,
+            if (messageWidget != null) messageWidget!,
+            if (showLogo)
+              Align(
+                alignment: Alignment.center,
+                child: GardenifiLogo(
+                  height: radius*2,
+                  divider: 4,
+                ),
+              )
+          ]),
+        )
       ]),
     );
   }

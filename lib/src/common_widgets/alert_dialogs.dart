@@ -12,21 +12,32 @@ Future<bool?> showAlertDialog({
   return showDialog(
     context: context,
     barrierDismissible: cancelActionText != null,
-    builder: (context) => AlertDialog(
-      title: Text(title, style: TextStyles.bigBold,),
-      content: content != null ? Text(content, style: TextStyles.smallNormal,) : null,
-      actions: <Widget>[
-              if (cancelActionText != null)
-                TextButton(
-                  child: Text(cancelActionText, style: TextStyles.mediumNormal),
-                  onPressed: () => Navigator.pop(context, false),
-                ),
+    builder: (context) => Container(
+      constraints: const BoxConstraints(
+        maxWidth: 200,
+      ),
+      child: AlertDialog(
+          title: Text(
+            title,
+            style: TextStyles.bigBold,
+          ),
+          content: content != null
+              ? Text(
+                  content,
+                  style: TextStyles.smallNormal,
+                )
+              : null,
+          actions: <Widget>[
+            if (cancelActionText != null)
               TextButton(
-                child: Text(defaultActionText, style: TextStyles.mediumNormal),
-                onPressed: () => Navigator.pop(context, true),
+                child: Text(cancelActionText, style: TextStyles.mediumNormal),
+                onPressed: () => Navigator.pop(context, false),
               ),
-            ]
-          
+            TextButton(
+              child: Text(defaultActionText, style: TextStyles.mediumNormal),
+              onPressed: () => Navigator.pop(context, true),
+            ),
+          ]),
     ),
   );
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
+import 'package:new_gardenifi_app/src/common_widgets/screen_upper_portrait.dart';
 import 'package:new_gardenifi_app/src/common_widgets/bottom_screen_widget.dart';
 import 'package:new_gardenifi_app/src/common_widgets/button_placeholder.dart';
 import 'package:new_gardenifi_app/src/common_widgets/no_bluetooth_widget.dart';
@@ -84,7 +84,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
             hasScrollBody: false,
             child: Column(
               children: [
-                BluetoothScreenUpper(
+                ScreenUpperPortrait(
                     radius: radius, showMenuButton: false, showLogo: true),
                 !isBluetoothOn
                     ? Expanded(child: NoBluetoothWidget(ref: ref))
@@ -124,7 +124,6 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                             gapPadding: 1)),
                                                     isEmpty: ssid == '',
                                                     child: DropdownButtonHideUnderline(
-                                                      
                                                         child: DropdownButton<String>(
                                                       menuMaxHeight: 400,
                                                       value: ssid == '' ? null : ssid,

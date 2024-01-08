@@ -3,17 +3,18 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
-import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
+import 'package:new_gardenifi_app/src/common_widgets/screen_upper_portrait.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/button_add_cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/cycles_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
-import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/showDuratonPicker.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/button_delete_program.dart';
+import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/button_save_program.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
-import 'package:new_gardenifi_app/utils.dart';
 
 class CreateProgramScreen extends ConsumerStatefulWidget {
   CreateProgramScreen({required this.valve, required this.name, super.key});
@@ -27,10 +28,20 @@ class CreateProgramScreen extends ConsumerStatefulWidget {
 }
 
 class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen> {
-  late Cycle cycle;
   bool editName = false;
 
   TextEditingController nameController = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var currentSchedule = ref.read(configTopicProvider);
+      ref.read(daysOfProgramProvider.notifier).state =
+          ref.read(programProvider).getDays(currentSchedule, widget.valve);
+      ref.read(cyclesOfProgramProvider.notifier).state = getCycles(currentSchedule);
+    });
+    super.initState();
+  }
 
   // Get the cyclces if they exist from the program for this valve
   List<Cycle> getCycles(List<Program> schedule) {
@@ -49,17 +60,6 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
     }
   }
 
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      var currentSchedule = ref.read(configTopicProvider);
-      ref.read(daysOfProgramProvider.notifier).state =
-          ref.read(programProvider).getDays(currentSchedule, widget.valve);
-      ref.read(cyclesOfProgramProvider.notifier).state = getCycles(currentSchedule);
-    });
-    super.initState();
-  }
-
   bool hasProgram() {
     var index = ref
         .read(configTopicProvider)
@@ -70,6 +70,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     final radius = screenHeight / 6;
 
     final currentSchedule = ref.watch(configTopicProvider);
@@ -96,156 +97,194 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
           } else {}
         }
       },
-      child: Scaffold(
-          body: Padding(
-        padding: const EdgeInsets.only(bottom: 15.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            BluetoothScreenUpper(radius: radius, showMenuButton: false, showLogo: true),
-            Center(
-              child: Text(
-                'Edit/Create program'.hardcoded,
-                style: TextStyles.mediumBold,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  editName
-                      ? SizedBox(
-                          width: 250,
-                          child: TextField(
-                            controller: nameController..text = widget.name,
-                            style: TextStyles.mediumNormal.copyWith(color: Colors.green),
-                            autofocus: true,
-                            onSubmitted: (value) {
-                              widget.name = nameController.text;
-                              setState(() {
-                                editName = false;
-                              });
-                              ref.read(hasProgramChangedProvider.notifier).state = true;
-                            },
-                          ),
-                        )
-                      : Expanded(
-                          child: Center(
-                            child: Text(
-                              widget.name,
-                              style: TextStyles.mediumBold.copyWith(color: Colors.green),
+      child: Scaffold(body: OrientationBuilder(builder: (context, orientation) {
+        return (orientation == Orientation.portrait)
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 15.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ScreenUpperPortrait(
+                        radius: radius, showMenuButton: false, showLogo: true),
+                    createTitle(),
+                    createValveNameRow(),
+                    const Divider(indent: 50, endIndent: 50),
+                    Text('Select the days you want to irrigate'.hardcoded),
+                    const DaysOfWeekWidget(),
+                    const Divider(indent: 50, endIndent: 50),
+                    AddCycleButton(
+                        ref: ref,
+                        daysOfCurrentProgram: daysOfCurrentProgram,
+                        context: context,
+                        cyclesOfCurrentProgram: cyclesOfCurrentProgram),
+                    (cyclesOfCurrentProgram.isNotEmpty)
+                        ? const CyclesWidget()
+                        : Expanded(child: Container()),
+                    if (hasChanged)
+                      SaveProgramButton(
+                          widget: widget,
+                          ref: ref,
+                          daysSelected: daysSelected,
+                          cyclesOfCurrentProgram: cyclesOfCurrentProgram,
+                          currentSchedule: currentSchedule,
+                          context: context),
+                    if (hasProgram())
+                      DeleteProgramButtonWidget(
+                          ref: ref, widget: widget, context: context)
+                  ],
+                ),
+              )
+            : SafeArea(
+                child: Column(
+                  children: [
+                    createTitle(),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Flexible(
+                            flex: 3,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                createValveNameRow(),
+                                const DaysOfWeekWidget(),
+                                AddCycleButton(
+                                    ref: ref,
+                                    daysOfCurrentProgram: daysOfCurrentProgram,
+                                    context: context,
+                                    cyclesOfCurrentProgram: cyclesOfCurrentProgram),
+                                     if (hasChanged)
+                                  SaveProgramButton(
+                                      widget: widget,
+                                      ref: ref,
+                                      daysSelected: daysSelected,
+                                      cyclesOfCurrentProgram: cyclesOfCurrentProgram,
+                                      currentSchedule: currentSchedule,
+                                      context: context),
+                                      if (hasProgram())
+                      DeleteProgramButtonWidget(
+                          ref: ref, widget: widget, context: context)
+                              ],
                             ),
                           ),
-                        ),
-                  if (!editName) IconButton(
-                      onPressed: () {
-                        setState(() {
-                          editName = true;
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.edit,
-                        size: 18,
-                        color: Colors.black54,
-                      ))
-                ],
-              ),
-            ),
-            const Divider(indent: 50, endIndent: 50),
-            Text('Select the days you want to irrigate'.hardcoded),
-            const DaysOfWeekWidget(),
-            const Divider(indent: 50, endIndent: 50),
-            TextButton.icon(
-              onPressed: (daysOfCurrentProgram.isEmpty)
-                  ? null
-                  : () async {
-                      TimeOfDay? time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                        barrierLabel: "Select start time".hardcoded,
-                        barrierColor: Colors.white,
-                        barrierDismissible: false,
-                      );
-                      if (time != null) {
-                        // Create a new cycle with selected start time
-                        cycle = Cycle(start: time.format(context));
-                        // Update the provider who keeps the state of cycle
-                        ref.read(cyclesOfProgramProvider.notifier).state = [
-                          ...cyclesOfCurrentProgram,
-                          cycle
-                        ];
-                        // Select the duration for that cycle
-                        var duration = await showDurationPickerDialog(context);
-                        if (duration != null) {
-                          ref.read(hasProgramChangedProvider.notifier).state = true;
-                          // Add the selected duration to the previous new created cycle
-                          cycle.min = duration.inMinutes.toString();
-                          // Update the provider
-                          ref.read(cyclesOfProgramProvider.notifier).state =
-                              addCycleAndSortList(cyclesOfCurrentProgram, cycle);
-                        }
-                      }
+                          Flexible(
+                            flex: 4,
+                            child: Column(
+                              children: [
+                                
+                                (cyclesOfCurrentProgram.isNotEmpty)
+                                    ? const CyclesWidget()
+                                    : Expanded(child: Container()),
+                               
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              );
+      })),
+    );
+  }
+
+  Padding createProgramScreenPortrait(
+      double radius,
+      List<DaysOfWeek> daysOfCurrentProgram,
+      BuildContext context,
+      List<Cycle> cyclesOfCurrentProgram,
+      bool hasChanged,
+      List<DaysOfWeek> daysSelected,
+      List<Program> currentSchedule) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ScreenUpperPortrait(radius: radius, showMenuButton: false, showLogo: true),
+          createTitle(),
+          createValveNameRow(),
+          const Divider(indent: 50, endIndent: 50),
+          Text('Select the days you want to irrigate'.hardcoded),
+          const DaysOfWeekWidget(),
+          const Divider(indent: 50, endIndent: 50),
+          AddCycleButton(
+              ref: ref,
+              daysOfCurrentProgram: daysOfCurrentProgram,
+              context: context,
+              cyclesOfCurrentProgram: cyclesOfCurrentProgram),
+          (cyclesOfCurrentProgram.isNotEmpty)
+              ? const CyclesWidget()
+              : Expanded(child: Container()),
+          if (hasChanged)
+            SaveProgramButton(
+                widget: widget,
+                ref: ref,
+                daysSelected: daysSelected,
+                cyclesOfCurrentProgram: cyclesOfCurrentProgram,
+                currentSchedule: currentSchedule,
+                context: context),
+          if (hasProgram())
+            DeleteProgramButtonWidget(ref: ref, widget: widget, context: context)
+        ],
+      ),
+    );
+  }
+
+  Center createTitle() {
+    return Center(
+      child: Text(
+        'Edit/Create program'.hardcoded,
+        style: TextStyles.mediumBold,
+      ),
+    );
+  }
+
+  Padding createValveNameRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          editName
+              ? SizedBox(
+                  width: 250,
+                  child: TextField(
+                    controller: nameController..text = widget.name,
+                    style: TextStyles.mediumNormal.copyWith(color: Colors.green),
+                    autofocus: true,
+                    onSubmitted: (value) {
+                      widget.name = nameController.text;
+                      setState(() {
+                        editName = false;
+                      });
+                      ref.read(hasProgramChangedProvider.notifier).state = true;
                     },
-              label: Text('Add an irrigation cycle'.hardcoded),
-              icon: const Icon(Icons.add_circle_outline),
-            ),
-            // ! Widget overflow on landscape !
-            (cyclesOfCurrentProgram.isNotEmpty)
-                ? const CyclesWidget()
-                : Expanded(child: Container()),
-            if (hasChanged)
-              OutlinedButton(
+                  ),
+                )
+              : Expanded(
+                  child: Center(
+                    child: Text(
+                      widget.name,
+                      style: TextStyles.mediumBold.copyWith(color: Colors.green),
+                    ),
+                  ),
+                ),
+          if (!editName)
+            IconButton(
                 onPressed: () {
-                  var listOfDays =
-                      convertListDaysOfWeekToListString(daysSelected).join(',');
-                  var program = Program(
-                    out: widget.valve,
-                    name: widget.name,
-                    days: listOfDays,
-                    cycles: cyclesOfCurrentProgram,
-                  );
-                  // Check if there is already a program for this valve and return 1 or -1
-                  var index = currentSchedule.indexWhere(
-                    (program) => program.out == widget.valve,
-                  );
-                  // If already exist a program for this valve, replace it with the new created, else add this to the schedule(List<Program)
-                  if (index != -1) {
-                    currentSchedule[index] = program;
-                  } else {
-                    currentSchedule.add(program);
-                  }
-                  var res = ref.read(programProvider).sendSchedule(currentSchedule);
-                  Navigator.pop(context, res);
+                  setState(() {
+                    editName = true;
+                  });
                 },
-                style: OutlinedButton.styleFrom(fixedSize: const Size(250, 20)),
-                child: Text(
-                  'Save'.hardcoded,
-                  style: TextStyles.smallBold,
-                ),
-              ),
-            if (hasProgram())
-              TextButton(
-                child: Text(
-                  'Delete program'.hardcoded,
-                  style: TextStyles.xSmallNormal.copyWith(color: Colors.red[800]),
-                ),
-                onPressed: () async {
-                  var delete = await showAlertDialog(
-                      context: context,
-                      title: 'Program Deletion'.hardcoded,
-                      defaultActionText: 'Yes'.hardcoded,
-                      cancelActionText: 'Cancel'.hardcoded,
-                      content: 'Are you sure you want to delete this program?'.hardcoded);
-                  if (delete == true) {
-                    var res = ref.read(programProvider).deleteProgram(widget.valve);
-                    Navigator.pop(context, res);
-                  }
-                },
-              )
-          ],
-        ),
-      )),
+                icon: const Icon(
+                  Icons.edit,
+                  size: 18,
+                  color: Colors.black54,
+                ))
+        ],
+      ),
     );
   }
 }

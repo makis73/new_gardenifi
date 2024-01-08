@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
+import 'package:new_gardenifi_app/src/common_widgets/screen_upper_portrait.dart';
 import 'package:new_gardenifi_app/src/common_widgets/error_message_widget.dart';
 import 'package:new_gardenifi_app/src/constants/colors.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
@@ -32,7 +32,7 @@ class _WifiConnectionScreenState extends ConsumerState<WifiConnectionScreen> {
             hasScrollBody: false,
             child: Column(
               children: [
-                BluetoothScreenUpper(
+                ScreenUpperPortrait(
                     radius: radius, showMenuButton: false, showLogo: true),
                 connectionState.when(
                   data: (data) {

@@ -2,9 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_gardenifi_app/src/common_widgets/bluetooth_screen_upper.dart';
+import 'package:new_gardenifi_app/src/common_widgets/screen_upper_landscape.dart';
+import 'package:new_gardenifi_app/src/common_widgets/screen_upper_portrait.dart';
 import 'package:new_gardenifi_app/src/common_widgets/snackbar.dart';
 import 'package:new_gardenifi_app/src/constants/colors.dart';
+import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/can_not_connect_to_broker_widget.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/device_disconnected.dart';
@@ -53,38 +55,83 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
     // When connection to broker is successful show snackbar
     ref.listen(connectedProvider, (previous, next) {
       if (next) {
-        showSnackbar(context, 'Connected to broker.', icon: Icons.done, color: Colors.greenAccent);
+        showSnackbar(context, 'Connected to broker.',
+            icon: Icons.done, color: Colors.greenAccent);
       }
     });
 
     return Scaffold(
         backgroundColor: screenBackgroundColor,
-        body: Column(
-          children: [
-            BluetoothScreenUpper(
-                radius: radius,
-                showMenuButton: true,
-                showAddRemoveMenu: true,
-                showInitializeMenu: true,
-                showLogo: true),
-            mqttControllerValue.when(
-              data: (data) {
-                return cantConnectToBroker
-                    ? const CanNotConnectToBrokerWidget()
-                    : (statusTopicMessage.containsKey('err') &&
-                            statusTopicMessage['err'] == 'LOST_CONNECTION')
-                        ? const DeviceDisconnectedWidget()
-                        : (listOfValves.isEmpty)
-                            ? const NoValvesWidget()
-                            : (disconnectedFromBroker)
-                                ? const DisconnectedFromBrokerWidget()
-                                : ValvesWidget(listOfValves: listOfValves);
-              },
-              error: (error, stackTrace) => Center(child: Text(error.toString())),
-              loading: () =>
-                  const Expanded(child: Center(child: CircularProgressIndicator())),
-            ),
-          ],
-        ));
+        body: OrientationBuilder(builder: (context, orientation) {
+          return orientation == Orientation.portrait
+              ? Column(
+                  children: [
+                    ScreenUpperPortrait(
+                        radius: radius,
+                        showMenuButton: true,
+                        showAddRemoveMenu: true,
+                        showInitializeMenu: true,
+                        showLogo: true),
+                    mqttControllerValue.when(
+                      data: (data) {
+                        return cantConnectToBroker
+                            ? const CanNotConnectToBrokerWidget()
+                            : (statusTopicMessage.containsKey('err') &&
+                                    statusTopicMessage['err'] == 'LOST_CONNECTION')
+                                ? const DeviceDisconnectedWidget()
+                                : (listOfValves.isEmpty)
+                                    ? const NoValvesWidget()
+                                    : (disconnectedFromBroker)
+                                        ? const DisconnectedFromBrokerWidget()
+                                        : ValvesWidget(listOfValves: listOfValves);
+                      },
+                      error: (error, stackTrace) => Center(child: Text(error.toString())),
+                      loading: () => const Expanded(
+                          child: Center(child: CircularProgressIndicator())),
+                    ),
+                  ],
+                )
+              : SafeArea(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ScreenUpperLandscape(
+                          radius: screenHeight / 3,
+                          showMenuButton: true,
+                          showAddRemoveMenu: true,
+                          showInitializeMenu: true,
+                          showLogo: true),
+                      gapW20,
+                      Expanded(
+                       
+                        child: Column(
+                          children: [
+                            mqttControllerValue.when(
+                              data: (data) {
+                                return cantConnectToBroker
+                                    ? const CanNotConnectToBrokerWidget()
+                                    : (statusTopicMessage.containsKey('err') &&
+                                            statusTopicMessage['err'] ==
+                                                'LOST_CONNECTION')
+                                        ? const DeviceDisconnectedWidget()
+                                        : (listOfValves.isEmpty)
+                                            ? const NoValvesWidget()
+                                            : (disconnectedFromBroker)
+                                                ? const DisconnectedFromBrokerWidget()
+                                                : ValvesWidget(
+                                                    listOfValves: listOfValves);
+                              },
+                              error: (error, stackTrace) =>
+                                  Center(child: Text(error.toString())),
+                              loading: () => const Expanded(
+                                  child: Center(child: CircularProgressIndicator())),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                );
+        }));
   }
 }
