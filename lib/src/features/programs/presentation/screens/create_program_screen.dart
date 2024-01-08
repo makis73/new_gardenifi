@@ -70,7 +70,6 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
     final radius = screenHeight / 6;
 
     final currentSchedule = ref.watch(configTopicProvider);
@@ -99,97 +98,73 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
       },
       child: Scaffold(body: OrientationBuilder(builder: (context, orientation) {
         return (orientation == Orientation.portrait)
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 15.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ScreenUpperPortrait(
-                        radius: radius, showMenuButton: false, showLogo: true),
-                    createTitle(),
-                    createValveNameRow(),
-                    const Divider(indent: 50, endIndent: 50),
-                    Text('Select the days you want to irrigate'.hardcoded),
-                    const DaysOfWeekWidget(),
-                    const Divider(indent: 50, endIndent: 50),
-                    AddCycleButton(
-                        ref: ref,
-                        daysOfCurrentProgram: daysOfCurrentProgram,
-                        context: context,
-                        cyclesOfCurrentProgram: cyclesOfCurrentProgram),
-                    (cyclesOfCurrentProgram.isNotEmpty)
-                        ? const CyclesWidget()
-                        : Expanded(child: Container()),
-                    if (hasChanged)
-                      SaveProgramButton(
-                          widget: widget,
-                          ref: ref,
-                          daysSelected: daysSelected,
-                          cyclesOfCurrentProgram: cyclesOfCurrentProgram,
-                          currentSchedule: currentSchedule,
-                          context: context),
-                    if (hasProgram())
-                      DeleteProgramButtonWidget(
-                          ref: ref, widget: widget, context: context)
-                  ],
-                ),
-              )
-            : SafeArea(
-                child: Column(
-                  children: [
-                    createTitle(),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Flexible(
-                            flex: 3,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                createValveNameRow(),
-                                const DaysOfWeekWidget(),
-                                AddCycleButton(
-                                    ref: ref,
-                                    daysOfCurrentProgram: daysOfCurrentProgram,
-                                    context: context,
-                                    cyclesOfCurrentProgram: cyclesOfCurrentProgram),
-                                     if (hasChanged)
-                                  SaveProgramButton(
-                                      widget: widget,
-                                      ref: ref,
-                                      daysSelected: daysSelected,
-                                      cyclesOfCurrentProgram: cyclesOfCurrentProgram,
-                                      currentSchedule: currentSchedule,
-                                      context: context),
-                                      if (hasProgram())
-                      DeleteProgramButtonWidget(
-                          ref: ref, widget: widget, context: context)
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            flex: 4,
-                            child: Column(
-                              children: [
-                                
-                                (cyclesOfCurrentProgram.isNotEmpty)
-                                    ? const CyclesWidget()
-                                    : Expanded(child: Container()),
-                               
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              );
+            ? createPotrtaitScreen(radius, daysOfCurrentProgram, context,
+                cyclesOfCurrentProgram, hasChanged, daysSelected, currentSchedule)
+            : createLandscapeScreen(daysOfCurrentProgram, context, cyclesOfCurrentProgram,
+                hasChanged, daysSelected, currentSchedule);
       })),
     );
   }
 
-  Padding createProgramScreenPortrait(
+  SafeArea createLandscapeScreen(
+      List<DaysOfWeek> daysOfCurrentProgram,
+      BuildContext context,
+      List<Cycle> cyclesOfCurrentProgram,
+      bool hasChanged,
+      List<DaysOfWeek> daysSelected,
+      List<Program> currentSchedule) {
+    return SafeArea(
+      child: Column(
+        children: [
+          createTitle(),
+          Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  flex: 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      createValveNameRow(),
+                      const DaysOfWeekWidget(),
+                      AddCycleButton(
+                          ref: ref,
+                          daysOfCurrentProgram: daysOfCurrentProgram,
+                          context: context,
+                          cyclesOfCurrentProgram: cyclesOfCurrentProgram),
+                      if (hasChanged)
+                        SaveProgramButton(
+                            widget: widget,
+                            ref: ref,
+                            daysSelected: daysSelected,
+                            cyclesOfCurrentProgram: cyclesOfCurrentProgram,
+                            currentSchedule: currentSchedule,
+                            context: context),
+                      if (hasProgram())
+                        DeleteProgramButtonWidget(
+                            ref: ref, widget: widget, context: context)
+                    ],
+                  ),
+                ),
+                Flexible(
+                  flex: 4,
+                  child: Column(
+                    children: [
+                      (cyclesOfCurrentProgram.isNotEmpty)
+                          ? const CyclesWidget()
+                          : Expanded(child: Container()),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Padding createPotrtaitScreen(
       double radius,
       List<DaysOfWeek> daysOfCurrentProgram,
       BuildContext context,
