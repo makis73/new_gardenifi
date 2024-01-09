@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_gardenifi_app/src/common_widgets/gardenifi_logo.dart';
-import 'package:new_gardenifi_app/src/common_widgets/more_menu_button.dart';
+import 'package:new_gardenifi_app/src/common_widgets/menu_button.dart';
 
 class ScreenUpperPortrait extends StatelessWidget {
   const ScreenUpperPortrait({
@@ -55,7 +55,7 @@ class ScreenUpperPortrait extends StatelessWidget {
             top: 30,
             child: MoreMenuButton(
               addRemoveValves: showAddRemoveMenu,
-              initializeIoT: showInitializeMenu,
+              initialize: showInitializeMenu,
             ),
           ),
         if (messageWidget != null) messageWidget!,

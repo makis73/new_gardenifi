@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_gardenifi_app/src/common_widgets/gardenifi_logo.dart';
-import 'package:new_gardenifi_app/src/common_widgets/more_menu_button.dart';
+import 'package:new_gardenifi_app/src/common_widgets/menu_button.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 
 class ScreenUpperLandscape extends StatelessWidget {
@@ -51,20 +51,20 @@ class ScreenUpperLandscape extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal:15.0),
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(children: [
             if (showMenuButton)
               MoreMenuButton(
                 addRemoveValves: showAddRemoveMenu,
-                initializeIoT: showInitializeMenu,
+                initialize: showInitializeMenu,
               ),
-              gapH32,
+            gapH32,
             if (messageWidget != null) messageWidget!,
             if (showLogo)
               Align(
                 alignment: Alignment.center,
                 child: GardenifiLogo(
-                  height: radius*2,
+                  height: radius * 2,
                   divider: 4,
                 ),
               )

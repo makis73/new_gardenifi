@@ -154,7 +154,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
       error: (error, stackTrace) => ErrorMessageWidget(error.toString()),
       loading: () => ProgressWidget(
         title: 'Connecting...'.hardcoded,
-        subtitle: 'Please hold your phone near device'.hardcoded,
+        subtitle: 'Please hold your phone near ΙοΤdevice'.hardcoded,
       ),
     );
   }

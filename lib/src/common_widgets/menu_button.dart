@@ -15,11 +15,15 @@ class MoreMenuButton extends ConsumerWidget {
   const MoreMenuButton({
     super.key,
     this.addRemoveValves = false,
-    this.initializeIoT = false,
+    this.initialize = false,
+    this.reboot = false,
+    this.update = false,
   });
 
   final bool? addRemoveValves;
-  final bool? initializeIoT;
+  final bool? initialize;
+  final bool? reboot;
+  final bool? update;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,6 +33,7 @@ class MoreMenuButton extends ConsumerWidget {
       child: MenuAnchor(
         alignmentOffset: const Offset(-130, 0),
         menuChildren: [
+          // Add-Remove Valves
           if (addRemoveValves == true)
             MenuItemButton(
               leadingIcon: Image.asset(
@@ -41,7 +46,9 @@ class MoreMenuButton extends ConsumerWidget {
                 ShowAddRemoveBottomSheet.showBottomSheet(context);
               },
             ),
-          if (initializeIoT == true)
+
+          // Initialize Device
+          if (initialize == true)
             MenuItemButton(
               leadingIcon: const Icon(Icons.home_repair_service),
               child: Text('Initialize IoT device'.hardcoded),
@@ -58,6 +65,8 @@ class MoreMenuButton extends ConsumerWidget {
                 }
               },
             ),
+
+          // Reboot device
           MenuItemButton(
             leadingIcon: const Icon(Icons.restart_alt),
             onPressed: () async {
@@ -76,6 +85,8 @@ class MoreMenuButton extends ConsumerWidget {
             },
             child: Text('Reboot IoT device'.hardcoded),
           ),
+
+          // Update device
           MenuItemButton(
             leadingIcon: const Icon(Icons.system_update_alt),
             onPressed: () async {
@@ -98,11 +109,15 @@ class MoreMenuButton extends ConsumerWidget {
             endIndent: 30,
             indent: 30,
           ),
+
+          // About
           MenuItemButton(
             leadingIcon: const Icon(Icons.info_outline),
             child: Text('About'.hardcoded),
             onPressed: () => aboutDialog(context: context, ref: ref),
           ),
+
+          // Exit
           MenuItemButton(
             leadingIcon: const Icon(Icons.exit_to_app),
             child: Text(loc.exit),

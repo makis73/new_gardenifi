@@ -42,7 +42,7 @@ class MqttRepository {
     _client.onSubscribed = _onSubscribed;
     _client.connectionMessage = connectMessage;
     _client.autoReconnect = false;
-
+    _client.onBadCertificate = (dynamic certificateData) => true;
     return _client;
   }
 
