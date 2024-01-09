@@ -51,6 +51,9 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
 
     final bool cantConnectToBroker = ref.watch(cantConnectProvider);
     final bool disconnectedFromBroker = ref.watch(disconnectedProvider);
+    final bool hasConnectionError = (statusTopicMessage.containsKey('err') &&
+        statusTopicMessage['err'] == 'LOST_CONNECTION');
+    final bool canShowAllMenuOptions = (!hasConnectionError && !cantConnectToBroker);
 
     // When connection to broker is successful show snackbar
     ref.listen(connectedProvider, (previous, next) {
@@ -69,15 +72,16 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
                     ScreenUpperPortrait(
                         radius: radius,
                         showMenuButton: true,
-                        showAddRemoveMenu: true,
-                        showInitializeMenu: true,
+                        showAddRemoveMenu: canShowAllMenuOptions,
+                        showInitializeMenu: canShowAllMenuOptions,
+                        showRebootMenu: canShowAllMenuOptions,
+                        showUpdateMenu: canShowAllMenuOptions,
                         showLogo: true),
                     mqttControllerValue.when(
                       data: (data) {
                         return cantConnectToBroker
                             ? const CanNotConnectToBrokerWidget()
-                            : (statusTopicMessage.containsKey('err') &&
-                                    statusTopicMessage['err'] == 'LOST_CONNECTION')
+                            : hasConnectionError
                                 ? const DeviceDisconnectedWidget()
                                 : (listOfValves.isEmpty)
                                     ? const NoValvesWidget()
@@ -103,7 +107,6 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
                           showLogo: true),
                       gapW20,
                       Expanded(
-                       
                         child: Column(
                           children: [
                             mqttControllerValue.when(

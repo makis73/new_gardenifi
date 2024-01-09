@@ -67,6 +67,7 @@ class MoreMenuButton extends ConsumerWidget {
             ),
 
           // Reboot device
+          if (reboot == true)
           MenuItemButton(
             leadingIcon: const Icon(Icons.restart_alt),
             onPressed: () async {
@@ -87,6 +88,7 @@ class MoreMenuButton extends ConsumerWidget {
           ),
 
           // Update device
+          if (update == true)
           MenuItemButton(
             leadingIcon: const Icon(Icons.system_update_alt),
             onPressed: () async {
