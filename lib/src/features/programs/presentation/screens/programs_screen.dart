@@ -55,6 +55,8 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
         statusTopicMessage['err'] == 'LOST_CONNECTION');
     final bool canShowAllMenuOptions = (!hasConnectionError && !cantConnectToBroker);
 
+    log('ProgramsScreen:: canShowAllMenuOptions = $canShowAllMenuOptions');
+
     // When connection to broker is successful show snackbar
     ref.listen(connectedProvider, (previous, next) {
       if (next) {

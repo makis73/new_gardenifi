@@ -14,6 +14,27 @@
     "welcomeText": "Καλώς ήρθατε\nστο αυτόματο σύστημα ποτίσματος",
 
     "bluetoothConnection": "Σύνδεση Bluettooth",
-    "exit": "Έξοδος"
+    "okLabel": "Oκ",
+    "cancelLabel": "Ακύρωση",
+    "yesLabel":"Ναι",
+    "addRemoveButtonLabel": "Διαχείριση βανών",
+    "initializeButtonLabel": "Αρχικοποίηση IoT συσκευής",
+    "initializeDialogTitle": "Αρχικοποίηση",
+    "initializeDialogPrompt": "Είστε σίγουρος ότι θέλετε να αρχικοποιήσετε την IoT συσκευή;",
+    "rebootButtonLabel": "Επανεκκίνηση IoT συσκευής",
+    "rebootDialogTitle": "Επανεκκίνηση",
+    "rebootDialogPrompt":"Είστε σίγουρος ότι θέλετε να επανεκκινήσετε την IoT συσκευή; Τα προγράμματα των βανών δεν θα χαθούν.",
+    "rebootSnackbarContent": "Η IoT συσκευή Θα επανεκκινήση τώρα!",
+    "updateTitle": "Ενημέρωση σέρβερ",
+    "updateDialogPrompt": "Θα γίνει ενημέρωση του σέρβερ της IoT συσκευής. Τα προγράμματα των βανών δεν θα χαθούν.",
+    "updateSnackbarContent": "Ο σέρβερ της IoT συσκευής θα ενημερωθεί τώρα!",
+    "aboutLabel": "Σχετικά",
+    "exitButtonLabel": "Έξοδος",
+    "exitDialogTitle": "Έξοδος",
+    "exitDialogPrompt": "Είστε σίγουρος ότι θέλετε να κλείσετε την εφαρμογή;",
+    "noBluetoothPrompt": "Για την λειτουργία της εφαρμογής είναι απαραίτητη η ενεργοποίηση του bluetooth",
+    "noBluetoothAction": "Ενεργοποίηση Bluetooth",
+    "goToWifiSetupScreenText": "Πατήστε 'Συνέχεια' για να μεταβείτε στην οθόνη ρύθμισης WiFi",
+    "goToWifiSetupScreenButtonLabel": "Συνέχεια"
   }
   

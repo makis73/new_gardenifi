@@ -52,5 +52,5 @@ Future<void> showExceptionAlertDialog({
       context: context,
       title: title,
       content: exception.toString(),
-      defaultActionText: 'OK'.hardcoded,
+      defaultActionText: 'Ok',
     );

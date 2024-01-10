@@ -13,6 +13,7 @@ import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_connection/widgets/pairing_success_widget.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/screens/wifi_setup_screen.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class BluetoothConnectionScreen extends ConsumerStatefulWidget {
@@ -38,6 +39,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
 
   @override
   Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final radius = screenHeight / 4;
@@ -90,9 +92,9 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
                                   screenWidth: screenWidth,
                                   screenHeight: screenHeight,
                                   isBluetoothOn: isBluetoothOn,
-                                  text: 'Press Continue to go to WiFi setup screen'
+                                  text: loc.goToWifiSetupScreenText
                                       .hardcoded,
-                                  buttonText: 'Continue'.hardcoded,
+                                  buttonText: loc.goToWifiSetupScreenButtonLabel,
                                   ref: ref,
                                   callback: () async {
                                     await Navigator.push(

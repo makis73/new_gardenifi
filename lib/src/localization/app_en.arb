@@ -14,5 +14,26 @@
   "welcomeText": "Welcome\nto automatic irrigation system",
 
   "bluetoothConnection": "Bluetooth Connection",
-  "exit": "Exit"
+  "okLabel": "Ok",
+  "cancelLabel": "Cancel",
+  "yesLabel":"Yes",
+  "addRemoveButtonLabel": "Add/Remove valves",
+  "initializeButtonLabel": "Initialize IoT device",
+  "initializeDialogTitle": "Initialize",
+  "initializeDialogPrompt": "Are you sure you want to initialze the IoT device",
+  "rebootButtonLabel": "Reboot IoT device",
+  "rebootDialogTitle": "Reboot IoT device",
+  "rebootDialogPrompt":"Are you sure you want to reboot IoT device? Your programs will not be lost",
+  "rebootSnackbarContent": "IoT will reboot now!",
+  "updateTitle": "Update server",
+  "updateDialogPrompt": "You will update the server of IoT device. Your programs will not be lost.",
+  "updateSnackbarContent": "IoT device will udate the server now!",
+  "aboutLabel": "About",
+  "exitButtonLabel": "Exit",
+  "exitDialogTitle": "Exit",
+  "exitDialogPrompt": "Are you sure you want to exit the app?",
+  "noBluetoothPrompt": "App require bluetooth to be turned on",
+  "noBluetoothAction": "Turn on Bluetooth",
+  "goToWifiSetupScreenText": "Press Continue to go to WiFi setup screen",
+  "goToWifiSetupScreenButtonLabel": "Continue"
 }

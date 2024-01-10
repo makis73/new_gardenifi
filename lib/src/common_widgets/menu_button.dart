@@ -41,7 +41,7 @@ class MoreMenuButton extends ConsumerWidget {
                 width: 25,
                 color: Colors.black.withOpacity(0.7),
               ),
-              child: Text('Add/Remove valves'.hardcoded),
+              child: Text(loc.addRemoveButtonLabel),
               onPressed: () {
                 ShowAddRemoveBottomSheet.showBottomSheet(context);
               },
@@ -51,15 +51,14 @@ class MoreMenuButton extends ConsumerWidget {
           if (initialize == true)
             MenuItemButton(
               leadingIcon: const Icon(Icons.home_repair_service),
-              child: Text('Initialize IoT device'.hardcoded),
+              child: Text(loc.initializeButtonLabel),
               onPressed: () async {
                 var res = await showAlertDialog(
-                    cancelActionText: 'Cancel'.hardcoded,
-                    defaultActionText: 'Ok'.hardcoded,
+                    cancelActionText: loc.cancelLabel,
+                    defaultActionText: loc.okLabel,
                     context: context,
-                    title: 'Initialze IoT'.hardcoded,
-                    content:
-                        'Are you sure you want to initialze the IoT device'.hardcoded);
+                    title: loc.initializeDialogTitle,
+                    content: loc.initializeDialogPrompt);
                 if (res == true) {
                   Navigator.of(context).popAndPushNamed('welcomeScreen');
                 }
@@ -68,45 +67,41 @@ class MoreMenuButton extends ConsumerWidget {
 
           // Reboot device
           if (reboot == true)
-          MenuItemButton(
-            leadingIcon: const Icon(Icons.restart_alt),
-            onPressed: () async {
-              var res = await showAlertDialog(
-                  context: context,
-                  title: 'Reboot',
-                  defaultActionText: 'Yes'.hardcoded,
-                  content:
-                      'Are you sure you want to reboot IoT device? Your programs will not be lost'
-                          .hardcoded,
-                  cancelActionText: 'Cancel'.hardcoded);
-              if (res == true) {
-                showSnackbar(context, 'IoT will reboot now!');
-                ref.read(mqttControllerProvider.notifier).rebootDevice();
-              }
-            },
-            child: Text('Reboot IoT device'.hardcoded),
-          ),
+            MenuItemButton(
+              leadingIcon: const Icon(Icons.restart_alt),
+              onPressed: () async {
+                var res = await showAlertDialog(
+                    context: context,
+                    title: loc.rebootDialogTitle,
+                    defaultActionText: loc.okLabel,
+                    content: loc.rebootDialogPrompt,
+                    cancelActionText: loc.cancelLabel);
+                if (res == true) {
+                  showSnackbar(context, loc.rebootSnackbarContent);
+                  ref.read(mqttControllerProvider.notifier).rebootDevice();
+                }
+              },
+              child: Text(loc.rebootButtonLabel),
+            ),
 
           // Update device
           if (update == true)
-          MenuItemButton(
-            leadingIcon: const Icon(Icons.system_update_alt),
-            onPressed: () async {
-              var res = await showAlertDialog(
-                  context: context,
-                  title: 'Update',
-                  defaultActionText: 'Ok'.hardcoded,
-                  content:
-                      'You will update the server of IoT device. Your programs will not be lost.'
-                          .hardcoded,
-                  cancelActionText: 'Cancel'.hardcoded);
-              if (res == true) {
-                showSnackbar(context, 'IoT device will udate the server now!');
-                ref.read(mqttControllerProvider.notifier).updateSever();
-              }
-            },
-            child: Text('Update server'.hardcoded),
-          ),
+            MenuItemButton(
+              leadingIcon: const Icon(Icons.system_update_alt),
+              onPressed: () async {
+                var res = await showAlertDialog(
+                    context: context,
+                    title: loc.updateTitle,
+                    defaultActionText: loc.okLabel,
+                    content: loc.updateDialogPrompt,
+                    cancelActionText: loc.cancelLabel);
+                if (res == true) {
+                  showSnackbar(context, loc.updateSnackbarContent);
+                  ref.read(mqttControllerProvider.notifier).updateSever();
+                }
+              },
+              child: Text(loc.updateTitle),
+            ),
           const Divider(
             endIndent: 30,
             indent: 30,
@@ -115,16 +110,24 @@ class MoreMenuButton extends ConsumerWidget {
           // About
           MenuItemButton(
             leadingIcon: const Icon(Icons.info_outline),
-            child: Text('About'.hardcoded),
+            child: Text(loc.aboutLabel),
             onPressed: () => aboutDialog(context: context, ref: ref),
           ),
 
           // Exit
           MenuItemButton(
             leadingIcon: const Icon(Icons.exit_to_app),
-            child: Text(loc.exit),
-            onPressed: () {
-              SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+            child: Text(loc.exitButtonLabel),
+            onPressed: () async {
+              var res = await showAlertDialog(
+                  context: context,
+                  title: loc.exitDialogTitle,
+                  defaultActionText: loc.okLabel,
+                  content: loc.exitDialogPrompt,
+                  cancelActionText: loc.cancelLabel);
+              if (res == true) {
+                SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+              }
             },
           ),
         ],
