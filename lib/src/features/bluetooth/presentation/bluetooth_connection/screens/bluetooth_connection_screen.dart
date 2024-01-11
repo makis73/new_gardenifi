@@ -93,7 +93,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
                                   screenHeight: screenHeight,
                                   isBluetoothOn: isBluetoothOn,
                                   text: loc.goToWifiSetupScreenText,
-                                  buttonText: loc.goToWifiSetupScreenButtonLabel,
+                                  buttonText: loc.continueButtonLabel,
                                   ref: ref,
                                   callback: () async {
                                     await Navigator.push(
