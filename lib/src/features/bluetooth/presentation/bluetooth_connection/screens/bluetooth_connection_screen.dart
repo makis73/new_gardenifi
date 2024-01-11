@@ -92,8 +92,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
                                   screenWidth: screenWidth,
                                   screenHeight: screenHeight,
                                   isBluetoothOn: isBluetoothOn,
-                                  text: loc.goToWifiSetupScreenText
-                                      .hardcoded,
+                                  text: loc.goToWifiSetupScreenText,
                                   buttonText: loc.goToWifiSetupScreenButtonLabel,
                                   ref: ref,
                                   callback: () async {
@@ -117,6 +116,7 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
   }
 
   Widget buildFindingDeviceWidget(AsyncValue<BluetoothDevice?> scanResultState) {
+    final loc = ref.read(appLocalizationsProvider);
     return scanResultState.when(
         data: (device) {
           if (device != null) {
@@ -130,12 +130,13 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
         },
         error: (error, stackTrace) => ErrorMessageWidget(error.toString()),
         loading: () => ProgressWidget(
-              title: 'Searching device...'.hardcoded,
-              subtitle: 'Please hold your phone near device'.hardcoded,
+              title: loc.searchingDeviceTitle,
+              subtitle: loc.searchingDeviceSubtitle,
             ));
   }
 
   Widget buildConnectionWidget(BluetoothDevice device) {
+    final loc = ref.read(appLocalizationsProvider);
     // Variable that watch the connection with device
     final connectionState = ref.watch(connectionProvider);
 
@@ -155,8 +156,8 @@ class _BluetoothConnectinScreenState extends ConsumerState<BluetoothConnectionSc
       },
       error: (error, stackTrace) => ErrorMessageWidget(error.toString()),
       loading: () => ProgressWidget(
-        title: 'Connecting...'.hardcoded,
-        subtitle: 'Please hold your phone near ΙοΤdevice'.hardcoded,
+        title: loc.connectingDeviceTitle,
+        subtitle: loc.connectingDeviceSubtitle,
       ),
     );
   }

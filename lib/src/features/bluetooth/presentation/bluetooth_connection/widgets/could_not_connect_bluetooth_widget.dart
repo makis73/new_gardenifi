@@ -3,6 +3,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class CouldNotConnectBluetoothWidget extends StatelessWidget {
@@ -17,11 +18,12 @@ class CouldNotConnectBluetoothWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Could not connect with device\n'.hardcoded,
+          loc.couldNotConnectBluetoothText,
           style: TextStyles.mediumBold,
           textAlign: TextAlign.center,
         ),
@@ -31,7 +33,7 @@ class CouldNotConnectBluetoothWidget extends StatelessWidget {
               await ref.read(bluetoothControllerProvider.notifier).connectDevice(device);
             },
             child: Text(
-              'Try Again'.hardcoded,
+              loc.tryAgainButtonLabel,
               style: TextStyles.smallNormal,
             )),
       ],

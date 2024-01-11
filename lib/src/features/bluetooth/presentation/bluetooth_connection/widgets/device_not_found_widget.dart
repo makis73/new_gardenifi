@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class DeviceNotFoundWidget extends StatelessWidget {
@@ -14,18 +15,19 @@ class DeviceNotFoundWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Device not found \nor connection with device lost'.hardcoded,
+            loc.deviceNotFoundTitle,
             style: TextStyles.mediumBold,
             textAlign: TextAlign.center,
           ),
           Text(
-            'Make sure device is on and try again'.hardcoded,
+            loc.deviceNotFoundSubtitle,
             style: TextStyles.xSmallNormal,
           ),
           TextButton(
@@ -34,7 +36,7 @@ class DeviceNotFoundWidget extends StatelessWidget {
                 await ref.read(bluetoothControllerProvider.notifier).startScan();
               },
               child: Text(
-                'Try Again'.hardcoded,
+                loc.tryAgainButtonLabel,
                 style: TextStyles.smallNormal,
               )),
         ],

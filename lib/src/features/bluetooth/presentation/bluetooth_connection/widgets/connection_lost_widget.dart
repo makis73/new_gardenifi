@@ -3,7 +3,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 
 class ConnectionLostWidget extends ConsumerWidget {
   const ConnectionLostWidget(this.device, {super.key});
@@ -12,6 +12,7 @@ class ConnectionLostWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = ref.read(appLocalizationsProvider);
     return Expanded(
         child: Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -22,7 +23,7 @@ class ConnectionLostWidget extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Could not connect with device\nor connnection lost. '.hardcoded,
+                loc.couldNotConnectBluetoothText,
                 style: TextStyles.mediumBold,
                 textAlign: TextAlign.center,
               ),
@@ -32,7 +33,7 @@ class ConnectionLostWidget extends ConsumerWidget {
                     Navigator.of(context).pop();
                   },
                   child: Text(
-                    'Try Again'.hardcoded,
+                    loc.tryAgainButtonLabel,
                     style: TextStyles.smallNormal,
                   )),
             ],

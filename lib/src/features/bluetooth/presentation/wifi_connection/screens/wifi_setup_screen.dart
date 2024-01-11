@@ -12,6 +12,7 @@ import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_conne
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/refresh_networks_button.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/wait_while_fetching_widget.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/screens/wifi_connection_screen.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class WiFiSetupScreen extends ConsumerStatefulWidget {
@@ -57,6 +58,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
     // Variable that watch the state of the bluetooth adapter
     final bluetoothAdapterProvider = ref.watch(bluetoothAdapterStateStreamProvider);
     // Variable that watch the state of the bluetooth connection
@@ -108,8 +110,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                 Padding(
                                                   padding: const EdgeInsets.all(12.0),
                                                   child: Text(
-                                                      'Select from the list the desired network and then fill in the password'
-                                                          .hardcoded),
+                                                      loc.selectNetworkLabel),
                                                 ),
                                                 SizedBox(
                                                   width: 300,
@@ -117,7 +118,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                   child: InputDecorator(
                                                     decoration: InputDecoration(
                                                         hintText:
-                                                            'Select network'.hardcoded,
+                                                            loc.selectNetworkHintText,
                                                         border: OutlineInputBorder(
                                                             borderRadius:
                                                                 BorderRadius.circular(15),
@@ -156,8 +157,7 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                           borderRadius:
                                                               BorderRadius.circular(15)),
                                                       labelText:
-                                                          'Enter the password of network'
-                                                              .hardcoded,
+                                                          loc.enterPasswordLabel,
                                                       suffixIcon: InkWell(
                                                         onTap: () => setState(() {
                                                           passwordVisibility =
@@ -198,9 +198,8 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
                                                   screenHeight: screenHeight,
                                                   isBluetoothOn: isBluetoothOn,
                                                   text:
-                                                      'Press "Connect" to connect the device to the desired network'
-                                                          .hardcoded,
-                                                  buttonText: 'Connect'.hardcoded,
+                                                      loc.connectToNetworkText,
+                                                  buttonText: loc.connectToNetworkButtonLabel,
                                                   ref: ref,
                                                   callback: () async {
                                                     ref.invalidate(

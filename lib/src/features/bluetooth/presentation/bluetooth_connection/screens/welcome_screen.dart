@@ -61,9 +61,8 @@ class WelcomeScreen extends ConsumerWidget {
                     screenWidth: screenWidth,
                     screenHeight: screenHeight,
                     isBluetoothOn: isBluetoothOn,
-                    text: 'Before continue you must configure the irrigation device'
-                        .hardcoded,
-                    buttonText: loc.bluetoothConnection,
+                    text: loc.bluetoothConnectionPrompt,
+                    buttonText: loc.bluetoothConnectionButtonLabel,
                     ref: ref,
                     callback: navigateToNextPage),
               ],

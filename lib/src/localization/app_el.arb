@@ -1,5 +1,5 @@
 {
-    "appTitle": "Η νέα εφαρμογή Gardenifi",
+    "appTitle": "RaspirriV1",
     "@appTitle": {
       "description": "Ο τίτλος της εφαρμογής"
     },
@@ -7,13 +7,7 @@
     "@fullName": {
       "description": "Το πλήρες  όνομα"
     },
-    "appBarTitle":"Νέα έκδοση",
-    "@appBarTitle": {
-      "description": "Τίτλος  του appbar"
-    },
     "welcomeText": "Καλώς ήρθατε\nστο αυτόματο σύστημα ποτίσματος",
-
-    "bluetoothConnection": "Σύνδεση Bluettooth",
     "okLabel": "Oκ",
     "cancelLabel": "Ακύρωση",
     "yesLabel":"Ναι",
@@ -35,6 +29,26 @@
     "noBluetoothPrompt": "Για την λειτουργία της εφαρμογής είναι απαραίτητη η ενεργοποίηση του bluetooth",
     "noBluetoothAction": "Ενεργοποίηση Bluetooth",
     "goToWifiSetupScreenText": "Πατήστε 'Συνέχεια' για να μεταβείτε στην οθόνη ρύθμισης WiFi",
-    "goToWifiSetupScreenButtonLabel": "Συνέχεια"
-  }
+    "continueButtonLabel": "Συνέχεια",
+    "searchingDeviceTitle": "Αναζήτηση συσκευής IoT...",
+    "searchingDeviceSubtitle": "Κρατήστε το τηλέφωνό σας κοντά στη συσκευή IoT",
+    "connectingDeviceTitle": "Σύνδεση...",
+    "connectingDeviceSubtitle": "Κρατήστε το τηλέφωνό σας κοντά στη συσκευή IoT",
+    "bluetoothConnectionPrompt": "Πριν συνεχίσετε πρέπει να γίνει ρύθμιση της συσκευής ΙοΤ μέσω σύνδεσης Bluetooth",
+    "bluetoothConnectionButtonLabel": "Σύνδεση Bluettooth",
+    "couldNotConnectBluetoothText": "Δεν ήταν δυνατή η σύνδεση με την ΙοΤ συσκευή\n",
+    "tryAgainButtonLabel": "Προσπαθήστε ξανά",
+    "deviceNotFoundTitle": "Η ΙοΤ συσκευή δεν βρέθηκε\nή η σύνδεση διακόπηκε",
+    "deviceNotFoundSubtitle": "Βεβαιωθήτε ότι η ΙοΤ συσκευή είναι ενεργοποιημένη και προσπαθήστε ξανά",
+    "pairingSuccesfulText": "Επιτυχής σύνδεση!",
+    "selectNetworkLabel": "Επιλέξτε από την λίστα το επιθυμητό δίκτυο και εισάγετε τον κωδικό",
+    "selectNetworkHintText": "Επιλέξτε δίκτυο",
+    "enterPasswordLabel": "Εισάγετε τον κωδικό του δικτύου",
+    "connectToNetworkText": "Πατήστε 'Σύνδεση' για να συνδέσετε την συσκευή ΙοΤ στο δίκτυο",
+    "connectToNetworkButtonLabel": "Σύνδεση",
+    "deviceConnectedText": "Η συσκευή ΙοΤ συνδέθηκε στο ίντερνετ επιτυχώς!",
+    "goToMainScreenText": "Είστε έτοιμος! Πατήστε 'Συνέχεια' για να μεταβείτε στην κύρια οθόνη"
+  
+
+    }
   

@@ -1,5 +1,5 @@
 {
-  "appTitle": "new_gardenifi_app",
+  "appTitle": "RaspirriV1",
   "@appTitle": {
     "description": "The title of the application"
   },
@@ -7,13 +7,7 @@
   "@fullName": {
     "description": "The full name of the author"
   },
-  "appBarTitle":"The new edition of Gardenifi",
-  "@appBarTitle": {
-    "description": "Title of the appbar"
-  },
   "welcomeText": "Welcome\nto automatic irrigation system",
-
-  "bluetoothConnection": "Bluetooth Connection",
   "okLabel": "Ok",
   "cancelLabel": "Cancel",
   "yesLabel":"Yes",
@@ -35,5 +29,26 @@
   "noBluetoothPrompt": "App require bluetooth to be turned on",
   "noBluetoothAction": "Turn on Bluetooth",
   "goToWifiSetupScreenText": "Press Continue to go to WiFi setup screen",
-  "goToWifiSetupScreenButtonLabel": "Continue"
+  "continueButtonLabel": "Continue",
+  "searchingDeviceTitle": "Searching IoT device...",
+  "searchingDeviceSubtitle": "Please hold your phone near IoT device",
+  "connectingDeviceTitle": "Connecting...",
+  "connectingDeviceSubtitle": "Please hold your phone near IoT device",
+  "bluetoothConnectionPrompt": "Before continue you must configure the IoT device via bluetooth connection",
+  "bluetoothConnectionButtonLabel": "Bluetooth Connection",
+  "couldNotConnectBluetoothText": "Could not connect with IoT device\n",
+  "tryAgainButtonLabel": "Try again",
+  "deviceNotFoundTitle": "IoT Device not found \nor connection with ΙοΤ device lost",
+  "deviceNotFoundSubtitle": "Make sure IoT device is on and try again",
+  "pairingSuccesfulText": "Pairing Succesful",
+  "selectNetworkLabel": "Select from the list the desired network and then fill in the password",
+  "selectNetworkHintText": "Select network",
+  "enterPasswordLabel": "Enter the password of network",
+  "connectToNetworkText": "Press 'Connect' to connect the ΙοΤ device to the desired network",
+  "connectToNetworkButtonLabel": "Connect",
+  "deviceConnectedText": "IoT device connected to internet succesfuly",
+  "goToMainScreenText": "You are ready! Press 'Continue' to go to main screen"
+
+
+
 }
