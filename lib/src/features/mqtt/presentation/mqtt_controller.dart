@@ -112,7 +112,7 @@ class MqttController extends StateNotifier<AsyncValue<void>> {
         }).toList();
 
         // Convert the times of the received programs to local timezone
-        ref.read(programProvider).convertScheduleToLocalTZ(scheduleUtcFromBroker);
+        // ref.read(programProvider).convertScheduleToLocalTZ(scheduleUtcFromBroker);
 
         // update the provider who holds the programs
         ref.read(configTopicProvider.notifier).state = scheduleUtcFromBroker;

@@ -42,7 +42,7 @@ class SaveProgramButton extends StatelessWidget {
           name: widget.name,
           days: listOfDays,
           cycles: cyclesOfCurrentProgram,
-          tzOffset: tzOffset,
+          tz_offset: tzOffset,
         );
         // Check if there is already a program for this valve and return 1 or -1
         var index = currentSchedule.indexWhere(

@@ -17,11 +17,11 @@ class ProgramController {
   final Ref ref;
 
   int sendSchedule(List<Program> schedule) {
-    for (Program program in schedule) {
-      for (var cycle in program.cycles) {
-        cycle.start = localToUtc(cycle.start);
-      }
-    }
+    // for (Program program in schedule) {
+    //   for (var cycle in program.cycles) {
+    //     cycle.start = localToUtc(cycle.start);
+    //   }
+    // }
     try {
       var scheduleEncoded = jsonEncode(schedule);
       ref
@@ -57,13 +57,13 @@ class ProgramController {
     ref.read(hasProgramChangedProvider.notifier).state = true;
   }
 
-  void convertScheduleToLocalTZ(List<Program> schedule) {
-    for (var program in schedule) {
-      for (var cycle in program.cycles) {
-        cycle.start = utcToLocal(cycle.start);
-      }
-    }
-  }
+  // void convertScheduleToLocalTZ(List<Program> schedule) {
+  //   for (var program in schedule) {
+  //     for (var cycle in program.cycles) {
+  //       cycle.start = utcToLocal(cycle.start);
+  //     }
+  //   }
+  // }
 
   
 

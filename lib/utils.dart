@@ -35,26 +35,6 @@ String getEndTime(BuildContext context, String startTime, String duration) {
   return timeOfDay.format(context);
 }
 
-String utcToLocal(String time) {
-  var x = DateFormat('M/d/y').format(DateTime.now());
-  DateTime localDateTime = DateFormat('M/d/y HH:mm').parseUTC('$x $time').toLocal();
-  // Convert DateTime local time to [String]
-  String localTimeString = DateFormat('HH:mm').format(localDateTime);
-
-  return localTimeString;
-}
-
-String localToUtc(String time) {
-  var x = DateFormat('M/d/y').format(DateTime.now());
-  DateTime localTime = DateFormat('M/d/y HH:mm').parse('$x $time');
-  // Convert [DateTime] to UTC
-  DateTime utcTime = localTime.toUtc();
-
-  // Convert UTC to [String]
-  String utcTimeString = DateFormat('HH:mm').format(utcTime);
-  return utcTimeString;
-}
-
 void refreshMainScreen(WidgetRef ref) {
   ref.invalidate(cantConnectProvider);
   ref.invalidate(disconnectedProvider);
