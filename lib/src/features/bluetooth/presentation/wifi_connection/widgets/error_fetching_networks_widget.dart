@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/button_placeholder.dart';
 import 'package:new_gardenifi_app/src/common_widgets/error_message_widget.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/refresh_networks_button.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
-class ErrorFetchingNetworksWidget extends StatelessWidget {
+class ErrorFetchingNetworksWidget extends ConsumerWidget {
   const ErrorFetchingNetworksWidget({
     super.key,
     required this.callback,
@@ -13,7 +15,8 @@ class ErrorFetchingNetworksWidget extends StatelessWidget {
   final Function() callback;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loc = ref.read(appLocalizationsProvider);
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -23,7 +26,7 @@ class ErrorFetchingNetworksWidget extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ErrorMessageWidget('Oups ... something went wrong'.hardcoded),
+                ErrorMessageWidget(loc.somethingWentWrongText),
                 RefreshNetworksButton(callback: callback),
               ],
             ),

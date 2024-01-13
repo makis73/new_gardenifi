@@ -47,7 +47,22 @@
   "connectToNetworkText": "Press 'Connect' to connect the ΙοΤ device to the desired network",
   "connectToNetworkButtonLabel": "Connect",
   "deviceConnectedText": "IoT device connected to internet succesfuly",
-  "goToMainScreenText": "You are ready! Press 'Continue' to go to main screen"
+  "goToMainScreenText": "You are ready! Press 'Continue' to go to main screen",
+  "deviceCouldNotConnectText": "IoT device could not connect to internet",
+  "ifProblemPersistText": "If problem persist go back and check network ssid and password",
+  "goBackButtonLabel": "Go back",
+  "somethingWentWrongText": "Oups ... something went wrong!",
+  "refreshListLabel": "Refresh list",
+  "waitWhileConnectingText": "Please wait while IoT is connecting to internet",
+  "waitWhileFetchingNetworksText": "Please wait while fetching networks",
+  "cantConnectToBrokerText": "Can't connect to broker.",
+  "makeSureYouAreConnectedText": "Make sure you are connected to internet and try again",
+  "exitAppText": "If problem persist, maybe broker is down.Exit the app and try again later.",
+  "deviceDisconnectedFromBrokerText": "IoT device disconnected from broker!",
+  "makeSureDeviceIsPoweredOnText": "Make sure IoT device is powered on",
+  "disconnectedFromBrokerText": "Disconnected from broker",
+  "ifProblemPersistOnDisconnectingFromBrokerText": "If problem persist exit the app and try open it again."
+
 
 
 

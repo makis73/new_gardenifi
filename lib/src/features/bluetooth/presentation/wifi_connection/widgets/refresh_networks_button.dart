@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
-class RefreshNetworksButton extends StatelessWidget {
+class RefreshNetworksButton extends ConsumerWidget {
   const RefreshNetworksButton({
     super.key,
     required this.callback,
@@ -10,9 +12,10 @@ class RefreshNetworksButton extends StatelessWidget {
   final Function() callback;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loc = ref.read(appLocalizationsProvider);
     return TextButton.icon(
-      label: Text('Refresh list'.hardcoded),
+      label: Text(loc.refreshListLabel),
       // Refresh the provider and rebuild widget
       onPressed: callback,
       icon: const Icon(

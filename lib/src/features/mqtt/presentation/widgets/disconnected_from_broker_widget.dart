@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
@@ -10,6 +11,7 @@ class DisconnectedFromBrokerWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = ref.read(appLocalizationsProvider);
     return Expanded(
         child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -22,12 +24,12 @@ class DisconnectedFromBrokerWidget extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Disconnected from broker.'.hardcoded,
+                  loc.disconnectedFromBrokerText,
                   style: TextStyles.mediumBold.copyWith(color: Colors.red[900]),
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  'Make sure you are connected to internet and try again'.hardcoded,
+                  loc.makeSureYouAreConnectedText,
                   style: TextStyles.smallNormal,
                   textAlign: TextAlign.center,
                 ),
@@ -37,7 +39,7 @@ class DisconnectedFromBrokerWidget extends ConsumerWidget {
                       refreshMainScreen(ref);
                     },
                     child: Text(
-                      'Try Again'.hardcoded,
+                      loc.tryAgainButtonLabel,
                       style: TextStyles.smallNormal,
                     )),
               ],
@@ -50,12 +52,12 @@ class DisconnectedFromBrokerWidget extends ConsumerWidget {
               child: Column(
                 children: [
                   Text(
-                      'If problem persist exit the app and try open it again.'.hardcoded),
+                      loc.ifProblemPersistOnDisconnectingFromBrokerText),
                   TextButton(
                       onPressed: () =>
                           // Exit the app
                           SystemChannels.platform.invokeMethod('SystemNavigator.pop'),
-                      child: Text('Exit'.hardcoded))
+                      child: Text(loc.exitButtonLabel))
                 ],
               ),
             ),

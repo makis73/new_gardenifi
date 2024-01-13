@@ -47,7 +47,28 @@
     "connectToNetworkText": "Πατήστε 'Σύνδεση' για να συνδέσετε την συσκευή ΙοΤ στο δίκτυο",
     "connectToNetworkButtonLabel": "Σύνδεση",
     "deviceConnectedText": "Η συσκευή ΙοΤ συνδέθηκε στο ίντερνετ επιτυχώς!",
-    "goToMainScreenText": "Είστε έτοιμος! Πατήστε 'Συνέχεια' για να μεταβείτε στην κύρια οθόνη"
+    "goToMainScreenText": "Είστε έτοιμος! Πατήστε 'Συνέχεια' για να μεταβείτε στην κύρια οθόνη",
+    "deviceCouldNotConnectText": "Η συσκευή IoT δεν μπόρεσε να συνδεθεί στο διαδύκτιο. Δοκιμάστε ξανά",
+    "ifProblemPersistText": "Αν το πρόβλημα συνεχίζει, πάτε πίσω και ελέγξτε το ssid και τον κωδικό δικτύου",
+    "goBackButtonLabel": "Πίσω",
+    "somethingWentWrongText": "Ουπς... κάτι δεν πήγε καλά!",
+    "refreshListLabel": "Ανανέωση λίστας",
+    "waitWhileConnectingText": "Παρακαλώ περιμένετε όσο η συσκευή ΙοΤ συνδέεται στο διαδύκτιο",
+    "waitWhileFetchingNetworksText": "Παρακαλώ περιμένετε όσο γίνεται ανάκτηση των δικτύων",
+    "cantConnectToBrokerText": "Αδυναμία σύνδεσης στον διακομιστή",
+    "makeSureYouAreConnectedText": "Βεβαιωθείτε ότι είστε συνδεδεμένοι στο διαδίκτυο και προσπαθήστε ξανά",
+    "exitAppText": "Αν το πρόβλημα συνεχίζει πιθανόν να υπάρχει πρόβλημα στον διακομιστή. Κλείστε την εφαρμογή και δοκιμάστε αργότερα.",
+    "deviceDisconnectedFromBrokerText": "Η συσκευή ΙοΤ αποσυνδέθηκε από τον διακομιστή",
+    "makeSureDeviceIsPoweredOnText": "Βεβαιωθείται ότι η συσκευή ΙοΤ είναι ενεργοποιημένη",
+    "disconnectedFromBrokerText": "Αποσυνδεθείκατε απο τον διακομιστή",
+    "ifProblemPersistOnDisconnectingFromBrokerText": "Αν το πρόβλημα συνεχίζει κλείστε την εφαρμογή και ανοίξτε την ξανά"
+
+
+
+
+
+
+
   
 
     }
