@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/screen_upper_landscape.dart';
@@ -13,6 +11,7 @@ import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/device_
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/widgets/disconnected_from_broker_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/no_valves_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/valves_widget.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class ProgramsScreen extends ConsumerStatefulWidget {
@@ -42,6 +41,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
     final screenHeight = MediaQuery.of(context).size.height;
     final radius = screenHeight / 4;
 
@@ -55,12 +55,10 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
         statusTopicMessage['err'] == 'LOST_CONNECTION');
     final bool canShowAllMenuOptions = (!hasConnectionError && !cantConnectToBroker);
 
-    log('ProgramsScreen:: canShowAllMenuOptions = $canShowAllMenuOptions');
-
     // When connection to broker is successful show snackbar
     ref.listen(connectedProvider, (previous, next) {
       if (next) {
-        showSnackbar(context, 'Connected to broker.',
+        showSnackbar(context, loc.connectedToBrokerSnackbarText,
             icon: Icons.done, color: Colors.greenAccent);
       }
     });

@@ -60,6 +60,7 @@
   "exitAppText": "If problem persist, maybe broker is down.Exit the app and try again later.",
   "deviceDisconnectedFromBrokerText": "IoT device disconnected from broker!",
   "makeSureDeviceIsPoweredOnText": "Make sure IoT device is powered on",
+  "connectedToBrokerSnackbarText": "Connected to broker",
   "disconnectedFromBrokerText": "Disconnected from broker",
   "ifProblemPersistOnDisconnectingFromBrokerText": "If problem persist exit the app and try open it again.",
   "areYouSureDialogTitle": "Are you sure?",

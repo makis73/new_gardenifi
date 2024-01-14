@@ -61,6 +61,7 @@
     "deviceDisconnectedFromBrokerText": "Η συσκευή ΙοΤ αποσυνδέθηκε από τον διακομιστή",
     "makeSureDeviceIsPoweredOnText": "Βεβαιωθείται ότι η συσκευή ΙοΤ είναι ενεργοποιημένη",
     "disconnectedFromBrokerText": "Αποσυνδεθείκατε απο τον διακομιστή",
+    "connectedToBrokerSnackbarText": "Συνδεθήκατε στον διακομιστή",
     "ifProblemPersistOnDisconnectingFromBrokerText": "Αν το πρόβλημα συνεχίζει κλείστε την εφαρμογή και ανοίξτε την ξανά",
     "areYouSureDialogTitle": "Είστε σίγουροι;",
     "changesHaveNotBeenSavedText": "Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί. Είστε σίγουροι ότι θέλετε να επιστρέψετε;",
