@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 void showSnackbar(BuildContext context, String title, {IconData? icon, Color? color}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        Text(title),
+        Expanded(child: Text(title)),
         Icon(
           icon,
           color: color,

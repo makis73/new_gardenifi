@@ -61,7 +61,87 @@
   "deviceDisconnectedFromBrokerText": "IoT device disconnected from broker!",
   "makeSureDeviceIsPoweredOnText": "Make sure IoT device is powered on",
   "disconnectedFromBrokerText": "Disconnected from broker",
-  "ifProblemPersistOnDisconnectingFromBrokerText": "If problem persist exit the app and try open it again."
+  "ifProblemPersistOnDisconnectingFromBrokerText": "If problem persist exit the app and try open it again.",
+  "areYouSureDialogTitle": "Are you sure?",
+  "changesHaveNotBeenSavedText": "There are changes that have not been saved. Are you sure you want to go back?",
+  "selectDaysToIrrigateText": "Select the days you want to irrigate",
+  "editCreateProgramTitle": "Edit/Create program",
+  "valveIsOnDialogTitle": "Valve is on!",
+  "valveIsOnDialogContent": "Please turn off valve before remove it from IoT device!",
+  "valveDeletionDialogTitle": "Valve deletion",
+  "valveDeletionDialogContent": "Are you sure you want to remove this valve? All programs of this valve will be also deleted.",
+  "addValveLabel": "Add",
+  "removeValveLabel": "Remove",
+  "selectStartTimeText": "Select start time",
+  "addIrrigationCycleLabel": "Add an irrigation cycle",
+  "deleteProgramButtonLabel": "Delete program",
+  "programDeletionDialogTitle": "Program deletion",
+  "programDeletionDialogContent": "Are you sure you want to delete this program?",
+  "saveButtonLabel": "Save",
+  "cycleDeletionDialogTitle": "Cycle deletion",
+  "cycleDeletionDialogContent": "Are you sure you want to delete this cycle?",
+  "cycleNumber": "Cycle {number}",
+  "@cycleNumber":{
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "startLabel": "Start: ",
+  "durationLabel": "Duration: ",
+  "noValveText": "No valve has been registered.\n",
+  "plugValveText": "Plug one or more valves in IoT device and select the port number from the button below to enable them.",
+  "addValvesButtonLabel": "Add valves",
+  "addRemoveValveBottomSheetTitle": "Add/Remove valves",
+  "doneButtonLabel": "Done",
+  "selectDurationTitle": "Select duration",
+  "valveNumber": "Valve {number}",
+  "@valveNumber":{
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "closesAtText": "Closes at {endTime}",
+  "@closesAtText": {
+    "placeholders": {
+      "endTime":{
+        "type": "String"
+      }      
+    }
+  },
+  "nextRunText": "Next run: ",
+  "noProgramText": "No program",
+  "programSendSnackbarText": "Program send to broker",
+  "programCouldNotSendSnackbarText": "Could not send program to broker. Try again",
+  "programDeletedSnackbarText": "Program deleted",
+  "createProgramText": "Create program",
+  "viewEditProgramText": "View/Edit program",
+  "collapseButtonLabel": "Collapse all",
+  "expandButtonLabel": "Expand all",
+  "nextRunTodayAtText": "Today {time}",
+  "@nextRunTodayAtText":{
+    "placeholders": {
+      "time":{
+        "type": "String"
+      }
+    }
+  },
+  "nextRunDayAtText": "Next {day} {time}",
+  "@nextRunDayAtText":{
+    "placeholders": {
+      "time":{
+        "type": "String"
+      },
+      "day":{
+        "type": "String"
+      }
+    }
+  }
+
+
 
 
 

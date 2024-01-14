@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/show_add_remov_bottomsheet.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class NoValvesWidget extends ConsumerWidget {
@@ -10,6 +11,7 @@ class NoValvesWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = ref.read(appLocalizationsProvider);
     return Expanded(
         child: Padding(
       padding: const EdgeInsets.all(8.0),
@@ -22,21 +24,20 @@ class NoValvesWidget extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "No valve has been registered.\n".hardcoded,
+                  loc.noValveText,
                   style: TextStyles.mediumBold,
                   textAlign: TextAlign.center,
                 ),
                 Text(
-                  'Connect one or more valves on IoT device and select the port number from the button below to enable them.'
-                      .hardcoded
-                      .hardcoded,
+                  loc.plugValveText,
                   style: TextStyles.smallNormal,
+                  textAlign: TextAlign.center,
                 ),
                 gapH24,
                 ElevatedButton(
-                  child: Text('Enable valves'.hardcoded),
+                  child: Text(loc.addValvesButtonLabel),
                   onPressed: () {
-                    ShowAddRemoveBottomSheet.showBottomSheet(context);
+                    ShowAddRemoveBottomSheet.showBottomSheet(context, ref);
                   },
                 ),
               ],

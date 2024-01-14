@@ -9,7 +9,6 @@ import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/about_dialog.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/show_add_remov_bottomsheet.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class MoreMenuButton extends ConsumerWidget {
   const MoreMenuButton({
@@ -43,7 +42,7 @@ class MoreMenuButton extends ConsumerWidget {
               ),
               child: Text(loc.addRemoveButtonLabel),
               onPressed: () {
-                ShowAddRemoveBottomSheet.showBottomSheet(context);
+                ShowAddRemoveBottomSheet.showBottomSheet(context, ref);
               },
             ),
 

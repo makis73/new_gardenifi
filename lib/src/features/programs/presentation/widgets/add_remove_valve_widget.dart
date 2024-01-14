@@ -7,7 +7,7 @@ import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 
 class AddRemoveValveWidget extends ConsumerWidget {
   const AddRemoveValveWidget(this.port, {super.key});
@@ -24,6 +24,7 @@ class AddRemoveValveWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = ref.read(appLocalizationsProvider);
     var enabledValves = ref.watch(valvesTopicProvider);
 
     return FloatingActionButton(
@@ -33,34 +34,31 @@ class AddRemoveValveWidget extends ConsumerWidget {
         // if the port is not registered, add it and send message to broker with new list to [valves] topic
         if (!enabledValves.contains(port)) {
           enabledValves.add(port);
-          ref.read(mqttControllerProvider.notifier).sendMessage(
-              valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)), true);
+          ref.read(mqttControllerProvider.notifier).sendMessage(valvesTopic,
+              MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)), true);
         }
         // if the port is already registered prompt user and then remove it and send message to broker with new list to [valves] topic.
         else if (enabledValves.contains(port)) {
           if (ref.read(statusTopicProvider)['out$port'] == 1) {
             await showAlertDialog(
-                defaultActionText: 'Ok'.hardcoded,
+                defaultActionText: loc.okLabel,
                 context: context,
-                title: 'Valve is On!'.hardcoded,
-                content:
-                    'Please turn off valve before remove it from IoT device!'.hardcoded);
+                title: loc.valveIsOnDialogTitle,
+                content: loc.valveIsOnDialogContent);
             Navigator.pop(context);
           } else {
             var res = await showAlertDialog(
                 context: context,
-                title: 'Valve deletion'.hardcoded,
-                defaultActionText: 'Yes'.hardcoded,
-                content:
-                    'Are you sure you want to remove this valve? All programs of this valve will be also deleted.',
-                cancelActionText: 'Cancel'.hardcoded);
+                title: loc.valveDeletionDialogTitle,
+                defaultActionText: loc.yesLabel,
+                content: loc.valveDeletionDialogContent,
+                cancelActionText: loc.cancelLabel);
             if (res == true) {
               enabledValves.remove(port);
               ref.read(programProvider).deleteProgram(int.parse(port));
-              ref.read(mqttControllerProvider.notifier).sendMessage(
-                  valvesTopic, MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)), true);
-            } else {
-            }
+              ref.read(mqttControllerProvider.notifier).sendMessage(valvesTopic,
+                  MqttQos.atLeastOnce, jsonEncode(sortList(enabledValves)), true);
+            } else {}
           }
         }
       },
@@ -72,7 +70,7 @@ class AddRemoveValveWidget extends ConsumerWidget {
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
           Text(
-            !enabledValves.contains(port) ? 'Add'.hardcoded : 'Remove'.hardcoded,
+            !enabledValves.contains(port) ? loc.addValveLabel : loc.removeValveLabel,
             style: const TextStyle(color: Colors.black45, fontSize: 12),
           )
         ],

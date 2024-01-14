@@ -61,11 +61,90 @@
     "deviceDisconnectedFromBrokerText": "Η συσκευή ΙοΤ αποσυνδέθηκε από τον διακομιστή",
     "makeSureDeviceIsPoweredOnText": "Βεβαιωθείται ότι η συσκευή ΙοΤ είναι ενεργοποιημένη",
     "disconnectedFromBrokerText": "Αποσυνδεθείκατε απο τον διακομιστή",
-    "ifProblemPersistOnDisconnectingFromBrokerText": "Αν το πρόβλημα συνεχίζει κλείστε την εφαρμογή και ανοίξτε την ξανά"
+    "ifProblemPersistOnDisconnectingFromBrokerText": "Αν το πρόβλημα συνεχίζει κλείστε την εφαρμογή και ανοίξτε την ξανά",
+    "areYouSureDialogTitle": "Είστε σίγουροι;",
+    "changesHaveNotBeenSavedText": "Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί. Είστε σίγουροι ότι θέλετε να επιστρέψετε;",
+    "selectDaysToIrrigateText": "Επιλέξτε τις ημέρες που θέλετε να ποτίσετε",
+    "editCreateProgramTitle": "Επεξεργασία/Δημιουργία προγράμματος",
+    "valveIsOnDialogTitle": "Η βάνα είναι ανοιχτή!",
+    "valveIsOnDialogContent": "Παρακαλώ κλείστε τη βάνα πριν την αφαιρέσετε από τη συσκευή IoT!",
+    "valveDeletionDialogTitle": "Διαγραφή βάνας",
+    "valveDeletionDialogContent": "Είστε σίγουροι ότι θέλετε να αφαιρέσετε αυτήν τη βάνα; Όλα τα προγράμματα αυτής της βάνας θα διαγραφούν.",
+    "addValveLabel": "Προσθήκη",
+    "removeValveLabel": "Αφαίρεση",
+    "selectStartTimeText": "Επιλογή ώρας έναρξης",
+    "addIrrigationCycleLabel": "Προσθήκη κύκλου ποτίσματος",
+    "deleteProgramButtonLabel": "Διαγραφή προγράμματος",
+    "programDeletionDialogTitle": "Διαγραφή προγράμματος",
+    "programDeletionDialogContent": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το πρόγραμμα;",
+    "saveButtonLabel": "Αποθήκευση",
+    "cycleDeletionDialogTitle": "Διαγραφή κύκλου",
+    "cycleDeletionDialogContent": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το κύκλο ποτίσματος;",
+    "cycleNumber": "Κύκλος {number}",
+    "@cycleNumber":{
+      "placeholders": {
+        "number": {
+          "type": "int"
+        }
+      }
+    }, 
+    "startLabel": "Έναρξη: ",
+    "durationLabel": "Διάρκεια: ",
+    "noValveText": "Δεν έχει προστεθεί βάνα.\n",
+    "plugValveText": "Συνδέστε μία ή περισσότερες βάνες στην συσκευή IoT και προσθέστε την αντίστοιχη είσοδο πατώντας το παρακάτω κουμπί",
+    "addValvesButtonLabel": "Προσθήκη βάνας",
+    "addRemoveValveBottomSheetTitle": "Προσθήκη/Αφαίρεση βανών",
+    "doneButtonLabel": "Τέλος",
+    "selectDurationTitle": "Επιλογή διάρκειας",
+    "valveNumber": "Βάνα {number}",
+    "@valveNumber":{
+      "placeholders": {
+        "number": {
+          "type": "int"
+        }
+      }
+    },
+    "closesAtText": "Κλείνει {endTime}",
+    "@closesAtText": {
+      "placeholders": {
+        "endTime":{
+          "type": "String"
+        }      
+      }
+    },
+    "nextRunText": "Επόμενο άνοιγμα: ",
+    "noProgramText": "Δεν υπάρχει πρόγραμμα",
+    "programSendSnackbarText": "Το πρόγραμμα στάλθηκε στον διακομιστή",
+    "programCouldNotSendSnackbarText": "Αποτυχία αποστολής προγράμματος στον διακομιστή. Προσπαθείστε ξανά",
+    "programDeletedSnackbarText": "Το πρόγραμμα διαγράφηκε",
+    "createProgramText": "Δημιουργία προγράμματος",
+    "viewEditProgramText": "Προβολή/Επεξεργασία προγράμματος",
+    "collapseButtonLabel": "Σύμπτυξη όλων",
+    "expandButtonLabel": "Ανάπτυξη όλων",
+    "nextRunTodayAtText": "Σήμερα {time}",
+    "@nextRunTodayAtText":{
+      "placeholders": {
+        "time":{
+          "type": "String"
+        }
+      }
+    },
+    "nextRunDayAtText": "{day} {time}",
+    "@nextRunDayAtText":{
+      "placeholders": {
+        "time":{
+          "type": "String"
+        },
+        "day":{
+          "type": "String"
+        }
+      }
+    }
+      
 
-
-
-
+  
+    
+  
 
 
 

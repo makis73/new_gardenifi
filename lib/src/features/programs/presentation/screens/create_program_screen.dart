@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
@@ -14,7 +12,7 @@ import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/cyc
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/button_delete_program.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/button_save_program.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 
 class CreateProgramScreen extends ConsumerStatefulWidget {
   CreateProgramScreen({required this.valve, required this.name, super.key});
@@ -69,6 +67,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
     final screenHeight = MediaQuery.of(context).size.height;
     final radius = screenHeight / 6;
 
@@ -85,12 +84,10 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
         if (!didPop) {
           var res = await showAlertDialog(
               context: context,
-              title: 'Are you sure?'.hardcoded,
-              defaultActionText: 'Yes'.hardcoded,
-              cancelActionText: 'Cancel'.hardcoded,
-              content:
-                  'There are changes that have not been saved. Are you sure you want go back?'
-                      .hardcoded);
+              title: loc.areYouSureDialogTitle,
+              defaultActionText: loc.yesLabel,
+              cancelActionText: loc.cancelLabel,
+              content: loc.changesHaveNotBeenSavedText);
           if (res == true) {
             Navigator.pop(context);
           } else {}
@@ -98,7 +95,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
       },
       child: Scaffold(body: OrientationBuilder(builder: (context, orientation) {
         return (orientation == Orientation.portrait)
-            ? createPotrtaitScreen(radius, daysOfCurrentProgram, context,
+            ? createPotrtaitScreen(ref, radius, daysOfCurrentProgram, context,
                 cyclesOfCurrentProgram, hasChanged, daysSelected, currentSchedule)
             : createLandscapeScreen(daysOfCurrentProgram, context, cyclesOfCurrentProgram,
                 hasChanged, daysSelected, currentSchedule);
@@ -116,7 +113,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
     return SafeArea(
       child: Column(
         children: [
-          createTitle(),
+          createTitle(ref),
           Expanded(
             child: Row(
               children: [
@@ -165,6 +162,7 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
   }
 
   Padding createPotrtaitScreen(
+      WidgetRef ref,
       double radius,
       List<DaysOfWeek> daysOfCurrentProgram,
       BuildContext context,
@@ -172,16 +170,17 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
       bool hasChanged,
       List<DaysOfWeek> daysSelected,
       List<Program> currentSchedule) {
+    final loc = ref.read(appLocalizationsProvider);
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ScreenUpperPortrait(radius: radius, showMenuButton: false, showLogo: true),
-          createTitle(),
+          createTitle(ref),
           createValveNameRow(),
           const Divider(indent: 50, endIndent: 50),
-          Text('Select the days you want to irrigate'.hardcoded),
+          Text(loc.selectDaysToIrrigateText),
           const DaysOfWeekWidget(),
           const Divider(indent: 50, endIndent: 50),
           AddCycleButton(
@@ -207,11 +206,13 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
     );
   }
 
-  Center createTitle() {
+  Center createTitle(WidgetRef ref) {
+    final loc = ref.read(appLocalizationsProvider);
     return Center(
       child: Text(
-        'Edit/Create program'.hardcoded,
+        loc.editCreateProgramTitle,
         style: TextStyles.mediumBold,
+        textAlign: TextAlign.center,
       ),
     );
   }

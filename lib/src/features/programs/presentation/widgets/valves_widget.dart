@@ -14,6 +14,7 @@ import 'package:new_gardenifi_app/src/features/programs/presentation/program_con
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/tile_title_widget.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
@@ -40,6 +41,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
     final status = ref.watch(statusTopicProvider);
     final schedule = ref.watch(configTopicProvider);
 
@@ -75,7 +77,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                       : [];
                   String name = (program != null && program.name.isNotEmpty)
                       ? program.name
-                      : 'Valve ${valve.toString()}'.hardcoded;
+                      : loc.valveNumber(valve);
 
                   // Get the next run of this valve.
                   var listOfStartTimes =
@@ -98,19 +100,19 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                       title: TileTitle(name: name, valveIsOn: valveIsOn),
                       subtitle: valveIsOn
                           ? Text(
-                              nextEnd != null ? 'Closes at $nextEnd'.hardcoded : '',
+                              nextEnd != null ? loc.closesAtText(nextEnd) : '',
                               style: const TextStyle(color: Colors.black),
                             )
                           : (cycles.isNotEmpty)
                               ? Row(
                                   children: [
-                                    Text('Next run: '.hardcoded),
+                                    Text(loc.nextRunText),
                                     Text(nextRun,
                                         style: TextStyles.xSmallNormal
                                             .copyWith(color: Colors.black))
                                   ],
                                 )
-                              : Text('No program'.hardcoded),
+                              : Text(loc.noProgramText),
                       collapsedBackgroundColor:
                           valveIsOn ? Colors.lightBlue.withOpacity(0.1) : Colors.white,
                       collapsedTextColor: Colors.green[900],
@@ -134,19 +136,18 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                               ))).then((value) {
                                     if (value != null && value == 1) {
                                       showSnackbar(
-                                          context, 'Program send to broker.'.hardcoded,
+                                          context, loc.programSendSnackbarText,
                                           icon: Icons.done, color: Colors.greenAccent);
                                     } else if (value != null && value == -1) {
                                       showSnackbar(
                                           context,
-                                          'Could not send program to broker. Try again'
-                                              .hardcoded,
+                                          loc.programCouldNotSendSnackbarText,
                                           icon: Icons.clear,
                                           color: Colors.red[800]);
                                     } else if (value != null && value == 2) {
                                       showSnackbar(
                                         context,
-                                        'Program deleted'.hardcoded,
+                                        loc.programDeletedSnackbarText,
                                         icon: Icons.done,
                                         color: Colors.greenAccent,
                                       );
@@ -158,8 +159,8 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                   });
                                 },
                                 child: cycles.isEmpty
-                                    ? Text('Create Program'.hardcoded)
-                                    : Text('View/Edit program'.hardcoded)),
+                                    ? Text(loc.createProgramText)
+                                    : Expanded(child: Text(loc.viewEditProgramText))),
                             Switch(
                               value: valveIsOn,
                               onChanged: (value) =>
@@ -180,27 +181,28 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                 },
               ),
             ),
-            if (MediaQuery.of(context).orientation == Orientation.portrait) TextButton(
-                onPressed: () {
-                  if (!conList[0].isExpanded) {
-                    setState(() {
-                      isExpanded = true;
-                    });
-                    for (var con in conList) {
-                      con.expand();
+            if (MediaQuery.of(context).orientation == Orientation.portrait)
+              TextButton(
+                  onPressed: () {
+                    if (!conList[0].isExpanded) {
+                      setState(() {
+                        isExpanded = true;
+                      });
+                      for (var con in conList) {
+                        con.expand();
+                      }
+                    } else {
+                      setState(() {
+                        isExpanded = false;
+                      });
+                      for (var con in conList) {
+                        con.collapse();
+                      }
                     }
-                  } else {
-                    setState(() {
-                      isExpanded = false;
-                    });
-                    for (var con in conList) {
-                      con.collapse();
-                    }
-                  }
-                },
-                child: isExpanded
-                    ? Text('Collapse all'.hardcoded)
-                    : Text('Expand all'.hardcoded))
+                  },
+                  child: isExpanded
+                      ? Text(loc.collapseButtonLabel)
+                      : Text(loc.expandButtonLabel))
           ],
         ),
       ),

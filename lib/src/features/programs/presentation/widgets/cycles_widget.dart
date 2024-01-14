@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
@@ -9,7 +7,7 @@ import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/showDuratonPicker.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class CyclesWidget extends ConsumerStatefulWidget {
@@ -22,6 +20,7 @@ class CyclesWidget extends ConsumerStatefulWidget {
 class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
   @override
   Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
     List<Cycle> cycles = ref.watch(cyclesOfProgramProvider);
     return Expanded(
       child: ListView.builder(
@@ -36,18 +35,17 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Cycle ${(index + 1).toString()}'.hardcoded,
+                    loc.cycleNumber(index + 1),
                     style: TextStyles.smallBold,
                   ),
                   IconButton(
                       onPressed: () async {
                         var res = await showAlertDialog(
                             context: context,
-                            title: 'Cycle deletion!'.hardcoded,
-                            defaultActionText: 'Yes'.hardcoded,
-                            content:
-                                'Are you sure you want to delete this cycle?'.hardcoded,
-                            cancelActionText: 'Cancel'.hardcoded);
+                            title: loc.cycleDeletionDialogTitle,
+                            defaultActionText: loc.yesLabel,
+                            content: loc.cycleDeletionDialogContent,
+                            cancelActionText: loc.cancelLabel);
                         (res == true)
                             ? ref.read(programProvider).deleteCycle(index)
                             : null;
@@ -61,14 +59,14 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
               ),
               subtitle: Row(
                 children: [
-                  Text('Start: '.hardcoded),
+                  Text(loc.startLabel),
                   FilledButton(
                     onPressed: () async {
                       TimeOfDay? time = await showTimePicker(
                         context: context,
                         initialTime:
                             convertStringToTimeOfDay(context, cycles[index].start),
-                        barrierLabel: "Select start time".hardcoded,
+                        // barrierLabel: "Select start time".hardcoded,
                         barrierColor: Colors.white,
                         barrierDismissible: false,
                       );
@@ -89,10 +87,10 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                     child: Text(cycles[index].start),
                   ),
                   gapW32,
-                  Text('duration: '.hardcoded),
+                  Text(loc.durationLabel),
                   FilledButton(
                     onPressed: () async {
-                      var duration = await showDurationPickerDialog(context);
+                      var duration = await showDurationPickerDialog(context, ref);
 
                       if (duration != null) {
                         var newCycle =

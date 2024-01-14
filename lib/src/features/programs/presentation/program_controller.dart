@@ -10,6 +10,8 @@ import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
+import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class ProgramController {
@@ -43,8 +45,9 @@ class ProgramController {
     if (index != -1) {
       schedule.removeAt(index);
       sendSchedule(schedule);
-      ref.read(mqttControllerProvider.notifier).sendMessage(
-          commandTopic, MqttQos.atLeastOnce, jsonEncode(deleteCmd), false);
+      ref
+          .read(mqttControllerProvider.notifier)
+          .sendMessage(commandTopic, MqttQos.atLeastOnce, jsonEncode(deleteCmd), false);
       return 2;
     }
     return null;
@@ -64,8 +67,6 @@ class ProgramController {
       }
     }
   }
-
-  
 
   Program? getProgram(List<Program> schedule, int valve) {
     for (var program in schedule) {
@@ -103,6 +104,7 @@ class ProgramController {
 
   // Get the the next run of the program
   String getNextRun(List<DaysOfWeek> listOfDays, String times) {
+    final loc = ref.read(appLocalizationsProvider);
     var today = DateFormat('E').format(DateTime.now());
     var todayDay = todayToDaysOfWeek(today);
     var closestTime = getClosestTime(times);
@@ -115,12 +117,12 @@ class ProgramController {
       newListDays.sort((a, b) => a.index.compareTo(b.index));
       var index = newListDays.indexWhere((element) => element == todayDay);
       if (listOfDays.contains(todayDay) && timeIsAfterNow(closestTime)) {
-        return 'Today $closestTime';
+        return loc.nextRunTodayAtText(closestTime);
       } else {
         return '${newListDays[index + 1].name} $closestTime';
       }
     } catch (e) {
-      return 'Next ${newListDays[0].name} $closestTime';
+      return loc.nextRunDayAtText(closestTime, newListDays[0].name);
     }
   }
 

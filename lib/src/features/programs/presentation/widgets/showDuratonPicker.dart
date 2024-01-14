@@ -1,9 +1,12 @@
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
-Future<Duration?> showDurationPickerDialog(BuildContext context) async {
+Future<Duration?> showDurationPickerDialog(BuildContext context, WidgetRef ref) async {
+  final loc = ref.read(appLocalizationsProvider);
   Duration duration = const Duration(minutes: 1);
   var res = await showDialog(
     context: context,
@@ -12,7 +15,8 @@ Future<Duration?> showDurationPickerDialog(BuildContext context) async {
       return StatefulBuilder(builder: (context, setState) {
         return AlertDialog(
             title: Text(
-              'Select duration'.hardcoded,
+              loc.selectDurationTitle,
+              style: TextStyles.smallNormal,
             ),
             content: DurationPicker(
               baseUnit: BaseUnit.minute,
@@ -24,11 +28,11 @@ Future<Duration?> showDurationPickerDialog(BuildContext context) async {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Cancel'.hardcoded, style: TextStyles.mediumNormal),
+                child: Text(loc.cancelLabel, style: TextStyles.mediumNormal),
                 onPressed: () => Navigator.pop(context, false),
               ),
               TextButton(
-                child: Text('Ok'.hardcoded, style: TextStyles.mediumNormal),
+                child: Text(loc.okLabel, style: TextStyles.mediumNormal),
                 onPressed: () => Navigator.pop(context, true),
               ),
             ]);
