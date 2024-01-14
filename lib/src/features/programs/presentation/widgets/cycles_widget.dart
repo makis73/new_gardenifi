@@ -66,7 +66,6 @@ class _CyclesWidgetState extends ConsumerState<CyclesWidget> {
                         context: context,
                         initialTime:
                             convertStringToTimeOfDay(context, cycles[index].start),
-                        // barrierLabel: "Select start time".hardcoded,
                         barrierColor: Colors.white,
                         barrierDismissible: false,
                       );

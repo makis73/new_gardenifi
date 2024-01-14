@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/add_remove_valve_widget.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class ShowAddRemoveBottomSheet {
   static Future<void> showBottomSheet(BuildContext context, WidgetRef ref) {

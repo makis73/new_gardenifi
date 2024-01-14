@@ -13,7 +13,6 @@ import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_conne
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/wait_while_fetching_widget.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/screens/wifi_connection_screen.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class WiFiSetupScreen extends ConsumerStatefulWidget {
   const WiFiSetupScreen(this.device, {super.key});
@@ -59,9 +58,9 @@ class _WiFiSetupScreenState extends ConsumerState<WiFiSetupScreen> {
   @override
   Widget build(BuildContext context) {
     final loc = ref.read(appLocalizationsProvider);
-    // Variable that watch the state of the bluetooth adapter
+    // Variable to watch the state of the bluetooth adapter
     final bluetoothAdapterProvider = ref.watch(bluetoothAdapterStateStreamProvider);
-    // Variable that watch the state of the bluetooth connection
+    // Variable to watch the state of the bluetooth connection
     final connectionState = ref.watch(connectionProvider);
 
     final bool isBluetoothOn =

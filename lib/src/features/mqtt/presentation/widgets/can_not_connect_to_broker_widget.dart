@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class CanNotConnectToBrokerWidget extends ConsumerWidget {
@@ -51,8 +50,7 @@ class CanNotConnectToBrokerWidget extends ConsumerWidget {
               height: 100,
               child: Column(
                 children: [
-                  Text(
-                      loc.ifProblemPersistText),
+                  Text(loc.ifProblemPersistText),
                   TextButton(
                       onPressed: () =>
                           SystemChannels.platform.invokeMethod('SystemNavigator.pop'),

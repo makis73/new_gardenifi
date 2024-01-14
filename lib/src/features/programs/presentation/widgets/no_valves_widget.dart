@@ -4,7 +4,6 @@ import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/show_add_remov_bottomsheet.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class NoValvesWidget extends ConsumerWidget {
   const NoValvesWidget({super.key});

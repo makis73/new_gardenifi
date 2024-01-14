@@ -21,13 +21,8 @@ Future<bool?> showDisconnectedAlertDialog({
           style: TextStyles.smallNormal,
         ),
         actions: <Widget>[
-          // TextButton(
-          //   child: Text('Cancel'),
-          //   onPressed: () => Navigator.pop(context),
-          // ),
           TextButton(
               onPressed: () {
-                // ref.invalidate(mqttControllerProvider);
                 Navigator.pop(context, true);
               },
               child: Text(loc.okLabel)),

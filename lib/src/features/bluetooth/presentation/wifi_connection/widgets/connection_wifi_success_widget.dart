@@ -5,7 +5,6 @@ import 'package:new_gardenifi_app/src/constants/gaps.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/programs_screen.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ConnectionWifiSuccessWidget extends ConsumerWidget {

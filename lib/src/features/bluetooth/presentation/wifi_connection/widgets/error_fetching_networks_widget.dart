@@ -4,7 +4,6 @@ import 'package:new_gardenifi_app/src/common_widgets/button_placeholder.dart';
 import 'package:new_gardenifi_app/src/common_widgets/error_message_widget.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/widgets/refresh_networks_button.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class ErrorFetchingNetworksWidget extends ConsumerWidget {
   const ErrorFetchingNetworksWidget({

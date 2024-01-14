@@ -8,7 +8,6 @@ import 'package:new_gardenifi_app/src/features/programs/presentation/program_con
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class SaveProgramButton extends StatelessWidget {

@@ -139,7 +139,16 @@
           "type": "String"
         }
       }
+    },
+    "day": "{day, select, Mon{Δευ} Tue{Τρ} Wed{Τετ} Thu{Πεμ} Fri{Παρ} Sat{Σαβ} Sun{Κυρ} other{_}}",
+    "@day":{
+      "placeholders": {
+        "day":{
+          "type": "String"
+        }
+      }
     }
+  
       
 
   

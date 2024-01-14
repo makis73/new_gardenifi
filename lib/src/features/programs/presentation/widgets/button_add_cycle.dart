@@ -5,7 +5,6 @@ import 'package:new_gardenifi_app/src/features/programs/presentation/screens/cre
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/showDuratonPicker.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class AddCycleButton extends ConsumerWidget {

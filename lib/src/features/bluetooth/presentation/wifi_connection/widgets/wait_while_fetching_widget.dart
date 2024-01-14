@@ -4,7 +4,6 @@ import 'package:new_gardenifi_app/src/common_widgets/button_placeholder.dart';
 import 'package:new_gardenifi_app/src/common_widgets/progress_widget.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class WaitWhileFetchingWidget extends ConsumerWidget {
   const WaitWhileFetchingWidget({

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 Future<bool?> showAlertDialog({
   required BuildContext context,

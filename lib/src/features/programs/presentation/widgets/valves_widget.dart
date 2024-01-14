@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +14,6 @@ import 'package:new_gardenifi_app/src/features/programs/presentation/screens/cre
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/tile_title_widget.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class ValvesWidget extends ConsumerStatefulWidget {
@@ -135,15 +133,12 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                                 name: name,
                                               ))).then((value) {
                                     if (value != null && value == 1) {
-                                      showSnackbar(
-                                          context, loc.programSendSnackbarText,
+                                      showSnackbar(context, loc.programSendSnackbarText,
                                           icon: Icons.done, color: Colors.greenAccent);
                                     } else if (value != null && value == -1) {
                                       showSnackbar(
-                                          context,
-                                          loc.programCouldNotSendSnackbarText,
-                                          icon: Icons.clear,
-                                          color: Colors.red[800]);
+                                          context, loc.programCouldNotSendSnackbarText,
+                                          icon: Icons.clear, color: Colors.red[800]);
                                     } else if (value != null && value == 2) {
                                       showSnackbar(
                                         context,

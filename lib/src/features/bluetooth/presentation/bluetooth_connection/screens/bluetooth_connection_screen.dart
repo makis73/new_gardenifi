@@ -14,7 +14,6 @@ import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/bluetooth_controller.dart';
 import 'package:new_gardenifi_app/src/features/bluetooth/presentation/wifi_connection/screens/wifi_setup_screen.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 
 class BluetoothConnectionScreen extends ConsumerStatefulWidget {
   const BluetoothConnectionScreen({super.key});

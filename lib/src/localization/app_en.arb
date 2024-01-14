@@ -139,6 +139,14 @@
         "type": "String"
       }
     }
+  },
+  "day": "{day, select, Mon{Mon} Tue{Tue} Wed{Wed} Thu{Thu} Fri{Fri} Sat{Sat} Sun{Sun} other{_}}",
+  "@day":{
+    "placeholders": {
+      "day":{
+        "type": "String"
+      }
+    }
   }
 
 

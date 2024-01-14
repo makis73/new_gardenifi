@@ -11,7 +11,6 @@ import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
-import 'package:new_gardenifi_app/src/localization/string_hardcoded.dart';
 import 'package:new_gardenifi_app/utils.dart';
 
 class ProgramController {
@@ -31,7 +30,6 @@ class ProgramController {
           .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded, true);
       return 1;
     } catch (e) {
-      log('PROGRAM_CONTROLLER:: Error while sending schedule to broker (error: ${e.toString()})');
       return -1;
     }
   }
@@ -119,10 +117,10 @@ class ProgramController {
       if (listOfDays.contains(todayDay) && timeIsAfterNow(closestTime)) {
         return loc.nextRunTodayAtText(closestTime);
       } else {
-        return '${newListDays[index + 1].name} $closestTime';
+        return '${loc.day(newListDays[index + 1].name)} $closestTime'; //'${newListDays[index + 1].name} $closestTime';
       }
     } catch (e) {
-      return loc.nextRunDayAtText(closestTime, newListDays[0].name);
+      return loc.nextRunDayAtText(closestTime, loc.day(newListDays[0].name));
     }
   }
 
