@@ -5,12 +5,14 @@ class Program {
   String name;
   String days;
   List<Cycle> cycles;
+  int tz_offset;
 
   Program({
     required this.out,
     this.name = '',
     required this.days,
     required this.cycles,
+    required this.tz_offset,
   });
 
   List<String>? listOfDays;
@@ -26,12 +28,19 @@ class Program {
       throw FormatException(
           'Invalid JSON: required "days" field of type [String] in $data');
     }
+    final tz_offset = data['tz_offset'];
+    if (tz_offset is! int) {
+      throw FormatException(
+          'Invalid JSON: required "tzOffset: field of type [int] in $data');
+    }
     final cycles = data['cycles'] as List<dynamic>;
+
     return Program(
       out: out,
       name: name,
       days: days,
       cycles: cycles.map((e) => Cycle.fromJson(e as Map<String, dynamic>)).toList(),
+      tz_offset: tz_offset,
     );
   }
 
@@ -41,9 +50,11 @@ class Program {
       'name': name,
       'days': days,
       'cycles': cycles.map((e) => e.toJson()).toList(),
+      'tz_offset': tz_offset,
     };
   }
 
   @override
-  String toString() => 'Program(out: $out, name: $name, days: $days, cycles: $cycles)';
+  String toString() =>
+      'Program(out: $out, name: $name, days: $days, cycles: $cycles, tz_offset: $tz_offset)';
 }

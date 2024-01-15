@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
@@ -33,12 +35,14 @@ class SaveProgramButton extends StatelessWidget {
     final loc = ref.read(appLocalizationsProvider);
     return OutlinedButton(
       onPressed: () {
+        var tzOffset = DateTime.now().timeZoneOffset.inHours;
         var listOfDays = convertListDaysOfWeekToListString(daysSelected).join(',');
         var program = Program(
           out: widget.valve,
           name: widget.name,
           days: listOfDays,
           cycles: cyclesOfCurrentProgram,
+          tz_offset: tzOffset,
         );
         // Check if there is already a program for this valve and return 1 or -1
         var index = currentSchedule.indexWhere(

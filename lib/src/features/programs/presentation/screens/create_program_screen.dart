@@ -93,13 +93,15 @@ class __CreateProgramScreenStateState extends ConsumerState<CreateProgramScreen>
           } else {}
         }
       },
-      child: Scaffold(body: OrientationBuilder(builder: (context, orientation) {
-        return (orientation == Orientation.portrait)
-            ? createPotrtaitScreen(ref, radius, daysOfCurrentProgram, context,
-                cyclesOfCurrentProgram, hasChanged, daysSelected, currentSchedule)
-            : createLandscapeScreen(daysOfCurrentProgram, context, cyclesOfCurrentProgram,
-                hasChanged, daysSelected, currentSchedule);
-      })),
+      child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: OrientationBuilder(builder: (context, orientation) {
+            return (orientation == Orientation.portrait)
+                ? createPotrtaitScreen(ref, radius, daysOfCurrentProgram, context,
+                    cyclesOfCurrentProgram, hasChanged, daysSelected, currentSchedule)
+                : createLandscapeScreen(daysOfCurrentProgram, context,
+                    cyclesOfCurrentProgram, hasChanged, daysSelected, currentSchedule);
+          })),
     );
   }
 
