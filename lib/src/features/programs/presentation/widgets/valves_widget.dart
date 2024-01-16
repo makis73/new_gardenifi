@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +27,6 @@ class ValvesWidget extends ConsumerStatefulWidget {
 }
 
 class _ValveCardsState extends ConsumerState<ValvesWidget> {
-  List<ExpansionTileController> conList = [];
   bool isExpanded = false;
 
   Map openValveCmd(int valve) {
@@ -38,10 +38,18 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final loc = ref.read(appLocalizationsProvider);
     final status = ref.watch(statusTopicProvider);
     final schedule = ref.watch(configTopicProvider);
+
+    // Use this list to arrange keys to ExpansionTiles and make them rebuild on pressing [Expand/Collapse] button
+    final uniqueKeysList = List<UniqueKey>.filled(widget.listOfValves.length, UniqueKey());
 
     return Expanded(
       child: RefreshIndicator(
@@ -56,8 +64,6 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                 itemCount: widget.listOfValves.length,
                 padding: const EdgeInsets.symmetric(vertical: 0),
                 itemBuilder: (context, index) {
-                  ExpansionTileController con = ExpansionTileController();
-                  conList.add(con);
 
                   int valve = int.parse(widget.listOfValves[index]);
                   bool valveIsOn = status['out$valve'] == 1 ? true : false;
@@ -94,7 +100,8 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ExpansionTile(
-                      controller: con,
+                      key: uniqueKeysList[index],
+                      initiallyExpanded: isExpanded,
                       title: TileTitle(name: name, valveIsOn: valveIsOn),
                       subtitle: valveIsOn
                           ? Text(
@@ -155,7 +162,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                                 },
                                 child: cycles.isEmpty
                                     ? Text(loc.createProgramText)
-                                    : Expanded(child: Text(loc.viewEditProgramText))),
+                                    : Text(loc.viewEditProgramText)),
                             Switch(
                               value: valveIsOn,
                               onChanged: (value) =>
@@ -176,24 +183,12 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                 },
               ),
             ),
-            if (MediaQuery.of(context).orientation == Orientation.portrait)
+            if (MediaQuery.of(context).orientation == Orientation.portrait && widget.listOfValves.length>1)
               TextButton(
                   onPressed: () {
-                    if (!conList[0].isExpanded) {
-                      setState(() {
-                        isExpanded = true;
-                      });
-                      for (var con in conList) {
-                        con.expand();
-                      }
-                    } else {
-                      setState(() {
-                        isExpanded = false;
-                      });
-                      for (var con in conList) {
-                        con.collapse();
-                      }
-                    }
+                    setState(() {
+                      isExpanded = !isExpanded;
+                    });
                   },
                   child: isExpanded
                       ? Text(loc.collapseButtonLabel)
