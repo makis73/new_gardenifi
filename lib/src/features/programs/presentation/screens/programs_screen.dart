@@ -103,9 +103,11 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
                       ScreenUpperLandscape(
                           radius: screenHeight / 3,
                           showMenuButton: true,
-                          showAddRemoveMenu: true,
-                          showInitializeMenu: true,
-                          showLogo: true),
+                        showAddRemoveMenu: canShowAllMenuOptions,
+                        showInitializeMenu: canShowAllMenuOptions,
+                        showRebootMenu: canShowAllMenuOptions,
+                        showUpdateMenu: canShowAllMenuOptions,
+                        showLogo: true),
                       gapW20,
                       Expanded(
                         child: Column(

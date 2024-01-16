@@ -8,9 +8,11 @@ class ScreenUpperLandscape extends StatelessWidget {
     super.key,
     required this.radius,
     required this.showMenuButton,
+    required this.showLogo,
     this.showAddRemoveMenu = false,
     this.showInitializeMenu = false,
-    required this.showLogo,
+    this.showRebootMenu = false,
+    this.showUpdateMenu = false,
     this.messageWidget,
   });
 
@@ -19,6 +21,8 @@ class ScreenUpperLandscape extends StatelessWidget {
   final bool showMenuButton;
   final bool? showAddRemoveMenu;
   final bool? showInitializeMenu;
+  final bool? showRebootMenu;
+  final bool? showUpdateMenu;
   final bool showLogo;
 
   @override
@@ -57,6 +61,8 @@ class ScreenUpperLandscape extends StatelessWidget {
               MoreMenuButton(
                 addRemoveValves: showAddRemoveMenu,
                 initialize: showInitializeMenu,
+                reboot: showRebootMenu,
+                update: showUpdateMenu,
               ),
             gapH32,
             if (messageWidget != null) messageWidget!,
