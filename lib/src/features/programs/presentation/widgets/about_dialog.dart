@@ -28,7 +28,7 @@ Future<bool?> aboutDialog({
         // applicationLegalese: '',
         children: [
           Text('Hardware Id: $hwId\n', style: textStyle),
-          Text('Uptime: ${metadata['uptime']}', style: textStyle),
+          Text('Uptime: ${metadata['uptime']}\n', style: textStyle),
           Text('Server version: ${metadata['git_commit']}', style: textStyle),
           gapH12,
           InkWell(

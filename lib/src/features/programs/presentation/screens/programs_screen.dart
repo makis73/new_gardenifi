@@ -74,7 +74,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen>
                         radius: radius,
                         showMenuButton: true,
                         showAddRemoveMenu: canShowAllMenuOptions,
-                        showInitializeMenu: canShowAllMenuOptions,
+                        showInitializeMenu: true,
                         showRebootMenu: canShowAllMenuOptions,
                         showUpdateMenu: canShowAllMenuOptions,
                         showLogo: true),
