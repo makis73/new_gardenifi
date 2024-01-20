@@ -27,7 +27,6 @@ class ValvesWidget extends ConsumerStatefulWidget {
 }
 
 class _ValveCardsState extends ConsumerState<ValvesWidget> {
-  bool isExpanded = false;
 
   Map openValveCmd(int valve) {
     return {"out": valve, "cmd": 1};
@@ -47,9 +46,6 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
     final loc = ref.read(appLocalizationsProvider);
     final status = ref.watch(statusTopicProvider);
     final schedule = ref.watch(configTopicProvider);
-
-    // Use this list to arrange keys to ExpansionTiles and make them rebuild on pressing [Expand/Collapse] button
-    final uniqueKeysList = List<UniqueKey>.filled(widget.listOfValves.length, UniqueKey());
 
     return Expanded(
       child: RefreshIndicator(
@@ -100,8 +96,7 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ExpansionTile(
-                      key: uniqueKeysList[index],
-                      initiallyExpanded: isExpanded,
+                      initiallyExpanded: false,
                       title: TileTitle(name: name, valveIsOn: valveIsOn),
                       subtitle: valveIsOn
                           ? Text(
@@ -183,16 +178,6 @@ class _ValveCardsState extends ConsumerState<ValvesWidget> {
                 },
               ),
             ),
-            if (MediaQuery.of(context).orientation == Orientation.portrait && widget.listOfValves.length>1)
-              TextButton(
-                  onPressed: () {
-                    setState(() {
-                      isExpanded = !isExpanded;
-                    });
-                  },
-                  child: isExpanded
-                      ? Text(loc.collapseButtonLabel)
-                      : Text(loc.expandButtonLabel))
           ],
         ),
       ),

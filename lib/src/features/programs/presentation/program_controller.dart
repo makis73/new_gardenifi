@@ -18,13 +18,9 @@ class ProgramController {
   final Ref ref;
 
   int sendSchedule(List<Program> schedule) {
-    // for (Program program in schedule) {
-    //   for (var cycle in program.cycles) {
-    //     cycle.start = localToUtc(cycle.start);
-    //   }
-    // }
     try {
       var scheduleEncoded = jsonEncode(schedule);
+      log('ProgramController:: scheduleEncoded: $scheduleEncoded');
       ref
           .read(mqttControllerProvider.notifier)
           .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded, true);
@@ -57,14 +53,6 @@ class ProgramController {
     ref.read(cyclesOfProgramProvider.notifier).state = [...cycles];
     ref.read(hasProgramChangedProvider.notifier).state = true;
   }
-
-  // void convertScheduleToLocalTZ(List<Program> schedule) {
-  //   for (var program in schedule) {
-  //     for (var cycle in program.cycles) {
-  //       cycle.start = utcToLocal(cycle.start);
-  //     }
-  //   }
-  // }
 
   Program? getProgram(List<Program> schedule, int valve) {
     for (var program in schedule) {
