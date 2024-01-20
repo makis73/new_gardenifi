@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,7 +50,6 @@ class BluetoothRepository {
     }
   }
 
-
   Future<List<int>> readFromCharacteristic(BluetoothCharacteristic char) async {
     var result = await char.read(timeout: 60);
     return result;
@@ -60,6 +60,7 @@ class BluetoothRepository {
     try {
       await char.write(value, withoutResponse: true);
     } catch (e) {
+      log('Error while writing to characteristic: ${e.toString()}');
     }
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/alert_dialogs.dart';
@@ -14,6 +16,7 @@ import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/but
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/button_save_program.dart';
 import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 
+// ignore: must_be_immutable
 class CreateProgramScreen extends ConsumerStatefulWidget {
   CreateProgramScreen({required this.valve, required this.name, super.key});
 

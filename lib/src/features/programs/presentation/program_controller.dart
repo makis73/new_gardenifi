@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -20,7 +19,6 @@ class ProgramController {
   int sendSchedule(List<Program> schedule) {
     try {
       var scheduleEncoded = jsonEncode(schedule);
-      log('ProgramController:: scheduleEncoded: $scheduleEncoded');
       ref
           .read(mqttControllerProvider.notifier)
           .sendMessage(configTopic, MqttQos.atLeastOnce, scheduleEncoded, true);

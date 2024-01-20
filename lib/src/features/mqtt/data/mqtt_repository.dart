@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,14 +81,12 @@ class MqttRepository {
 
   void _onConnected() {
     connectionState = MqttCurrentConnectionState.connected;
-    // log('APP::From repo: client connected');
     ref.read(disconnectedProvider.notifier).state = false;
     ref.read(connectedProvider.notifier).state = true;
   }
 
   void onDisconnected() {
     connectionState = MqttCurrentConnectionState.disconnected;
-    // log('APP::From repo: disconnected');
     ref.read(disconnectedProvider.notifier).state = true;
     ref.read(connectedProvider.notifier).state = false;
   }

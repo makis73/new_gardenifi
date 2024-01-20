@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
-import 'package:new_gardenifi_app/src/features/programs/presentation/program_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:new_gardenifi_app/src/constants/mqtt_constants.dart';

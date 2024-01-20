@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/common_widgets/big_green_button.dart';
 import 'package:new_gardenifi_app/src/constants/text_styles.dart';
-import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 
 class BottomWidget extends StatelessWidget {
   const BottomWidget({
@@ -28,7 +27,6 @@ class BottomWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loc = ref.read(appLocalizationsProvider);
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,

@@ -1,6 +1,4 @@
 // ignore_for_file: constant_identifier_names
-
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -20,8 +18,6 @@ enum DaysOfWeek {
 
 class DaysOfWeekWidget extends ConsumerStatefulWidget {
   const DaysOfWeekWidget({super.key});
-
-  
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _DaysOfWeekWidgetState();
@@ -49,8 +45,7 @@ class _DaysOfWeekWidgetState extends ConsumerState<DaysOfWeekWidget> {
   createDaysWidget(double maxWidth) {
     List<Widget> list = [];
     for (var i in DaysOfWeek.values) {
-      list.add(
-          DayButton(day: i, maxWidth: maxWidth));
+      list.add(DayButton(day: i, maxWidth: maxWidth));
     }
     return list;
   }
