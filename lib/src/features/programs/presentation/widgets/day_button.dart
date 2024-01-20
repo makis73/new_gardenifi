@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/screens/create_program_screen.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
+import 'package:new_gardenifi_app/src/localization/app_localizations_provider.dart';
 
 class DayButton extends ConsumerStatefulWidget {
   const DayButton({required this.day, required this.maxWidth, super.key});
@@ -23,6 +24,7 @@ class _DayButtonState extends ConsumerState<DayButton> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = ref.read(appLocalizationsProvider);
     // The current selected days
     final currentSelectedDays = ref.watch(daysOfProgramProvider);
     final isSelected = currentSelectedDays.contains(widget.day);
@@ -33,7 +35,7 @@ class _DayButtonState extends ConsumerState<DayButton> {
           padding: const EdgeInsets.all(2.0),
           child: ElevatedButton(
             child: Text(
-              widget.day.name,
+              loc.day(widget.day.name) ,
               style: TextStyle(color: isSelected ? Colors.white : null),
             ),
             style: ElevatedButton.styleFrom(

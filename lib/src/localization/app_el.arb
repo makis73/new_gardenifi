@@ -141,7 +141,7 @@
         }
       }
     },
-    "day": "{day, select, Mon{Δευ} Tue{Τρ} Wed{Τετ} Thu{Πεμ} Fri{Παρ} Sat{Σαβ} Sun{Κυρ} other{_}}",
+    "day": "{day, select, Mon{Δευ} Tue{Τρι} Wed{Τετ} Thu{Πεμ} Fri{Παρ} Sat{Σαβ} Sun{Κυρ} other{_}}",
     "@day":{
       "placeholders": {
         "day":{
