@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:new_gardenifi_app/src/features/programs/domain/cycle.dart';
-import 'package:new_gardenifi_app/src/features/programs/domain/program.dart';
 import 'package:new_gardenifi_app/src/features/mqtt/presentation/mqtt_controller.dart';
 import 'package:new_gardenifi_app/src/features/programs/presentation/widgets/days_of_week_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,13 +27,6 @@ TimeOfDay convertStringToTimeOfDay(BuildContext context, String startTime) {
   return timeOfDay;
 }
 
-String getEndTime(BuildContext context, String startTime, String duration) {
-  DateTime dateTime =
-      DateFormat.Hm().parse(startTime).add(Duration(minutes: int.parse(duration)));
-  TimeOfDay timeOfDay = TimeOfDay.fromDateTime(dateTime);
-  return timeOfDay.format(context);
-}
-
 void refreshMainScreen(WidgetRef ref) {
   ref.invalidate(cantConnectProvider);
   ref.invalidate(disconnectedProvider);
@@ -45,15 +37,6 @@ void refreshMainScreen(WidgetRef ref) {
   ref.read(mqttControllerProvider.notifier).setupAndConnectClient();
 }
 
-List<String> createSortedTimeTexts(Program program) {
-  if (program.cycles.isNotEmpty) {
-    List<String> sortedTimeList = program.cycles.map((e) => e.start).toList();
-    sortedTimeList.sort((a, b) => a.compareTo(b));
-    return sortedTimeList;
-  }
-  return [];
-}
-
 List<Cycle> addCycleAndSortList(List<Cycle> cycles, Cycle cycle) {
   var newCycles = [...cycles, cycle];
   newCycles.sort(((a, b) => a.start.compareTo(b.start)));
@@ -62,13 +45,6 @@ List<Cycle> addCycleAndSortList(List<Cycle> cycles, Cycle cycle) {
 
 extension StringCasingExtension on String {
   String toDecapitalized() => length > 0 ? '${this[0].toLowerCase()}${substring(1)}' : '';
-}
-
-// Formating string of day to 2 chars string
-String shorteningDays(BuildContext context, String? days) {
-  var listOfDays = days!.split(',');
-  var shortDaysList = listOfDays.map((e) => e.substring(0, 3));
-  return shortDaysList.join(', ');
 }
 
 List<DaysOfWeek> stringToDaysOfWeek(String days) {

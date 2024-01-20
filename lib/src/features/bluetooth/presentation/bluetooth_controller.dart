@@ -103,7 +103,7 @@ class BluetoothController extends StateNotifier<AsyncValue<BluetoothDevice?>> {
     }
   }
 
-  // call repository to write data to device
+  // Call repository to write data to device
   Future<void> writeToDevice(String data) async {
     List<int> formatedData = utf8.encode(data);
     if (mainCharacteristic != null) {
@@ -205,6 +205,3 @@ final passwordProvider = StateProvider<String>((ref) {
   return '';
 });
 
-final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
-  return SharedPreferences.getInstance();
-});
