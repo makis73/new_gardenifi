@@ -15,29 +15,32 @@ class RootApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Gardenifi',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.green)),
-      restorationScopeId: 'app',
-      // Provide the generated AppLocalizations to the MaterialApp. This
-      // allows descendant Widgets to display the correct translations
-      // depending on the user's locale.
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      // If the device has not been initialized go to first screen. Else go to main program screen
-      home: (deviceHasBeenInitialized == true || deviceHasBeenInitialized == null)
-          ? const ProgramsScreen()
-          : const WelcomeScreen(),
-      // initialRoute: '/',
-      routes: {
-        'welcomeScreen': (context) => const WelcomeScreen(),
-        'bleConnection': (context) => const BluetoothConnectionScreen(),
-        'wifiConnection': (context) => const WifiConnectionScreen(),
-        'wifiSetup': (context) => WiFiSetupScreen(
-            ModalRoute.of(context)!.settings.arguments as BluetoothDevice),
-        'programsScreen': (context) => const ProgramsScreen(),
-      },
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'RaspirriV1',
+        theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.green)),
+        restorationScopeId: 'app',
+        // Provide the generated AppLocalizations to the MaterialApp. This
+        // allows descendant Widgets to display the correct translations
+        // depending on the user's locale.
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        // If the device has not been initialized go to first screen. Else go to main program screen
+        home: (deviceHasBeenInitialized == true || deviceHasBeenInitialized == null)
+            ? const ProgramsScreen()
+            : const WelcomeScreen(),
+        // initialRoute: '/',
+        routes: {
+          'welcomeScreen': (context) => const WelcomeScreen(),
+          'bleConnection': (context) => const BluetoothConnectionScreen(),
+          'wifiConnection': (context) => const WifiConnectionScreen(),
+          'wifiSetup': (context) => WiFiSetupScreen(
+              ModalRoute.of(context)!.settings.arguments as BluetoothDevice),
+          'programsScreen': (context) => const ProgramsScreen(),
+        },
+      ),
     );
   }
 }
